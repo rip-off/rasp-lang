@@ -31,7 +31,7 @@ namespace
 				}
 				else
 				{
-					for(auto i = children.rbegin() ; i != children.rend() ; ++i)
+					for(Token::Children::const_reverse_iterator i = children.rbegin() ; i != children.rend() ; ++i)
 					{
 						compile(*i, bindings, list);
 					}
@@ -80,7 +80,7 @@ namespace
 			break;
 		case Token::Root:
 			std::cout << "Root {\n";
-			for(auto i = children.begin() ; i != children.end() ; ++i)
+			for(Token::Children::const_iterator i = children.begin() ; i != children.end() ; ++i)
 			{
 				printTree(*i, level + 1);
 			}
@@ -89,7 +89,7 @@ namespace
 			break;
 		case Token::List:
 			std::cout << "List {\n";
-			for(auto i = children.rbegin() ; i != children.rend() ; ++i)
+			for(Token::Children::const_reverse_iterator i = children.rbegin() ; i != children.rend() ; ++i)
 			{
 				printTree(*i, level + 1);
 			}
@@ -118,7 +118,7 @@ InstructionList compile(const Token &tree, const Bindings &bindings)
 	InstructionList result;
 	assert(tree.type() == Token::Root);
 	const Token::Children &children = tree.children();
-	for(auto i = children.begin() ; i != children.end() ; ++i)
+	for(Token::Children::const_iterator i = children.begin() ; i != children.end() ; ++i)
 	{
 		compile(*i, bindings, result);
 	}

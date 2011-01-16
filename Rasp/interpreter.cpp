@@ -49,7 +49,7 @@ namespace
 Value Interpreter::exec(const InstructionList &instructions) const
 {
 	Stack stack;
-	for(auto it = instructions.cbegin() ; it != instructions.cend() ; ++it)
+	for(InstructionList::const_iterator it = instructions.begin() ; it != instructions.end() ; ++it)
 	{
 		Instruction::Type type = it->type();
 		const Value &value = it->value();

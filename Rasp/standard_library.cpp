@@ -23,7 +23,7 @@ namespace
 	Value plus(const Arguments &arguments)
 	{
 		int result = 0;
-		for(auto i = arguments.cbegin() ; i != arguments.cend() ; ++i)
+		for(Arguments::const_iterator i = arguments.cbegin() ; i != arguments.cend() ; ++i)
 		{
 			if(!i->isNumber())
 			{
@@ -37,7 +37,7 @@ namespace
 	Value mul(const Arguments &arguments)
 	{
 		int result = 1;
-		for(auto i = arguments.cbegin() ; i != arguments.cend() ; ++i)
+		for(Arguments::const_iterator i = arguments.cbegin() ; i != arguments.cend() ; ++i)
 		{
 			if(!i->isNumber())
 			{
@@ -68,7 +68,7 @@ namespace
 
 	Value print(const Arguments &arguments)
 	{
-		for(auto i = arguments.begin() ; i != arguments.end() ; ++i)
+		for(Arguments::const_iterator i = arguments.begin() ; i != arguments.end() ; ++i)
 		{
 			// TODO: remove automatic space when we support character/string literals.
 			std::cout << *i << ' ';
