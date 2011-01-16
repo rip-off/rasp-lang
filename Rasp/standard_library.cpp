@@ -23,7 +23,7 @@ namespace
 	Value plus(const Arguments &arguments)
 	{
 		int result = 0;
-		for(Arguments::const_iterator i = arguments.cbegin() ; i != arguments.cend() ; ++i)
+		for(Arguments::const_iterator i = arguments.begin() ; i != arguments.end() ; ++i)
 		{
 			if(!i->isNumber())
 			{
@@ -37,7 +37,7 @@ namespace
 	Value mul(const Arguments &arguments)
 	{
 		int result = 1;
-		for(Arguments::const_iterator i = arguments.cbegin() ; i != arguments.cend() ; ++i)
+		for(Arguments::const_iterator i = arguments.begin() ; i != arguments.end() ; ++i)
 		{
 			if(!i->isNumber())
 			{
