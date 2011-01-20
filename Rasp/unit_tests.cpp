@@ -4,8 +4,8 @@
 #include <iostream>
 
 #include "token.h"
+#include "lexer.h"
 #include "parser.h"
-#include "compiler.h"
 #include "exceptions.h"
 #include "instruction.h"
 #include "interpreter.h"
@@ -27,10 +27,10 @@ namespace
 		assert(result.number() == (42 + 13 + 16));
 	}
 
-	void testParser()
+	void testLexer()
 	{
 		std::string source = "(+ 13 42)";
-		Token token = parse(source);
+		Token token = lex(source);
 		assert(token.type() == Token::Root);
 		
 		const Token::Children &rootChildren = token.children();
@@ -45,26 +45,30 @@ namespace
 		assert(children[2].type() == Token::Number && children[2].string() == "42");
 	}
 
-	void testCompiler(Interpreter &interpreter)
+	void testParser(Interpreter &interpreter)
 	{
 		Token function = Token::identifier("+");
 		Token left = Token::number("42");
 		Token right = Token::number("13");
-		Token list;
+		Token list = Token::list();
 		list.addChild(function);
 		list.addChild(left);
 		list.addChild(right);
 		Token root;
 		root.addChild(list);
-		InstructionList result = compile(root, interpreter.bindings());
-		assert(!result.empty());
+		InstructionList result = parse(root, interpreter.bindings());
+		assert(result.size() == 4);
+		assert(result[0].type() == Instruction::Push && result[0].value().number() == 13);
+		assert(result[1].type() == Instruction::Push && result[1].value().number() == 42);
+		assert(result[2].type() == Instruction::Push && result[2].value().isFunction() && result[2].value().function().name() == "+");
+		assert(result[3].type() == Instruction::Call && result[3].value().number() == 2);
 	}
 
 	void testAll(Interpreter &interpreter)
 	{
 		std::string source = "(+ (* 2 42) (/ 133 10) (- 1 6))";
-		Token token = parse(source);
-		InstructionList instructions = compile(token, interpreter.bindings());
+		Token token = lex(source);
+		InstructionList instructions = parse(token, interpreter.bindings());
 		Value result = interpreter.exec(instructions);
 		assert(result.isNumber());
 		assert(result.number() == 84 + 13 - 5);
@@ -75,8 +79,8 @@ void runUnitTests(Interpreter &interpreter)
 {
 	try
 	{
-		testParser();
-		testCompiler(interpreter);
+		testLexer();
+		testParser(interpreter);
 		testInterpreter(interpreter);
 
 		testAll(interpreter);

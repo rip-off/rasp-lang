@@ -12,19 +12,19 @@ public:
 	}
 };
 
-class ParseError : public RaspError
+class LexError : public RaspError
 {
 public:
-	ParseError(const std::string &message)
+	LexError(const std::string &message)
 		: RaspError(message)
 	{
 	}
 };
 
-class CompileError : public RaspError
+class ParseError : public RaspError
 {
 public:
-	CompileError(const std::string &message)
+	ParseError(const std::string &message)
 		: RaspError(message)
 	{
 	}

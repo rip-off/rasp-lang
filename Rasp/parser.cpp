@@ -1,149 +1,126 @@
 #include "parser.h"
 
-#include <cctype>
-#include <algorithm>
+// TODO: remove me...
+#include <iostream>
 
-#include "utils.h"
+#include "token.h"
+#include "bindings.h"
 #include "exceptions.h"
-
-typedef std::string::const_iterator Iterator;
 
 namespace
 {
-	class MatchParens
+	void parse(const Token &token, const Bindings &bindings, InstructionList &list)
 	{
-	public:
-		MatchParens() 
-			: diff(1) 
+		const Token::Children &children = token.children();
+		switch(token.type())
 		{
-		}
-
-		bool operator()( char c )
-		{
-			if(c == '(')
+		case Token::Nil:
+			assert(children.empty());
+			list.push_back(Instruction::push(Value::nil()));
+			break;
+		case Token::Root:
+			assert(children.empty());
+			// do nothing;
+			break;
+		case Token::List:
 			{
-				++diff;
-			}
-			else if(c == ')')
-			{
-				--diff;
-				if(diff == 0)
+				if(children.empty())
 				{
-					return true;
+					// TODO: investigate this, compile time error?
+					list.push_back(Instruction::push(Value::nil()));
+				}
+				else
+				{
+					for(Token::Children::const_reverse_iterator i = children.rbegin() ; i != children.rend() ; ++i)
+					{
+						parse(*i, bindings, list);
+					}
+					// Call expects the number of arguments, so we must omit 1 element
+					// This is because the function is the mandatory first element
+					// TODO: check the first element is a function at compile time
+					list.push_back(Instruction::call(children.size() - 1));
 				}
 			}
-			return false;
-		}
-	private:
-		unsigned diff;
-	};
-
-	class IsSpace
-	{
-	public:
-		IsSpace(bool negate = false) : negate(negate)
-		{
-		}
-
-		bool operator()(char c)
-		{
-			bool space = std::isspace(c);
-			return negate != space; // negate ? !space : space;
-		}
-	private:
-		bool negate;
-	};
-
-	Iterator consumeWhitespace(const Iterator begin, const Iterator end)
-	{
-		return std::find_if(begin, end, IsSpace(true));
-	}
-
-	Token literal(Iterator &current, const Iterator end)
-	{
-		current = consumeWhitespace(current, end);
-		const Iterator literalEnd = std::find_if(current, end, IsSpace());
-		
-		std::string string(current, literalEnd);
-		current = literalEnd;
-		
-		if(string == "nil")
-		{
-			return Token::nil();
-		}
-		else if(is<int>(string))
-		{
-			return Token::number(string);
-		}
-		else
-		{
-			return Token::identifier(string);
-		}
-	}
-
-	Token next(Iterator &begin, const Iterator end);
-
-	Token list(Iterator &current, const Iterator end)
-	{
-		current = consumeWhitespace(current, end);
-		const Iterator endOfList = std::find_if(current, end, MatchParens());
-		if(endOfList == end)
-		{
-			throw ParseError("Unterminated list");
-		}
-
-		Token result = Token::list();
-		while(current != endOfList)
-		{
-			result.addChild(next(current, endOfList));
-		}
-
-		// This should be 
-		if(current != end)
-		{
-			++current;
-		}
-		return result;
-	}
-
-	Token next(Iterator &current, const Iterator end)
-	{
-		current = consumeWhitespace(current, end);
-		if(current == end)
-		{
-			return Token();
-		}
-		else
-		{
-			char c = *current;
-			if(c == ')')
+			break;
+		case Token::Number:
+			assert(children.empty());
+			list.push_back(Instruction::push(to<int>(token.string())));
+			break;
+		case Token::Identifier:
 			{
-				throw ParseError("Stray ) in program");
+				assert(children.empty());
+				const Value *value = tryFind(bindings, token.string());
+				if(!value)
+				{
+					throw ParseError("Unknown binding " + token.string());
+				}
+				list.push_back(Instruction::push(*value));
 			}
-			else if(c == '(')
-			{
-				++current;
-				return list(current, end);
-			}
-			else
-			{
-				return literal(current, end);
-			}
+			break;
 		}
 	}
-} // End anonymous namespace
 
-Token parse(const std::string &source)
+	void printTabs(int num)
+	{
+		while(num --> 0)
+		{
+			std::cout << '\t';
+		}
+	}
+
+	void printTree(const Token &token, int level)
+	{
+		printTabs(level);
+		const Token::Children &children = token.children();
+		switch(token.type())
+		{
+		case Token::Nil:
+			assert(children.empty());
+			std::cout << "nil";
+			break;
+		case Token::Root:
+			std::cout << "Root {\n";
+			for(Token::Children::const_iterator i = children.begin() ; i != children.end() ; ++i)
+			{
+				printTree(*i, level + 1);
+			}
+			printTabs(level);
+			std::cout << "}";
+			break;
+		case Token::List:
+			std::cout << "List {\n";
+			for(Token::Children::const_reverse_iterator i = children.rbegin() ; i != children.rend() ; ++i)
+			{
+				printTree(*i, level + 1);
+			}
+			printTabs(level);
+			std::cout << "}";
+			break;
+		case Token::Number:
+			assert(children.empty());
+			std::cout << "Number(" << token.string() << ')' << '\n';
+			break;
+		case Token::Identifier:
+			assert(children.empty());
+			std::cout << "Identifier(" << token.string() << ')' << '\n';
+			break;
+		}
+		std::cout << '\n';
+	}
+}
+
+InstructionList parse(const Token &tree, const Bindings &bindings)
 {
-	Token root;
-	
-	Iterator it = source.begin();
-	const Iterator end = source.end();
-	while(it != end)
-	{
-		Token token = next(it, end);
-		root.addChild(token);
-	}
+#if 0
+	printTree(tree,1);
+#endif
 
-	return root;
+	InstructionList result;
+	assert(tree.type() == Token::Root);
+	const Token::Children &children = tree.children();
+	for(Token::Children::const_iterator i = children.begin() ; i != children.end() ; ++i)
+	{
+		parse(*i, bindings, result);
+	}
+	return result;
 }

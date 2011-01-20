@@ -1,8 +1,11 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-#include "token.h"
+#include "bindings.h"
+#include "instruction.h"
 
-Token parse(const std::string &source);
+class Token;
+
+InstructionList parse(const Token &tree, const Bindings &bindings);
 
 #endif

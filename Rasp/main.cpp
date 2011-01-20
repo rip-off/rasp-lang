@@ -2,8 +2,8 @@
 #include <string>
 #include <iostream>
 
+#include "lexer.h"
 #include "parser.h"
-#include "compiler.h"
 #include "exceptions.h"
 #include "unit_tests.h"
 #include "interpreter.h"
@@ -22,17 +22,17 @@ int main()
 	{
 		try
 		{
-			Token token = parse(line);
-			InstructionList instructions = compile(token, bindings);
+			Token token = lex(line);
+			InstructionList instructions = parse(token, bindings);
 			std::cout << interpreter.exec(instructions) << std::endl;
+		}
+		catch(const LexError &e)
+		{
+			std::cerr << "Lex error: " << e.what() << '\n';
 		}
 		catch(const ParseError &e)
 		{
-			std::cerr << "Parser error: " << e.what() << '\n';
-		}
-		catch(const CompileError &e)
-		{
-			std::cerr << "Compiler error: " << e.what() << '\n';
+			std::cerr << "Parse error: " << e.what() << '\n';
 		}
 		catch(const ExecutionError &e)
 		{
