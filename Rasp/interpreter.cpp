@@ -71,5 +71,5 @@ Value Interpreter::exec(const InstructionList &instructions) const
 
 const Value *Interpreter::binding(const std::string &name) const
 {
-	return tryFind(bindings, name);
+	return tryFind(bindings_, name);
 }
