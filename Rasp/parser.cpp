@@ -42,6 +42,10 @@ namespace
 				}
 			}
 			break;
+		case Token::String:
+			assert(children.empty());
+			list.push_back(Instruction::push(token.string()));
+			break;
 		case Token::Number:
 			assert(children.empty());
 			list.push_back(Instruction::push(to<int>(token.string())));
@@ -95,6 +99,10 @@ namespace
 			}
 			printTabs(level);
 			std::cout << "}";
+			break;
+		case Token::String:
+			assert(children.empty());
+			std::cout << "String(" << token.string() << ')' << '\n';
 			break;
 		case Token::Number:
 			assert(children.empty());

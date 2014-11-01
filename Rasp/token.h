@@ -17,6 +17,7 @@ public:
 		Nil,
 		Root,
 		List,
+		String,
 		Number,
 		Identifier
 	};
@@ -35,6 +36,11 @@ public:
 	static Token list()
 	{
 		return Token(List, "__list");
+	}
+
+	static Token string(const std::string &text)
+	{
+		return Token(String, text);
 	}
 
 	static Token number(const std::string &number)

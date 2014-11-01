@@ -75,6 +75,11 @@ namespace
 		{
 			return Token::number(string);
 		}
+		else if(!string.empty() && string[0] == '?')
+		{
+			// TODO: handle quotes properly
+			return Token::string(string.substr(1, std::string::npos));
+		}
 		else
 		{
 			return Token::identifier(string);

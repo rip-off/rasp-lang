@@ -12,6 +12,7 @@ private:
 	enum Type
 	{
 		TNil,
+		TString,
 		TNumber,
 		TFunction,
 	};
@@ -19,7 +20,8 @@ private:
 	union Data
 	{
 		int number;
-		const Function *function;
+		Function *function;
+		char *string;
 	};
 
 public:
@@ -33,6 +35,8 @@ public:
 	{
 		data.number = number;
 	}
+
+	Value(const std::string &text);
 
 	Value(const Function &function);
 

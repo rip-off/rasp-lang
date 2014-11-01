@@ -1,5 +1,6 @@
 #include "value.h"
 
+#include <cstring>
 #include <iostream>
 #include <algorithm>
 #include <stdexcept>
@@ -12,11 +13,22 @@ Value::Value(const Function &function)
 	data.function = new Function(function);
 }
 
+Value::Value(const std::string &text)
+	: type(TString)
+{
+	// TODO: strdup isn't standard???
+	data.string = strdup(text.c_str());
+}
+
 Value::~Value()
 {
 	if(type == TFunction)
 	{
 		delete data.function;
+	}
+	else if(type == TString)
+	{
+		std::free(data.string);
 	}
 }
 
@@ -26,6 +38,10 @@ Value::Value(const Value &value)
 	if(type == TFunction)
 	{
 		data.function = new Function(*value.data.function);
+	}
+	else if(type == TString)
+	{
+		data.string = strdup(value.data.string);
 	}
 	else
 	{
@@ -46,6 +62,9 @@ std::ostream &operator<<(std::ostream &out, const Value &value)
 	{
 	case Value::TNil:
 		return out << "nil";
+	case Value::TString:
+		// TODO: escape embedded quotes
+		return out << "\"" << value.data.string << "\"";
 	case Value::TNumber:
 		return out << value.data.number;
 	case Value::TFunction:
