@@ -73,6 +73,7 @@ namespace
 			// TODO: remove automatic space when we support character/string literals.
 			std::cout << *i << ' ';
 		}
+		std::cout << '\n';
 		return Value();
 	}
 

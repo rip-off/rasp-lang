@@ -16,7 +16,7 @@ int main()
 
 	runUnitTests(interpreter);
 
-	std::cout << "Enter some code:\n";
+	std::cout << "Enter some code, or type \'exit\' when finished:\n";
 	std::string line;
 	while((std::cout << " > ") && std::getline(std::cin, line) && !(line == "quit" || line == "exit"))
 	{
@@ -24,7 +24,8 @@ int main()
 		{
 			Token token = lex(line);
 			InstructionList instructions = parse(token, bindings);
-			std::cout << interpreter.exec(instructions) << std::endl;
+			Value result = interpreter.exec(instructions);
+			std::cout << " < " << result << std::endl;
 		}
 		catch(const LexError &e)
 		{
