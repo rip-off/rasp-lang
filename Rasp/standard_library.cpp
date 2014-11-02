@@ -70,11 +70,33 @@ namespace
 	{
 		for(Arguments::const_iterator i = arguments.begin() ; i != arguments.end() ; ++i)
 		{
-			// TODO: remove automatic space when we support character/string literals.
-			std::cout << *i << ' ';
+			const Value &value = *i;
+			switch(value.type())
+			{
+			case Value::TNil:
+				std::cout << "nil";
+				break;
+			case Value::TString:
+				std::cout << value.string();
+				break;
+			case Value::TNumber:
+				std::cout << value.number();
+				break;
+			case Value::TFunction:
+				std::cout << value;
+				break;
+			default:
+				throw std::logic_error("Type not implemented");
+			}
 		}
-		std::cout << '\n';
 		return Value();
+	}
+
+	Value println(const Arguments &arguments)
+	{
+		Value result = print(arguments);
+		std::cout << '\n';
+		return result;
 	}
 
 	Value sleep(const Arguments &arguments)
@@ -102,13 +124,6 @@ namespace
 			throw ExecutionError("Expect no arguments");
 		}
 		return static_cast<int>(std::time(0));
-	}
-
-	Value println(const Arguments &arguments)
-	{
-		print(arguments);
-		std::cout << '\n';
-		return Value();
 	}
 
 #define ENTRY(X) ApiReg(#X, &X)

@@ -1,2 +1,3 @@
-(print "hello world")
-(print "hello, \"Alice\", how are you?")
+(println "hello world")
+(println "hello, \"Alice\", how are you?")
+(println "does" "print" "add" "spaces")

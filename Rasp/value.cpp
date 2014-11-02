@@ -7,45 +7,55 @@
 
 #include "function.h"
 
-Value::Value(const Function &function)
-	: type(TFunction)
+Value::Value()
+	: type_(TNil)
 {
-	data.function = new Function(function);
+}
+
+Value::Value(int number)
+	: type_(TNumber)
+{
+	data_.number = number;
+}
+
+Value::Value(const Function &function)
+	: type_(TFunction)
+{
+	data_.function = new Function(function);
 }
 
 Value::Value(const std::string &text)
-	: type(TString)
+	: type_(TString)
 {
-	// TODO: strdup isn't standard???
-	data.string = strdup(text.c_str());
+	data_.string = new std::string(text);
 }
 
 Value::~Value()
 {
-	if(type == TFunction)
+	if(type_ == TFunction)
 	{
-		delete data.function;
+		delete data_.function;
 	}
-	else if(type == TString)
+	else if(type_ == TString)
 	{
-		std::free(data.string);
+		delete data_.string;
 	}
 }
 
 Value::Value(const Value &value)
-	: type(value.type)
+	: type_(value.type_)
 {
-	if(type == TFunction)
+	if(type_ == TFunction)
 	{
-		data.function = new Function(*value.data.function);
+		data_.function = new Function(*value.data_.function);
 	}
-	else if(type == TString)
+	else if(type_ == TString)
 	{
-		data.string = strdup(value.data.string);
+		data_.string = new std::string(*value.data_.string);
 	}
 	else
 	{
-		data = value.data;
+		data_ = value.data_;
 	}
 }
 
@@ -76,17 +86,16 @@ namespace
 
 std::ostream &operator<<(std::ostream &out, const Value &value)
 {
-	switch(value.type)
+	switch(value.type_)
 	{
 	case Value::TNil:
 		return out << "nil";
 	case Value::TString:
-		// TODO: escape embedded quotes
-		return out << "\"" << escapeEmbeddedQuotes(value.data.string) << "\"";
+		return out << "\"" << escapeEmbeddedQuotes(*value.data_.string) << "\"";
 	case Value::TNumber:
-		return out << value.data.number;
+		return out << value.data_.number;
 	case Value::TFunction:
-		return out << "(function: " << value.data.function->name() << ')';
+		return out << "(function: " << value.data_.function->name() << ')';
 	default:
 		throw std::logic_error("Type not implemented");
 	}
