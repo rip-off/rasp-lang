@@ -1,10 +1,10 @@
 #include "parser.h"
 
-// TODO: remove me...
 #include <iostream>
 
 #include "token.h"
 #include "bindings.h"
+#include "settings.h"
 #include "exceptions.h"
 
 namespace
@@ -117,11 +117,12 @@ namespace
 	}
 }
 
-InstructionList parse(const Token &tree, const Bindings &bindings)
+InstructionList parse(const Token &tree, const Bindings &bindings, const Settings &settings)
 {
-#if 0
-	printTree(tree,1);
-#endif
+	if (settings.verbose)
+	{
+		printTree(tree,1);
+	}
 
 	InstructionList result;
 	assert(tree.type() == Token::Root);

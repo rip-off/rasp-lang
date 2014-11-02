@@ -5,7 +5,8 @@
 #include "instruction.h"
 
 class Token;
+class Settings;
 
-InstructionList parse(const Token &tree, const Bindings &bindings);
+InstructionList parse(const Token &tree, const Bindings &bindings, const Settings &settings);
 
 #endif

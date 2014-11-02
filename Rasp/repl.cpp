@@ -6,11 +6,9 @@
 #include "lexer.h"
 #include "parser.h"
 #include "exceptions.h"
-#include "unit_tests.h"
 #include "interpreter.h"
-#include "standard_library.h"
 
-void repl(Interpreter &interpreter)
+void repl(Interpreter &interpreter, const Settings &settings)
 {
 	Bindings &bindings = interpreter.bindings();
 
@@ -21,7 +19,7 @@ void repl(Interpreter &interpreter)
 		try
 		{
 			Token token = lex(line);
-			InstructionList instructions = parse(token, bindings);
+			InstructionList instructions = parse(token, bindings, settings);
 			Value result = interpreter.exec(instructions);
 			std::cout << " < " << result << std::endl;
 		}

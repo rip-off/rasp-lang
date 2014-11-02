@@ -6,12 +6,19 @@
 #include "token.h"
 #include "lexer.h"
 #include "parser.h"
+#include "settings.h"
 #include "exceptions.h"
 #include "instruction.h"
 #include "interpreter.h"
 
 namespace
 {
+	InstructionList parse(const Token &token, const Bindings &bindings)
+	{
+		Settings settings;
+		return parse(token, bindings, settings);
+	}
+
 	void testInterpreter(Interpreter &interpreter)
 	{
 		InstructionList instructions;

@@ -1,70 +1,57 @@
 #include <string>
-#include <fstream>
+#include <vector>
 #include <iostream>
-#include <iterator>
 
 #include "repl.h"
-#include "lexer.h"
-#include "parser.h"
-#include "exceptions.h"
+#include "settings.h"
+#include "compiler.h"
 #include "unit_tests.h"
 #include "interpreter.h"
 #include "standard_library.h"
 
+typedef std::vector<std::string> ArgumentList;
+
+ArgumentList gatherArguments(int argc, const char **argv, Settings &settings)
+{
+	ArgumentList args;
+	for (int i = 1 ; i < argc ; ++i)
+	{
+		std::string argument = argv[i];
+		if (argument == "--verbose")
+		{
+			std::cout << "INFO: Verbose mode enabled!\n";
+			settings.verbose = true;
+		}
+		else
+		{
+			args.push_back(argument);
+		}
+	}
+	return args;
+}
+
 int main(int argc, const char **argv)
 {
+	Settings settings;
+	ArgumentList args = gatherArguments(argc, argv, settings);	
+
+	// TODO: should these objects be shared with unit tests?
+	// TODO: Probably don't want to share them between files
 	Bindings bindings = bindStandardLibrary();
 	Interpreter interpreter(bindings);
 
 	runUnitTests(interpreter);
 
-	if (argc < 2)
+	if (args.empty())
 	{
-		repl(interpreter);
+		repl(interpreter, settings);
 	}
 	else
 	{
-		for (int i = 1 ; i < argc ; ++i) 
+		for (ArgumentList::const_iterator it = args.begin() ; it != args.end() ; ++it) 
 		{
-			std::fstream file(argv[i]);
-			if (file)
-			{
-				std::string contents(
-					// Extra parens for "most vexing parse"
-					(std::istreambuf_iterator<char>(file)), 
-					std::istreambuf_iterator<char>());
-				try
-				{
-					Token token = lex(contents);
-					InstructionList instructions = parse(token, bindings);
-					Value result = interpreter.exec(instructions);
-					std::cout << argv[i] << ": " << result << '\n';
-				}
-				catch(const LexError &e)
-				{
-					std::cerr << "Lex error: " << e.what() << '\n';
-				}
-				catch(const ParseError &e)
-				{
-					std::cerr << "Parse error: " << e.what() << '\n';
-				}
-				catch(const ExecutionError &e)
-				{
-					std::cerr << "Execution error: " << e.what() << '\n';
-				}
-				catch(const RaspError &e)
-				{
-					std::cerr << "General error: " << e.what() << '\n';
-				}
-				catch(const std::exception &error)
-				{
-					std::cerr << "Internal Error: " << error.what() << std::endl;
-				}
-			}
-			else
-			{
-				std::cerr << "Failed to load " << argv[i] << '\n';
-			}
+			execute(interpreter, *it, settings);
 		}
 	}
 }
+
