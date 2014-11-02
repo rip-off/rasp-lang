@@ -1,8 +1,10 @@
 #include "function.h"
 
-#include "api.h"
-
-Value Function::call(const Arguments &arguments) const
+Function::Function()
 {
-	return functionPointer(arguments);
 }
+
+Function::~Function()
+{
+}
+

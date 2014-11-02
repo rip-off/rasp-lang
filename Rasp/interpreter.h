@@ -13,7 +13,7 @@ public:
 	{
 	}
 
-	Value exec(const InstructionList &instructions) const;
+	Value exec(const InstructionList &instructions);
 
 	const Value *binding(const std::string &name) const;
 

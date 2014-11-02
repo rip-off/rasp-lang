@@ -22,7 +22,7 @@ Value::Value(int number)
 Value::Value(const Function &function)
 	: type_(TFunction)
 {
-	data_.function = new Function(function);
+	data_.function = function.clone();
 }
 
 Value::Value(const std::string &text)
@@ -48,7 +48,7 @@ Value::Value(const Value &value)
 {
 	if(type_ == TFunction)
 	{
-		data_.function = new Function(*value.data_.function);
+		data_.function = value.data_.function->clone();
 	}
 	else if(type_ == TString)
 	{

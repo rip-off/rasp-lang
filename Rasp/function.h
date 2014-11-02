@@ -2,29 +2,24 @@
 #define FUNCTION_H
 
 #include <string>
-
 #include "common.h"
 
 class Function
 {
 public:
-	Function(const std::string &name, ApiFunction *functionPointer)
-		: name_(name), functionPointer(functionPointer)
-	{
-	}
+	virtual ~Function();
+	virtual Function *clone() const = 0;
+	virtual Value call(CallContext &) const = 0;
+	virtual	const std::string &name() const = 0;
 
-	Value call(const Arguments &arguments) const;
-
-	const std::string &name() const
-	{
-		return name_;
-	}
+protected:
+	Function();
 
 private:
-	std::string name_;
-	ApiFunction *functionPointer;
+	// Deliberately private and unimplemented
+	Function(const Function &);
+	Function &operator=(const Function &);
 };
-
 
 
 #endif

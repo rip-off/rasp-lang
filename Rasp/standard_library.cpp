@@ -19,6 +19,18 @@
 
 namespace
 {
+	Value set(CallContext &callContext)
+	{
+		const Arguments &arguments = callContext.arguments();
+		if(arguments.size() != 2 || !arguments[0].isString())
+		{
+			throw ExecutionError("Expected a string and a value");
+		}
+		
+		Bindings &bindings = callContext.bindings();
+		bindings.insert(std::make_pair(arguments[0].string(), arguments[1]));
+		return arguments[1];
+	}
 
 	Value plus(const Arguments &arguments)
 	{
@@ -130,6 +142,7 @@ namespace
 
 	const ApiReg registry[] = 
 	{
+		ApiReg("set", &set),
 		ApiReg("+", &plus),
 		ApiReg("-", &sub),
 		ApiReg("/", &div),

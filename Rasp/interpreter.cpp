@@ -16,7 +16,7 @@ namespace
 		return result;
 	}
 
-	void handleFunction(const Value &value, Stack &stack)
+	void handleFunction(const Value &value, Stack &stack, Bindings &bindings)
 	{
 		if(!value.isNumber())
 		{
@@ -41,12 +41,13 @@ namespace
 			arguments.push_back(pop(stack));
 		}
 		const Function &function = top.function();
-		Value result = function.call(arguments);
+		CallContext callContext(&bindings, &arguments);
+		Value result = function.call(callContext);
 		stack.push(result);
 	}
 }
 
-Value Interpreter::exec(const InstructionList &instructions) const
+Value Interpreter::exec(const InstructionList &instructions)
 {
 	Stack stack;
 	for(InstructionList::const_iterator it = instructions.begin() ; it != instructions.end() ; ++it)
@@ -62,7 +63,7 @@ Value Interpreter::exec(const InstructionList &instructions) const
 			stack.push(value);
 			break;
 		case Instruction::Call:
-			handleFunction(value, stack);
+			handleFunction(value, stack, bindings_);
 			break;
 		}
 	}

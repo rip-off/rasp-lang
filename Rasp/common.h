@@ -2,10 +2,23 @@
 #define COMMON_H
 
 #include <vector>
-
 #include "value.h"
+#include "bindings.h"
 
 typedef std::vector<Value> Arguments;
-typedef Value ApiFunction(const Arguments &args);
+
+class CallContext
+{
+public:
+	CallContext(Bindings *bindings, Arguments *arguments);
+
+	const Arguments &arguments() const;
+	Bindings &bindings();
+
+private:
+	Bindings *bindings_;
+	Arguments *arguments_;
+};
+
 
 #endif

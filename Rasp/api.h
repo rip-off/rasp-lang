@@ -2,34 +2,60 @@
 #define API_H
 
 #include <vector>
+#include <memory>
 #include <algorithm>
 
 #include "utils.h"
+#include "value.h"
 #include "common.h"
 #include "bindings.h"
 #include "function.h"
 
-struct ApiReg
+class ExternalFunction : public Function
 {
 public:
-	ApiReg(const std::string &name, ApiFunction *function) 
-		: name_(name), function_(function)
-	{
-	}
+	typedef Value RawFunction(CallContext &);
 
-	const std::string &name() const 
-	{ 
-		return name_; 
-	}
+	ExternalFunction(const std::string &name, RawFunction *rawFunction);
 
-	ApiFunction *function() const
-	{ 
-		return function_; 
-	}
+	virtual Function *clone() const;
+	virtual Value call(CallContext &) const;
+	virtual	const std::string &name() const;
 
 private:
 	std::string name_;
-	ApiFunction *function_;
+	RawFunction *rawFunction;
+};
+
+// Pure from the point of the view of the interpreter
+class PureExternalFunction : public Function
+{
+public:
+	typedef Value RawFunction(const Arguments &args);
+
+	PureExternalFunction(const std::string &name, RawFunction *rawFunction);
+
+	virtual Function *clone() const;
+	virtual Value call(CallContext &) const;
+	virtual	const std::string &name() const;
+
+private:
+	std::string name_;
+	RawFunction *rawFunction;
+};
+
+struct ApiReg
+{
+public:
+	ApiReg(const std::string &name, ExternalFunction::RawFunction *rawFunction) ;
+	ApiReg(const std::string &name, PureExternalFunction::RawFunction *rawFunction);
+
+	const std::string &name() const;
+	const Function &function() const;
+
+private:
+	std::string name_;
+	std::unique_ptr<Function> function_;
 };
 
 template<int N>
@@ -37,8 +63,8 @@ void registerBindings(Bindings &bindings, const ApiReg (&registry)[N])
 {
 	for(const ApiReg *current = registry ; current != registry + N ; ++current)
 	{
-		Function function(current->name(), current->function());
-		bindings.insert(std::make_pair(function.name(), function));
+		Value functionValue = current->function();
+		bindings.insert(std::make_pair(current->name(), functionValue));
 	}
 }
 
