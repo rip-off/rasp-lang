@@ -12,44 +12,6 @@ public:
 	}
 };
 
-class LexError : public RaspError
-{
-public:
-	LexError(unsigned line, const std::string &message)
-	: 
-		RaspError(message),
-		line_(line)
-	{
-	}
-
-	unsigned line() const
-	{
-		return line_;
-	}
-
-private:
-	unsigned line_;
-};
-
-class ParseError : public RaspError
-{
-public:
-	ParseError(unsigned line, const std::string &message)
-	: 
-		RaspError(message),
-		line_(line)
-	{
-	}
-
-	unsigned line() const
-	{
-		return line_;
-	}
-
-private:
-	unsigned line_;
-};
-
 class ExecutionError : public RaspError
 {
 public:
