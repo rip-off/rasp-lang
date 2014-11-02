@@ -123,11 +123,6 @@ namespace
 		{
 			return Token::number(current.line(), string);
 		}
-		else if(!string.empty() && string[0] == '?')
-		{
-			// TODO: handle quotes properly
-			return Token::string(current.line(), string.substr(1, std::string::npos));
-		}
 		else
 		{
 			return Token::identifier(current.line(), string);
