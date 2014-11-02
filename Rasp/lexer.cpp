@@ -117,20 +117,20 @@ namespace
 		
 		if(string == "nil")
 		{
-			return Token::nil();
+			return Token::nil(current.line());
 		}
 		else if(is<int>(string))
 		{
-			return Token::number(string);
+			return Token::number(current.line(), string);
 		}
 		else if(!string.empty() && string[0] == '?')
 		{
 			// TODO: handle quotes properly
-			return Token::string(string.substr(1, std::string::npos));
+			return Token::string(current.line(), string.substr(1, std::string::npos));
 		}
 		else
 		{
-			return Token::identifier(string);
+			return Token::identifier(current.line(), string);
 		}
 	}
 
@@ -145,7 +145,7 @@ namespace
 			throw LexError(current.line(), "Unterminated list");
 		}
 
-		Token result = Token::list();
+		Token result = Token::list(current.line());
 		while(current != endOfList)
 		{
 			result.addChild(next(current, endOfList));
@@ -186,7 +186,7 @@ namespace
 				if (c == '\"')
 				{
 					++current;
-					return Token::string(text);
+					return Token::string(current.line(), text);
 				}
 				else if (c == '\\')
 				{
@@ -207,7 +207,8 @@ namespace
 		current = consumeWhitespace(current, end);
 		if(current == end)
 		{
-			return Token();
+			// TODO: ugly phantom tokens :[
+			return Token::root(current.line());
 		}
 		else
 		{
@@ -236,7 +237,7 @@ namespace
 
 Token lex(const std::string &source)
 {
-	Token root;
+	Token root = Token::root(0);
 	
 	Iterator it = source.begin();
 	const Iterator end = source.end();

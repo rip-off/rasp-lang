@@ -56,7 +56,7 @@ namespace
 				const Value *value = tryFind(bindings, token.string());
 				if(!value)
 				{
-					throw ParseError("Unknown binding " + token.string());
+					throw ParseError(token.line(), "Unknown binding " + token.string());
 				}
 				list.push_back(Instruction::push(*value));
 			}

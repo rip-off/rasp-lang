@@ -34,7 +34,7 @@ void execute(Interpreter &interpreter, const std::string &filename, const Settin
 		}
 		catch(const ParseError &e)
 		{
-			std::cerr << "Parse error in " << filename << ": " << e.what() << '\n';
+			std::cerr << "Parse error in " << filename << " at line " << e.line() << ": " << e.what() << '\n';
 		}
 		catch(const ExecutionError &e)
 		{

@@ -29,7 +29,7 @@ void repl(Interpreter &interpreter, const Settings &settings)
 		}
 		catch(const ParseError &e)
 		{
-			std::cerr << "Parse error: " << e.what() << '\n';
+			std::cerr << "Parse error at line " << e.line() << ": " << e.what() << '\n';
 		}
 		catch(const ExecutionError &e)
 		{

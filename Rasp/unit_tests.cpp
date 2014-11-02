@@ -54,14 +54,15 @@ namespace
 
 	void testParser(Interpreter &interpreter)
 	{
-		Token function = Token::identifier("+");
-		Token left = Token::number("42");
-		Token right = Token::number("13");
-		Token list = Token::list();
+		unsigned line = 1;
+		Token function = Token::identifier(line, "+");
+		Token left = Token::number(line, "42");
+		Token right = Token::number(line, "13");
+		Token list = Token::list(line);
 		list.addChild(function);
 		list.addChild(left);
 		list.addChild(right);
-		Token root;
+		Token root = Token::root(line);
 		root.addChild(list);
 		InstructionList result = parse(root, interpreter.bindings());
 		assert(result.size() == 4);

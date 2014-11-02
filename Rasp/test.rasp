@@ -2,3 +2,5 @@
 (println "hello, \"Alice\", how are you?")
 (println "does" "print" "add" "spaces")
 (print "Newline #1\nNewline #2\nNewline #3\n")
+(oh no)
+(now what)

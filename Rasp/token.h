@@ -22,36 +22,48 @@ public:
 		Identifier
 	};
 
+	/* TODO: necessary?
 	Token()
 	: 
 		type_(Root)
 	{
 	}
+	*/
 
-	static Token nil()
+	static Token root(unsigned line)
 	{
-		return Token(Nil, "__nil_literal");
+		return Token(line, Root, "__root");
 	}
 
-	static Token list()
+	static Token nil(unsigned line)
 	{
-		return Token(List, "__list");
+		return Token(line, Nil, "__nil_literal");
 	}
 
-	static Token string(const std::string &text)
+	static Token list(unsigned line)
 	{
-		return Token(String, text);
+		return Token(line, List, "__list");
 	}
 
-	static Token number(const std::string &number)
+	static Token string(unsigned line, const std::string &text)
+	{
+		return Token(line, String, text);
+	}
+
+	static Token number(unsigned line, const std::string &number)
 	{
 		assert(is<int>(number));
-		return Token(Number, number); 
+		return Token(line, Number, number); 
 	}
 
-	static Token identifier(const std::string &identifier)
+	static Token identifier(unsigned line, const std::string &identifier)
 	{
-		return Token(Identifier, identifier);
+		return Token(line, Identifier, identifier);
+	}
+
+	unsigned line() const
+	{
+		return line_;
 	}
 
 	Type type() const
@@ -78,8 +90,9 @@ public:
 	}
 
 private:
-	Token(Type type, const std::string &string)
+	Token(unsigned line, Type type, const std::string &string)
 	:
+		line_(line),
 		type_(type),
 		string_(string)
 	{
@@ -90,6 +103,7 @@ private:
 		return type_ != Root;
 	}
 
+	unsigned line_;
 	Type type_;
 	std::string string_;
 	Children children_;

@@ -34,10 +34,20 @@ private:
 class ParseError : public RaspError
 {
 public:
-	ParseError(const std::string &message)
-		: RaspError(message)
+	ParseError(unsigned line, const std::string &message)
+	: 
+		RaspError(message),
+		line_(line)
 	{
 	}
+
+	unsigned line() const
+	{
+		return line_;
+	}
+
+private:
+	unsigned line_;
 };
 
 class ExecutionError : public RaspError
