@@ -1,0 +1,5 @@
+Variable declarations
+Comments
+Loops
+Types?
+
