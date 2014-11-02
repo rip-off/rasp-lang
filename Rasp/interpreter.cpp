@@ -20,20 +20,20 @@ namespace
 	{
 		if(!value.isNumber())
 		{
-			throw ExecutionError("Call instruction expects a numeric argument");				
+			throw std::logic_error("Compiler bug: Call instruction expects a numeric argument");				
 		}
 		// TODO: signed/unsigned mismatch...
 		unsigned argc = value.number();
 		if(stack.size() < argc + 1)
 		{
 			// TODO: include stack size and argc in exception information.
-			throw ExecutionError("Not enough values on the stack to call function");
+			throw std::logic_error("Compiler bug: Not enough values on the stack to call function");
 		}
 			
 		Value top = pop(stack);
 		if(!top.isFunction())
 		{
-			throw ExecutionError("Call instruction expects top of the stack to be functional value");
+			throw std::logic_error("Compiler bug: Call instruction expects top of the stack to be functional value");
 		}
 		Arguments arguments;
 		while(argc --> 0)
@@ -65,6 +65,27 @@ Value Interpreter::exec(const InstructionList &instructions)
 		case Instruction::Call:
 			handleFunction(value, stack, bindings_);
 			break;
+		case Instruction::Jump:
+			{
+				if(stack.empty())
+				{
+					throw std::logic_error("Compiler bug: empty stack");
+				}
+				int instructionsToSkip = value.number();
+				int remaining = instructions.end() - it;
+				if(remaining < instructionsToSkip)
+				{
+					throw std::logic_error("Compiler bug: insufficient instructions available to skip!");
+				}
+
+				if(stack.top().isNil())
+				{
+					it += instructionsToSkip;
+				}
+			}
+			break;
+		default:
+			throw std::logic_error("Compiler bug: unhandled instruction type!");
 		}
 	}
 	return stack.empty() ? Value::nil() : pop(stack);

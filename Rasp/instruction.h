@@ -2,6 +2,7 @@
 #define INSTRUCTION_H
 
 #include <vector>
+#include <iostream>
 
 #include "value.h"
 #include "function.h"
@@ -9,53 +10,39 @@
 class Instruction
 {
 public:
+	typedef std::vector<Instruction> InstructionList;
+
 	enum Type
 	{
 		Call,
 		Push,
 		NoOp,
+		Jump,
 	};
 
-	static Instruction noop()
-	{
-		return Instruction(NoOp, Value::nil());
-	}
+	static Instruction noop();
 
-	static Instruction push(const Value &value) 
-	{
-		return Instruction(Push, value);
-	}
+	static Instruction push(const Value &value) ;
 
-	static Instruction function(const Function &func) 
-	{
-		return Instruction(Push, func);
-	}
+	static Instruction function(const Function &func);
 
-	static Instruction call(int argc)
-	{
-		return Instruction(Call, argc);
-	}
+	static Instruction call(int argc);
 
-	Type type() const
-	{
-		return type_;
-	}
+	static Instruction jump(int instructions);
 
-	const Value &value() const
-	{
-		return value_;
-	}
+	Type type() const;
+
+	const Value &value() const;
+
+	friend std::ostream &operator<<(std::ostream &out, const Instruction &);
 
 private:
-	Instruction(Type type, const Value &value)
-		: type_(type), value_(value)
-	{
-	}
+	Instruction(Type type, const Value &value);
 
 	Type type_;
 	Value value_;
 };
 
-typedef std::vector<Instruction> InstructionList;
+typedef Instruction::InstructionList InstructionList;
 
 #endif

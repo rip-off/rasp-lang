@@ -40,6 +40,11 @@ public:
 	{
 		return Value();
 	}
+
+	bool isNil() const
+	{
+		return type_ == TNil;
+	}
 	
 	bool isNumber() const 
 	{ 

@@ -119,6 +119,10 @@ namespace
 		{
 			return Token::nil(current.line());
 		}
+		else if(string == "if")
+		{
+			return Token::condition(current.line());
+		}
 		else if(is<int>(string))
 		{
 			return Token::number(current.line(), string);

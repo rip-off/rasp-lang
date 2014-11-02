@@ -19,16 +19,9 @@ public:
 		List,
 		String,
 		Number,
-		Identifier
+		Condition,
+		Identifier,
 	};
-
-	/* TODO: necessary?
-	Token()
-	: 
-		type_(Root)
-	{
-	}
-	*/
 
 	static Token root(unsigned line)
 	{
@@ -38,6 +31,11 @@ public:
 	static Token nil(unsigned line)
 	{
 		return Token(line, Nil, "__nil_literal");
+	}
+
+	static Token condition(unsigned line)
+	{
+		return Token(line, Condition, "__if");
 	}
 
 	static Token list(unsigned line)
