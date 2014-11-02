@@ -111,6 +111,26 @@ namespace
 		return result;
 	}
 
+	Token stringLiteral(Iterator &current, const Iterator end)
+	{
+		std::string text = "";
+		for ( /* nada */ ; current != end ; ++current)
+		{
+			char c = *current;
+			if (c == '\"')
+			{
+				++current;
+				return Token::string(text);
+			}
+			else
+			{
+				text += c;
+			}
+		}
+		// TODO: file name & line number
+		throw LexError("String literal never closed");
+	}
+
 	Token next(Iterator &current, const Iterator end)
 	{
 		current = consumeWhitespace(current, end);
@@ -129,6 +149,11 @@ namespace
 			{
 				++current;
 				return list(current, end);
+			}
+			else if(c == '\"')
+			{
+				++current;
+				return stringLiteral(current, end);
 			}
 			else
 			{
