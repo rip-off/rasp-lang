@@ -114,17 +114,39 @@ namespace
 	Token stringLiteral(Iterator &current, const Iterator end)
 	{
 		std::string text = "";
+		bool escape = false;
 		for ( /* nada */ ; current != end ; ++current)
 		{
 			char c = *current;
-			if (c == '\"')
+			if (escape)
 			{
-				++current;
-				return Token::string(text);
+				if (c == '\"' || c == '\\') 
+				{
+					text += c;
+				}
+				else
+				{
+					std::string escapeSequence = "\\";
+					escapeSequence += c;
+					throw LexError("Invalid escape sequence in string literal: " + escapeSequence);
+				}
+				escape = false;
 			}
 			else
 			{
-				text += c;
+				if (c == '\"')
+				{
+					++current;
+					return Token::string(text);
+				}
+				else if (c == '\\')
+				{
+					escape = true;
+				}
+				else
+				{
+					text += c;
+				}
 			}
 		}
 		// TODO: file name & line number

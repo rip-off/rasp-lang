@@ -56,6 +56,24 @@ Value &Value::operator=(const Value &value)
 	return *this;
 }
 
+namespace
+{
+	std::string escapeEmbeddedQuotes(const std::string &text)
+	{
+		std::string result;
+		for (unsigned i = 0 ; i < text.size() ; ++i) 
+		{
+			char c = text[i];
+			if (c == '\"') 
+			{
+				result += '\\';
+			}
+			result += c;
+		}
+		return result;
+	}
+}
+
 std::ostream &operator<<(std::ostream &out, const Value &value)
 {
 	switch(value.type)
@@ -64,7 +82,7 @@ std::ostream &operator<<(std::ostream &out, const Value &value)
 		return out << "nil";
 	case Value::TString:
 		// TODO: escape embedded quotes
-		return out << "\"" << value.data.string << "\"";
+		return out << "\"" << escapeEmbeddedQuotes(value.data.string) << "\"";
 	case Value::TNumber:
 		return out << value.data.number;
 	case Value::TFunction:
