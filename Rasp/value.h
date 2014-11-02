@@ -34,6 +34,7 @@ public:
 	~Value();
 	Value(const Value &);
 	Value &operator=(const Value &);
+	friend void swap(Value &a, Value &b);
 
 	static Value nil()
 	{

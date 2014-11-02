@@ -63,8 +63,15 @@ Value::Value(const Value &value)
 Value &Value::operator=(const Value &value)
 {
 	Value copy = value;
-	std::swap(copy, *this);
+	swap(copy, *this);
 	return *this;
+}
+
+void swap(Value &a, Value &b)
+{
+	using std::swap;
+	swap(a.type_, b.type_);
+	swap(a.data_, b.data_);
 }
 
 namespace

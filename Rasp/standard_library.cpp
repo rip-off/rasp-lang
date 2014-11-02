@@ -28,7 +28,7 @@ namespace
 		}
 		
 		Bindings &bindings = callContext.bindings();
-		bindings.insert(std::make_pair(arguments[0].string(), arguments[1]));
+		bindings[arguments[0].string()] = arguments[1];
 		return arguments[1];
 	}
 
