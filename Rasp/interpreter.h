@@ -17,7 +17,11 @@ public:
 
 	const Value *binding(const std::string &name) const;
 
-	// TODO: remove this...
+	Bindings &bindings()
+	{
+		return bindings_;
+	}
+
 	const Bindings &bindings() const
 	{
 		return bindings_;
