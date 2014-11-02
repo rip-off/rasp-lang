@@ -4,6 +4,7 @@
 #include <algorithm>
 
 #include "utils.h"
+#include "escape.h"
 #include "exceptions.h"
 
 typedef std::string::const_iterator Iterator;
@@ -120,15 +121,16 @@ namespace
 			char c = *current;
 			if (escape)
 			{
-				if (c == '\"' || c == '\\') 
+				if (needsEscaping(c)) 
 				{
-					text += c;
+					text += unescape(c);
 				}
 				else
 				{
-					std::string escapeSequence = "\\";
-					escapeSequence += c;
-					throw LexError("Invalid escape sequence in string literal: " + escapeSequence);
+					std::string message = "Invalid escape sequence \'\\";
+					message += c;
+					message += "\' found in string literal";
+					throw LexError(message);
 				}
 				escape = false;
 			}

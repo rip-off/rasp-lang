@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <stdexcept>
 
+#include "escape.h"
 #include "function.h"
 
 Value::Value()
@@ -68,17 +69,21 @@ Value &Value::operator=(const Value &value)
 
 namespace
 {
-	std::string escapeEmbeddedQuotes(const std::string &text)
+	std::string addEscapes(const std::string &text)
 	{
 		std::string result;
 		for (unsigned i = 0 ; i < text.size() ; ++i) 
 		{
 			char c = text[i];
-			if (c == '\"') 
+			if (needsReescaping(c)) 
 			{
 				result += '\\';
+				result += reescape(c);
 			}
-			result += c;
+			else
+			{
+				result += c;
+			}
 		}
 		return result;
 	}
@@ -91,7 +96,7 @@ std::ostream &operator<<(std::ostream &out, const Value &value)
 	case Value::TNil:
 		return out << "nil";
 	case Value::TString:
-		return out << "\"" << escapeEmbeddedQuotes(*value.data_.string) << "\"";
+		return out << '\"' << addEscapes(*value.data_.string) << '\"';
 	case Value::TNumber:
 		return out << value.data_.number;
 	case Value::TFunction:
