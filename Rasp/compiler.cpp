@@ -30,7 +30,7 @@ void execute(Interpreter &interpreter, const std::string &filename, const Settin
 		}
 		catch(const LexError &e)
 		{
-			std::cerr << "Lex error in " << filename << ": " << e.what() << '\n';
+			std::cerr << "Lex error in " << filename << " at line " << e.line() << ": " << e.what() << '\n';
 		}
 		catch(const ParseError &e)
 		{

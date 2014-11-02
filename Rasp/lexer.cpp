@@ -1,16 +1,63 @@
 #include "lexer.h"
 
 #include <cctype>
+#include <iterator>
 #include <algorithm>
 
 #include "utils.h"
 #include "escape.h"
 #include "exceptions.h"
 
-typedef std::string::const_iterator Iterator;
+// TODO: typedef std::string::const_iterator Iterator;
 
 namespace
 {
+	class Iterator : public std::iterator<std::forward_iterator_tag, char>
+	{
+	public:
+		Iterator(std::string::const_iterator it)
+		:
+			line_(1),
+			it(it)
+		{
+		}
+
+		char operator*() const
+		{
+			return *it;
+		}
+
+		unsigned line() const
+		{
+			return line_;
+		}
+
+		Iterator &operator++()
+		{
+			if (*it == '\n')
+			{
+				line_ += 1;
+			}
+			++it;
+			return *this;
+		}
+
+		bool operator==(const Iterator &other) const
+		{
+			return it == other.it;
+		}
+
+		bool operator!=(const Iterator &other) const
+		{
+			return it != other.it;
+		}
+
+	private:
+		unsigned line_;
+		std::string::const_iterator it;
+	};
+
+
 	class MatchParens
 	{
 	public:
@@ -95,7 +142,7 @@ namespace
 		const Iterator endOfList = std::find_if(current, end, MatchParens());
 		if(endOfList == end)
 		{
-			throw LexError("Unterminated list");
+			throw LexError(current.line(), "Unterminated list");
 		}
 
 		Token result = Token::list();
@@ -130,7 +177,7 @@ namespace
 					std::string message = "Invalid escape sequence \'\\";
 					message += c;
 					message += "\' found in string literal";
-					throw LexError(message);
+					throw LexError(current.line(), message);
 				}
 				escape = false;
 			}
@@ -152,7 +199,7 @@ namespace
 			}
 		}
 		// TODO: file name & line number
-		throw LexError("String literal never closed");
+		throw LexError(current.line(), "String literal never closed");
 	}
 
 	Token next(Iterator &current, const Iterator end)
@@ -167,7 +214,7 @@ namespace
 			char c = *current;
 			if(c == ')')
 			{
-				throw LexError("Stray ) in program");
+				throw LexError(current.line(), "Stray ) in program");
 			}
 			else if(c == '(')
 			{

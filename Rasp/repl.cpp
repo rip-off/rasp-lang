@@ -25,7 +25,7 @@ void repl(Interpreter &interpreter, const Settings &settings)
 		}
 		catch(const LexError &e)
 		{
-			std::cerr << "Lex error: " << e.what() << '\n';
+			std::cerr << "Lex error at line " << e.line() << ": " << e.what() << '\n';
 		}
 		catch(const ParseError &e)
 		{
