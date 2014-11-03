@@ -17,7 +17,12 @@ ArgumentList gatherArguments(int argc, const char **argv, Settings &settings)
 	for (int i = 1 ; i < argc ; ++i)
 	{
 		std::string argument = argv[i];
-		if (argument == "--verbose")
+		if (argument == "--trace")
+		{
+			std::cout << "INFO: Trace mode enabled!\n";
+			settings.trace = true;
+		}
+		else if (argument == "--verbose")
 		{
 			std::cout << "INFO: Verbose mode enabled!\n";
 			settings.verbose = true;

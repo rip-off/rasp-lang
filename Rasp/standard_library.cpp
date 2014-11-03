@@ -19,6 +19,7 @@
 
 namespace
 {
+#if 0
 	Value set(CallContext &callContext)
 	{
 		const Arguments &arguments = callContext.arguments();
@@ -31,6 +32,7 @@ namespace
 		bindings[arguments[0].string()] = arguments[1];
 		return arguments[1];
 	}
+#endif
 
 	Value plus(const Arguments &arguments)
 	{
@@ -142,7 +144,7 @@ namespace
 
 	const ApiReg registry[] = 
 	{
-		ApiReg("set", &set),
+		// TODO: ApiReg("set", &set),
 		ApiReg("+", &plus),
 		ApiReg("-", &sub),
 		ApiReg("/", &div),

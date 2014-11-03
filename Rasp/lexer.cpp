@@ -127,6 +127,10 @@ namespace
 		{
 			return Token::declaration(current.line());
 		}
+		else if(string == "set")
+		{
+			return Token::assignment(current.line());
+		}
 		else if(is<int>(string))
 		{
 			return Token::number(current.line(), string);

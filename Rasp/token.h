@@ -21,6 +21,7 @@ public:
 		Number,
 		Condition,
 		Identifier,
+		Assignment,
 		Declaration,
 	};
 
@@ -42,6 +43,11 @@ public:
 	static Token declaration(unsigned line)
 	{
 		return Token(line, Declaration, "__def");
+	}
+
+	static Token assignment(unsigned line)
+	{
+		return Token(line, Assignment, "__set");
 	}
 
 	static Token list(unsigned line)

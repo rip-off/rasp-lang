@@ -73,6 +73,24 @@ namespace
 						bindings[identifier] = Value::nil();
 						list.push_back(Instruction::assign(identifier));
 					}
+					else if(children.front().type() == Token::Assignment)
+					{
+						if(children.size() == 2)
+						{
+							throw ParseError(token.line(), "Variable assignment requires a name");
+						}
+						else if(children.size() != 3)
+						{
+							throw ParseError(token.line(), "Missing assignment value");
+						}
+						std::string identifier = children[1].string();
+						if (bindings.find(identifier) == bindings.end())
+						{
+							throw ParseError(token.line(), "Variable " + identifier + " not defined");
+						}	
+						parse(children[2], bindings, list);
+						list.push_back(Instruction::assign(identifier));
+					}
 					else
 					{
 						for(Token::Children::const_reverse_iterator i = children.rbegin() ; i != children.rend() ; ++i)
@@ -97,12 +115,17 @@ namespace
 			break;
 		case Token::Condition:
 			{
-				throw ParseError(token.line(), "If must be first element of a list");
+				throw ParseError(token.line(), "'if' must be first element of a list");
+			}
+			break;
+		case Token::Assignment:
+			{
+				throw ParseError(token.line(), "'set' must be first element of a list");
 			}
 			break;
 		case Token::Declaration:
 			{
-				throw ParseError(token.line(), "Def must be first element of a list");
+				throw ParseError(token.line(), "'def' must be first element of a list");
 			}
 			break;
 		case Token::Identifier:
@@ -170,6 +193,10 @@ namespace
 		case Token::Declaration:
 			assert(children.empty());
 			std::cout << "Def";
+			break;
+		case Token::Assignment:
+			assert(children.empty());
+			std::cout << "Assignment(" << token.string() << ')' << '\n';
 			break;
 		case Token::Identifier:
 			assert(children.empty());

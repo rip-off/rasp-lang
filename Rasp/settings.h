@@ -4,9 +4,13 @@
 class Settings
 {
 public:
+	bool trace;
 	bool verbose;
 
-	Settings() : verbose(false)
+	Settings() 
+	:
+		trace(false),
+		verbose(false)
 	{
 	}
 };

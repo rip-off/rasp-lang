@@ -65,12 +65,24 @@ Value Interpreter::exec(const InstructionList &instructions)
 		switch(type)
 		{
 		case Instruction::NoOp:
+			if(settings_.trace)
+			{				
+				std::cout << "DEBUG: noop!\n";
+			}
 			// Do nothing
 			break;
 		case Instruction::Push:
+			if(settings_.trace)
+			{				
+				std::cout << "DEBUG: push " << value << '\n';
+			}
 			stack.push_back(value);
 			break;
 		case Instruction::Call:
+			if(settings_.trace)
+			{				
+				std::cout << "DEBUG: call " << value << '\n';
+			}
 			handleFunction(value, stack, bindings_);
 			break;
 		case Instruction::Jump:
@@ -87,7 +99,10 @@ Value Interpreter::exec(const InstructionList &instructions)
 				}
 
 				Value top = pop(stack);
-				// TODO: std::cout << "DEBUG: jumping if " << top << '\n';
+				if(settings_.trace)
+				{				
+					std::cout << "DEBUG: jumping if " << top << '\n';
+				}
 				if(top.isNil())
 				{
 					it += instructionsToSkip;
@@ -102,7 +117,10 @@ Value Interpreter::exec(const InstructionList &instructions)
 				}
 				assert(value.isString());
 				Value top = pop(stack);
-				// TODO: std::cout << "assigning " << value.string() << " to " << v << '\n';
+				if(settings_.trace)
+				{
+					std::cout << "DEBUG: assigning " << value.string() << " to " << top << '\n';
+				}
 				bindings_[value.string()] = top;
 			}
 			break;
