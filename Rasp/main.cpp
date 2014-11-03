@@ -30,17 +30,24 @@ ArgumentList gatherArguments(int argc, const char **argv, Settings &settings)
 	return args;
 }
 
+void unitTests()
+{
+	Settings settings;
+	Bindings bindings = bindStandardLibrary();
+	Interpreter interpreter(bindings, settings);
+	runUnitTests(interpreter);
+}
+
 int main(int argc, const char **argv)
 {
+	unitTests();
+
 	Settings settings;
 	ArgumentList args = gatherArguments(argc, argv, settings);	
 
-	// TODO: should these objects be shared with unit tests?
 	// TODO: Probably don't want to share them between files
 	Bindings bindings = bindStandardLibrary();
-	Interpreter interpreter(bindings);
-
-	runUnitTests(interpreter);
+	Interpreter interpreter(bindings, settings);
 
 	if (args.empty())
 	{
