@@ -1,6 +1,7 @@
 #include "parser.h"
 
 #include <iostream>
+#include <algorithm>
 
 #include "token.h"
 #include "bindings.h"
@@ -9,7 +10,12 @@
 
 namespace
 {
-	void parse(const Token &token, /* TODO: declarations const */ Bindings &bindings, InstructionList &list)
+	bool isDefined(const std::vector<Identifier> &declarations, const Identifier identifier)
+	{
+		return std::find(declarations.begin(), declarations.end(), identifier) != declarations.end();
+	}
+
+	void parse(const Token &token, std::vector<Identifier> &declarations, InstructionList &list)
 	{
 		const Token::Children &children = token.children();
 		switch(token.type())
@@ -42,12 +48,12 @@ namespace
 							throw ParseError(token.line(), "Conditional expression is missing code to execute");
 						}
 						// Evaluate the conditional expression first
-						parse(children[1], bindings, list);
+						parse(children[1], declarations, list);
 						// Generate the list of instructions to be executed if branch is taken
 						InstructionList tempInstructions;
 						for(unsigned i = 2 ; i < children.size() ; ++i)
 						{
-							parse(children[i], bindings, tempInstructions);
+							parse(children[i], declarations, tempInstructions);
 						}
 						// Actual branch instruction
 						list.push_back(Instruction::jump(tempInstructions.size()));
@@ -64,14 +70,14 @@ namespace
 						{
 							throw ParseError(token.line(), "Missing initialisation value");
 						}
-						std::string identifier = children[1].string();
-						if (bindings.find(identifier) != bindings.end())
+						Identifier identifier = Identifier(children[1].string());
+						if (isDefined(declarations, identifier))
 						{
-							throw ParseError(token.line(), "Variable " + identifier + " already defined");
-						}						
-						parse(children[2], bindings, list);
-						bindings[identifier] = Value::nil();
-						list.push_back(Instruction::assign(identifier));
+							throw ParseError(token.line(), "Variable " + identifier.name() + " already defined");
+						}
+						declarations.push_back(identifier);				
+						parse(children[2], declarations, list);
+						list.push_back(Instruction::assign(identifier.name()));
 					}
 					else if(children.front().type() == Token::Assignment)
 					{
@@ -83,19 +89,19 @@ namespace
 						{
 							throw ParseError(token.line(), "Missing assignment value");
 						}
-						std::string identifier = children[1].string();
-						if (bindings.find(identifier) == bindings.end())
+						Identifier identifier = Identifier(children[1].string());
+						if (!isDefined(declarations, identifier))
 						{
-							throw ParseError(token.line(), "Variable " + identifier + " not defined");
+							throw ParseError(token.line(), "Variable " + identifier.name() + " not defined");
 						}	
-						parse(children[2], bindings, list);
-						list.push_back(Instruction::assign(identifier));
+						parse(children[2], declarations, list);
+						list.push_back(Instruction::assign(identifier.name()));
 					}
 					else
 					{
 						for(Token::Children::const_reverse_iterator i = children.rbegin() ; i != children.rend() ; ++i)
 						{
-							parse(*i, bindings, list);
+							parse(*i, declarations, list);
 						}
 						// Call expects the number of arguments, so we must omit 1 element
 						// This is because the function is the mandatory first element
@@ -131,12 +137,12 @@ namespace
 		case Token::Identifier:
 			{
 				assert(children.empty());
-				const Value *value = tryFind(bindings, token.string());
-				if(!value)
+				Identifier identifier = Identifier(token.string());
+				if (!isDefined(declarations, identifier))
 				{
-					throw ParseError(token.line(), "Unknown binding " + token.string());
+					throw ParseError(token.line(), "Variable " + identifier.name() + " not defined");
 				}
-				list.push_back(Instruction::push(*value));
+				list.push_back(Instruction::ref(identifier));
 			}
 			break;
 		}
@@ -207,7 +213,7 @@ namespace
 	}
 }
 
-InstructionList parse(const Token &tree, Bindings &bindings, const Settings &settings)
+InstructionList parse(const Token &tree, std::vector<Identifier> &declarations, const Settings &settings)
 {
 	if (settings.verbose)
 	{
@@ -219,7 +225,7 @@ InstructionList parse(const Token &tree, Bindings &bindings, const Settings &set
 	const Token::Children &children = tree.children();
 	for(Token::Children::const_iterator it = children.begin() ; it != children.end() ; ++it)
 	{
-		parse(*it, bindings, result);
+		parse(*it, declarations, result);
 	}
 
 	if (settings.verbose)

@@ -12,8 +12,6 @@
 
 void execute(Interpreter &interpreter, const std::string &filename, const Settings &settings)
 {
-	Bindings &bindings = interpreter.bindings();
-
 	std::fstream file(filename.c_str());
 	if (file)
 	{
@@ -24,7 +22,8 @@ void execute(Interpreter &interpreter, const std::string &filename, const Settin
 		try
 		{
 			Token token = lex(contents);
-			InstructionList instructions = parse(token, bindings, settings);
+			std::vector<Identifier> declarations = interpreter.declarations();
+			InstructionList instructions = parse(token, declarations, settings);
 			Value result = interpreter.exec(instructions);
 			std::cout << filename << ": " << result << '\n';
 		}

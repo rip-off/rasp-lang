@@ -15,4 +15,30 @@
 (println "try: nil and 1")
 (if nil (if 1 (println "out: both")) (println "out: first"))
 
+(println "\nAnd now...\nWith variables!\n\n")
+
+(def x nil)
+(def y nil)
+
+(println "try: " x " and " y)
+(if x (if y (println "out: both")) (println "out: first"))
+
+(set x 1)
+(set y nil)
+
+(println "try: " x " and " y)
+(if x (if y (println "out: both")) (println "out: first"))
+
+(set x 1)
+(set y 1)
+
+(println "try: " x " and " y)
+(if x (if y (println "out: both")) (println "out: first"))
+
+(set x nil)
+(set y 1)
+
+(println "try: " x " and " y)
+(if x (if y (println "out: both")) (println "out: first"))
+
 

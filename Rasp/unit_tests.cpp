@@ -13,10 +13,10 @@
 
 namespace
 {
-	InstructionList parse(const Token &token, Bindings &bindings)
+	InstructionList parse(const Token &token, std::vector<Identifier> &declarations)
 	{
 		Settings settings;
-		return parse(token, bindings, settings);
+		return parse(token, declarations, settings);
 	}
 
 	void testInterpreter(Interpreter &interpreter)
@@ -25,7 +25,7 @@ namespace
 		instructions.push_back(Instruction::push(42));
 		instructions.push_back(Instruction::push(13));
 		instructions.push_back(Instruction::push(16));
-		const Value *value = interpreter.binding("+");
+		const Value *value = interpreter.binding(Identifier("+"));
 		assert(value);
 		instructions.push_back(Instruction::push(*value));
 		instructions.push_back(Instruction::call(3));
@@ -64,11 +64,12 @@ namespace
 		list.addChild(right);
 		Token root = Token::root(line);
 		root.addChild(list);
-		InstructionList result = parse(root, interpreter.bindings());
+		std::vector<Identifier> declarations = interpreter.declarations();
+		InstructionList result = parse(root, declarations);
 		assert(result.size() == 4);
 		assert(result[0].type() == Instruction::Push && result[0].value().number() == 13);
 		assert(result[1].type() == Instruction::Push && result[1].value().number() == 42);
-		assert(result[2].type() == Instruction::Push && result[2].value().isFunction() && result[2].value().function().name() == "+");
+		assert(result[2].type() == Instruction::Ref && result[2].value().string() == "+");
 		assert(result[3].type() == Instruction::Call && result[3].value().number() == 2);
 	}
 
@@ -76,7 +77,8 @@ namespace
 	{
 		std::string source = "(+ (* 2 42) (/ 133 10) (- 1 6))";
 		Token token = lex(source);
-		InstructionList instructions = parse(token, interpreter.bindings());
+		std::vector<Identifier> declarations = interpreter.declarations();
+		InstructionList instructions = parse(token, declarations);
 		Value result = interpreter.exec(instructions);
 		assert(result.isNumber());
 		assert(result.number() == 84 + 13 - 5);

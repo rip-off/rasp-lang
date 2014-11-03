@@ -14,6 +14,7 @@ public:
 
 	enum Type
 	{
+		Ref,
 		Call,
 		Push,
 		NoOp,
@@ -23,7 +24,9 @@ public:
 
 	static Instruction noop();
 
-	static Instruction push(const Value &value) ;
+	static Instruction ref(const Identifier &identifier);
+
+	static Instruction push(const Value &value);
 
 	static Instruction function(const Function &func);
 

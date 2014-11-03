@@ -13,7 +13,7 @@ public:
 
 	Value exec(const InstructionList &instructions);
 
-	const Value *binding(const std::string &name) const;
+	const Value *binding(const Identifier &name) const;
 
 	Bindings &bindings()
 	{
@@ -24,6 +24,8 @@ public:
 	{
 		return bindings_;
 	}
+
+	std::vector<Identifier> declarations() const;
 
 private:
 	Bindings bindings_;

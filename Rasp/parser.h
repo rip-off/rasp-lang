@@ -27,6 +27,6 @@ private:
 	unsigned line_;
 };
 
-InstructionList parse(const Token &tree, Bindings &bindings, const Settings &settings);
+InstructionList parse(const Token &tree, std::vector<Identifier> &declarations, const Settings &settings);
 
 #endif

@@ -2,10 +2,10 @@
 #define BINDINGS_H
 
 #include <map>
-#include <string>
 
 #include "value.h"
+#include "identifier.h"
 
-typedef std::map<std::string, Value> Bindings;
+typedef std::map<Identifier, Value> Bindings;
 
 #endif

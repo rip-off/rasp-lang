@@ -71,6 +71,18 @@ Value Interpreter::exec(const InstructionList &instructions)
 			}
 			// Do nothing
 			break;
+		case Instruction::Ref:
+			{
+				// TODO: compiler bug: binding not found?
+				Identifier identifier = Identifier(value.string());
+				const Value &value = bindings_[identifier];
+				if(settings_.trace)
+				{				
+					std::cout << "DEBUG: ref " << identifier.name() << "(" << value << ")" << '\n';
+				}
+				stack.push_back(value);
+			}
+			break;
 		case Instruction::Push:
 			if(settings_.trace)
 			{				
@@ -121,7 +133,8 @@ Value Interpreter::exec(const InstructionList &instructions)
 				{
 					std::cout << "DEBUG: assigning " << value.string() << " to " << top << '\n';
 				}
-				bindings_[value.string()] = top;
+				Identifier identifier = Identifier(value.string());
+				bindings_[identifier] = top;
 			}
 			break;
 		default:
@@ -141,7 +154,18 @@ Value Interpreter::exec(const InstructionList &instructions)
 	return stack.empty() ? Value::nil() : pop(stack);
 }
 
-const Value *Interpreter::binding(const std::string &name) const
+std::vector<Identifier> Interpreter::declarations() const
+{
+	std::vector<Identifier> result;
+	for(Bindings::const_iterator it = bindings_.begin() ; it != bindings_.end() ; ++it)
+	{
+		result.push_back(it->first);
+	}
+	return result;
+}
+
+const Value *Interpreter::binding(const Identifier &name) const
 {
 	return tryFind(bindings_, name);
 }
+

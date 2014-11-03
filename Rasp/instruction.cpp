@@ -11,6 +11,11 @@ Instruction Instruction::noop()
 	return Instruction(NoOp, Value::nil());
 }
 
+Instruction Instruction::ref(const Identifier &identifier)
+{
+	return Instruction(Ref, identifier.name());
+}
+
 Instruction Instruction::push(const Value &value) 
 {
 	return Instruction(Push, value);
@@ -52,6 +57,9 @@ std::ostream &operator<<(std::ostream &out, const Instruction &instruction)
 	{
 	case Instruction::NoOp:
 		out << "noop";
+		break;
+	case Instruction::Ref:
+		out << "ref(" << instruction.value_ << ")";
 		break;
 	case Instruction::Push:
 		out << "push(" << instruction.value_ << ")";

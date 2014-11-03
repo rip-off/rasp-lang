@@ -10,8 +10,6 @@
 
 void repl(Interpreter &interpreter, const Settings &settings)
 {
-	Bindings &bindings = interpreter.bindings();
-
 	std::cout << "Enter some code, or type \'exit\' when finished:\n";
 	std::string line;
 	while((std::cout << " > ") && std::getline(std::cin, line) && !(line == "quit" || line == "exit"))
@@ -19,7 +17,8 @@ void repl(Interpreter &interpreter, const Settings &settings)
 		try
 		{
 			Token token = lex(line);
-			InstructionList instructions = parse(token, bindings, settings);
+			std::vector<Identifier> declarations = interpreter.declarations();
+			InstructionList instructions = parse(token, declarations, settings);
 			Value result = interpreter.exec(instructions);
 			std::cout << " < " << result << std::endl;
 		}
