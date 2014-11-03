@@ -25,93 +25,38 @@ public:
 		Declaration,
 	};
 
-	static Token root(unsigned line)
-	{
-		return Token(line, Root, "__root");
-	}
+	static Token root(unsigned line);
 
-	static Token nil(unsigned line)
-	{
-		return Token(line, Nil, "__nil_literal");
-	}
+	static Token nil(unsigned line);
 
-	static Token condition(unsigned line)
-	{
-		return Token(line, Condition, "__if");
-	}
+	static Token condition(unsigned line);
 
-	static Token declaration(unsigned line)
-	{
-		return Token(line, Declaration, "__def");
-	}
+	static Token declaration(unsigned line);
 
-	static Token assignment(unsigned line)
-	{
-		return Token(line, Assignment, "__set");
-	}
+	static Token assignment(unsigned line);
 
-	static Token list(unsigned line)
-	{
-		return Token(line, List, "__list");
-	}
+	static Token list(unsigned line);
 
-	static Token string(unsigned line, const std::string &text)
-	{
-		return Token(line, String, text);
-	}
+	static Token string(unsigned line, const std::string &text);
 
-	static Token number(unsigned line, const std::string &number)
-	{
-		assert(is<int>(number));
-		return Token(line, Number, number); 
-	}
+	static Token number(unsigned line, const std::string &number);
 
-	static Token identifier(unsigned line, const std::string &identifier)
-	{
-		return Token(line, Identifier, identifier);
-	}
+	static Token identifier(unsigned line, const std::string &identifier);
 
-	unsigned line() const
-	{
-		return line_;
-	}
+	unsigned line() const;
 
-	Type type() const
-	{
-		return type_;
-	}
+	Type type() const;
 
-	const std::string &string() const
-	{
-		return string_;
-	}
+	const std::string &string() const;
 
-	const Children &children() const
-	{
-		return children_;
-	}
+	const Children &children() const;
 
-	void addChild(const Token &token)
-	{
-		if(token.isValidChild())
-		{
-			children_.push_back(token);
-		}
-	}
+	void addChild(const Token &token);
 
 private:
-	Token(unsigned line, Type type, const std::string &string)
-	:
-		line_(line),
-		type_(type),
-		string_(string)
-	{
-	}
+	Token(unsigned line, Type type, const std::string &string);
 
-	bool isValidChild() const
-	{
-		return type_ != Root;
-	}
+	bool isValidChild() const;
 
 	unsigned line_;
 	Type type_;
