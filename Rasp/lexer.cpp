@@ -123,6 +123,10 @@ namespace
 		{
 			return Token::condition(current.line());
 		}
+		else if(string == "def")
+		{
+			return Token::declaration(current.line());
+		}
 		else if(is<int>(string))
 		{
 			return Token::number(current.line(), string);

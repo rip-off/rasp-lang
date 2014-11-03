@@ -7,12 +7,13 @@
 
 namespace
 {
-	typedef std::stack<Value> Stack;
+	typedef std::vector<Value> Stack;
 
 	Value pop(Stack &stack)
 	{
-		Value result = stack.top();
-		stack.pop();
+		assert(!stack.empty());
+		Value result = stack.back();
+		stack.pop_back();
 		return result;
 	}
 
@@ -43,8 +44,15 @@ namespace
 		const Function &function = top.function();
 		CallContext callContext(&bindings, &arguments);
 		Value result = function.call(callContext);
-		stack.push(result);
+		stack.push_back(result);
 	}
+}
+
+Interpreter::Interpreter(const Bindings &bindings, const Settings &settings)
+:
+	bindings_(bindings),
+	settings_(settings)
+{
 }
 
 Value Interpreter::exec(const InstructionList &instructions)
@@ -60,7 +68,7 @@ Value Interpreter::exec(const InstructionList &instructions)
 			// Do nothing
 			break;
 		case Instruction::Push:
-			stack.push(value);
+			stack.push_back(value);
 			break;
 		case Instruction::Call:
 			handleFunction(value, stack, bindings_);
@@ -69,7 +77,7 @@ Value Interpreter::exec(const InstructionList &instructions)
 			{
 				if(stack.empty())
 				{
-					throw std::logic_error("Compiler bug: empty stack");
+					throw std::logic_error("Compiler bug: empty stack when testing condition");
 				}
 				int instructionsToSkip = value.number();
 				int remaining = instructions.end() - it;
@@ -78,16 +86,40 @@ Value Interpreter::exec(const InstructionList &instructions)
 					throw std::logic_error("Compiler bug: insufficient instructions available to skip!");
 				}
 
-				if(stack.top().isNil())
+				Value top = pop(stack);
+				// TODO: std::cout << "DEBUG: jumping if " << top << '\n';
+				if(top.isNil())
 				{
 					it += instructionsToSkip;
 				}
 			}
 			break;
+		case Instruction::Assign:
+			{
+				if(stack.empty())
+				{
+					throw std::logic_error("Compiler bug: empty stack during assignment");
+				}
+				assert(value.isString());
+				Value top = pop(stack);
+				// TODO: std::cout << "assigning " << value.string() << " to " << v << '\n';
+				bindings_[value.string()] = top;
+			}
+			break;
 		default:
-			throw std::logic_error("Compiler bug: unhandled instruction type!");
+			throw std::logic_error("Compiler bug: unhandled instruction type: " + str(type));
 		}
 	}
+	
+	if (settings_.verbose)
+	{
+		std::cout << "Stack contains " << stack.size() << " entries:\n";
+		for(Stack::const_iterator it = stack.begin() ; it != stack.end() ; ++it)
+		{
+			std::cout << " * " << *it;
+		}
+	}
+	
 	return stack.empty() ? Value::nil() : pop(stack);
 }
 

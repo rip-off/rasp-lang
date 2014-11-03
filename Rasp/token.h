@@ -21,6 +21,7 @@ public:
 		Number,
 		Condition,
 		Identifier,
+		Declaration,
 	};
 
 	static Token root(unsigned line)
@@ -36,6 +37,11 @@ public:
 	static Token condition(unsigned line)
 	{
 		return Token(line, Condition, "__if");
+	}
+
+	static Token declaration(unsigned line)
+	{
+		return Token(line, Declaration, "__def");
 	}
 
 	static Token list(unsigned line)

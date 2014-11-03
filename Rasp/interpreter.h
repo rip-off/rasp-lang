@@ -1,6 +1,7 @@
 #ifndef INTERPRETER_H
 #define INTERPRETER_H
 
+#include "settings.h"
 #include "function.h"
 #include "bindings.h"
 #include "instruction.h"
@@ -8,10 +9,7 @@
 class Interpreter
 {
 public:
-	Interpreter(const Bindings &bindings)
-		: bindings_(bindings)
-	{
-	}
+	Interpreter(const Bindings &bindings, const Settings &settings);
 
 	Value exec(const InstructionList &instructions);
 
@@ -29,6 +27,7 @@ public:
 
 private:
 	Bindings bindings_;
+	Settings settings_;
 };
 
 #endif

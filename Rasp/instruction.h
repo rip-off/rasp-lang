@@ -18,6 +18,7 @@ public:
 		Push,
 		NoOp,
 		Jump,
+		Assign,
 	};
 
 	static Instruction noop();
@@ -29,6 +30,8 @@ public:
 	static Instruction call(int argc);
 
 	static Instruction jump(int instructions);
+
+	static Instruction assign(const std::string &identifier);
 
 	Type type() const;
 

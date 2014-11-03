@@ -13,7 +13,7 @@
 
 namespace
 {
-	InstructionList parse(const Token &token, const Bindings &bindings)
+	InstructionList parse(const Token &token, Bindings &bindings)
 	{
 		Settings settings;
 		return parse(token, bindings, settings);

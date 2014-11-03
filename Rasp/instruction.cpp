@@ -1,4 +1,5 @@
 #include "instruction.h"
+#include "utils.h"
 
 Instruction::Instruction(Type type, const Value &value)
 	: type_(type), value_(value)
@@ -30,6 +31,11 @@ Instruction Instruction::jump(int instructions)
 	return Instruction(Jump, instructions);
 }
 
+Instruction Instruction::assign(const std::string &identifier)
+{
+	return Instruction(Assign, identifier);
+}
+
 Instruction::Type Instruction::type() const
 {
 	return type_;
@@ -56,8 +62,11 @@ std::ostream &operator<<(std::ostream &out, const Instruction &instruction)
 	case Instruction::Jump:
 		out << "jump(" << instruction.value_ << ")";
 		break;
+	case Instruction::Assign:
+		out << "assign(" << instruction.value_ << ")";
+		break;
 	default:
-		throw std::logic_error("Compiler bug: unhandled instruction type!");
+		throw std::logic_error("Compiler bug: unhandled instruction type: " + str(instruction.type_));
 	}
 	return out;
 }

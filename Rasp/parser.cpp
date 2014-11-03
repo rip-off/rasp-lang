@@ -9,7 +9,7 @@
 
 namespace
 {
-	void parse(const Token &token, const Bindings &bindings, InstructionList &list)
+	void parse(const Token &token, /* TODO: declarations const */ Bindings &bindings, InstructionList &list)
 	{
 		const Token::Children &children = token.children();
 		switch(token.type())
@@ -54,6 +54,25 @@ namespace
 						// Insert the remaining instructions into the stream
 						list.insert(list.end(), tempInstructions.begin(), tempInstructions.end());
 					}
+					else if(children.front().type() == Token::Declaration)
+					{
+						if(children.size() == 2)
+						{
+							throw ParseError(token.line(), "Variable declaration requires a name");
+						}
+						else if(children.size() != 3)
+						{
+							throw ParseError(token.line(), "Missing initialisation value");
+						}
+						std::string identifier = children[1].string();
+						if (bindings.find(identifier) != bindings.end())
+						{
+							throw ParseError(token.line(), "Variable " + identifier + " already defined");
+						}						
+						parse(children[2], bindings, list);
+						bindings[identifier] = Value::nil();
+						list.push_back(Instruction::assign(identifier));
+					}
 					else
 					{
 						for(Token::Children::const_reverse_iterator i = children.rbegin() ; i != children.rend() ; ++i)
@@ -78,32 +97,12 @@ namespace
 			break;
 		case Token::Condition:
 			{
-#if 0
-				if(children.empty())
-				{
-					throw ParseError(token.line(), "Conditional expression is missing condition");
-				}
-				if(children.size() < 2) 
-				{
-					throw ParseError(token.line(), "Conditional expression is missing code to execute");
-				}
-#endif
-				//list.push_back(Instruction::condition(children.size() - 1));
 				throw ParseError(token.line(), "If must be first element of a list");
-
-				
-				// TODO:
-#if 0
-				
-				InstructionList condition;
-				parse(children.front(), bindings, condition);
-				InstructionList conditionalInstructions;
-				for(Token::Children::const_reverse_iterator i = children.rbegin() ; i != children.rend() - 1 ; ++i)
-				{
-					parse(*i, bindings, conditionalInstructions);
-				}
-				list.push_back(Instruction::condition(condition, conditionalInstructions));
-#endif
+			}
+			break;
+		case Token::Declaration:
+			{
+				throw ParseError(token.line(), "Def must be first element of a list");
 			}
 			break;
 		case Token::Identifier:
@@ -149,7 +148,7 @@ namespace
 			break;
 		case Token::List:
 			std::cout << "List {\n";
-			for(Token::Children::const_reverse_iterator i = children.rbegin() ; i != children.rend() ; ++i)
+			for(Token::Children::const_iterator i = children.begin() ; i != children.end() ; ++i)
 			{
 				printTree(*i, level + 1);
 			}
@@ -165,13 +164,12 @@ namespace
 			std::cout << "Number(" << token.string() << ')' << '\n';
 			break;
 		case Token::Condition:
-			std::cout << "If {\n";
-			for(Token::Children::const_reverse_iterator i = children.rbegin() ; i != children.rend() ; ++i)
-			{
-				printTree(*i, level + 1);
-			}
-			printTabs(level);
-			std::cout << "}";
+			assert(children.empty());
+			std::cout << "If";
+			break;
+		case Token::Declaration:
+			assert(children.empty());
+			std::cout << "Def";
 			break;
 		case Token::Identifier:
 			assert(children.empty());
@@ -182,7 +180,7 @@ namespace
 	}
 }
 
-InstructionList parse(const Token &tree, const Bindings &bindings, const Settings &settings)
+InstructionList parse(const Token &tree, Bindings &bindings, const Settings &settings)
 {
 	if (settings.verbose)
 	{
