@@ -1,5 +1,18 @@
-Variable declarations
-Comments
-Loops
-Types?
+Doing:
+* Loops
+* Investigate stuff being left over in the stack
+
+Next:
+* Comments
+* User defined functions
+* Types
+* Types?
+
+Done:
+* Some basic stuff
+* Conditions
+* Variable declarations
+
+
+
 
