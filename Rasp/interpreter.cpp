@@ -113,12 +113,27 @@ Value Interpreter::exec(const InstructionList &instructions)
 				Value top = pop(stack);
 				if(settings_.trace)
 				{				
-					std::cout << "DEBUG: jumping if " << top << '\n';
+					std::cout << "DEBUG: jumping back " << instructionsToSkip << " if " << top << '\n';
 				}
 				if(top.isNil())
 				{
 					it += instructionsToSkip;
 				}
+			}
+			break;
+		case Instruction::Loop:
+			{
+				int instructionCount = value.number();
+				if(instructionCount > instructions.size())
+				{
+					throw std::logic_error("Compiler bug: insufficient instructions available to loop!");
+				}
+
+				if(settings_.trace)
+				{				
+					std::cout << "DEBUG: looping back " << instructionCount << "instructions\n";
+				}
+				it -= instructionCount;
 			}
 			break;
 		case Instruction::Assign:

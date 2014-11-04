@@ -129,6 +129,10 @@ namespace
 		{
 			return Token::assignment(current.line());
 		}
+		else if(string == "while")
+		{
+			return Token::loop(current.line());
+		}
 		else if(is<int>(string))
 		{
 			return Token::number(current.line(), string);

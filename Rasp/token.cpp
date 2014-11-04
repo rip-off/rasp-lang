@@ -30,6 +30,11 @@ Token Token::list(unsigned line)
 	return Token(line, List, "__list");
 }
 
+Token Token::loop(unsigned line)
+{
+	return Token(line, Loop, "__loop");
+}
+
 Token Token::string(unsigned line, const std::string &text)
 {
 	return Token(line, String, text);

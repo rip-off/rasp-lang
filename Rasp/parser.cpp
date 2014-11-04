@@ -37,7 +37,38 @@ namespace
 				}
 				else
 				{
-					if(children.front().type() == Token::Condition)
+					if(children.front().type() == Token::Loop)
+					{
+						if(children.size() == 1)
+						{
+							throw ParseError(token.line(), "'while' expression is missing condition");
+						}
+						else if(children.size() == 2)
+						{
+							throw ParseError(token.line(), "'while' expression is missing code to execute");
+						}
+						unsigned previousInstructionCount = list.size();
+						// Evaluate the conditional expression first
+						parse(children[1], declarations, list);
+						unsigned conditionExpressionInstructions = list.size() - previousInstructionCount;
+						// Generate the list of instructions to be executed if branch is taken
+						InstructionList tempInstructions;
+						for(unsigned i = 2 ; i < children.size() ; ++i)
+						{
+							parse(children[i], declarations, tempInstructions);
+						}
+						unsigned bodyInstructions = tempInstructions.size();
+						// Actual branch instruction
+						// +1 for the loop instruction itself!
+						list.push_back(Instruction::jump(bodyInstructions + 1));
+						// Insert the remaining instructions into the stream
+						list.insert(list.end(), tempInstructions.begin(), tempInstructions.end());
+						// Return to loop start
+						// +1 for jump instruction
+						// +1 for this loop instruction itself!
+						list.push_back(Instruction::loop(bodyInstructions + 1 + conditionExpressionInstructions + 1));
+					}
+					else if(children.front().type() == Token::Condition)
 					{
 						if(children.size() == 1)
 						{
@@ -115,6 +146,11 @@ namespace
 			assert(children.empty());
 			list.push_back(Instruction::push(token.string()));
 			break;
+		case Token::Loop:
+			{
+				throw ParseError(token.line(), "'while' must be first element of a list");
+			}
+			break;
 		case Token::Number:
 			assert(children.empty());
 			list.push_back(Instruction::push(to<int>(token.string())));
@@ -183,6 +219,10 @@ namespace
 			}
 			printTabs(level);
 			std::cout << "}";
+			break;
+		case Token::Loop:
+			assert(children.empty());
+			std::cout << "While";
 			break;
 		case Token::String:
 			assert(children.empty());

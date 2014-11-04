@@ -17,6 +17,7 @@ public:
 		Nil,
 		Root,
 		List,
+		Loop,
 		String,
 		Number,
 		Condition,
@@ -36,6 +37,8 @@ public:
 	static Token assignment(unsigned line);
 
 	static Token list(unsigned line);
+
+	static Token loop(unsigned line);
 
 	static Token string(unsigned line, const std::string &text);
 

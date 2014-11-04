@@ -19,6 +19,7 @@ public:
 		Push,
 		NoOp,
 		Jump,
+		Loop,
 		Assign,
 	};
 
@@ -33,6 +34,8 @@ public:
 	static Instruction call(int argc);
 
 	static Instruction jump(int instructions);
+
+	static Instruction loop(int instructions);
 
 	static Instruction assign(const std::string &identifier);
 

@@ -36,6 +36,11 @@ Instruction Instruction::jump(int instructions)
 	return Instruction(Jump, instructions);
 }
 
+Instruction Instruction::loop(int instructions)
+{
+	return Instruction(Loop, instructions);
+}
+
 Instruction Instruction::assign(const std::string &identifier)
 {
 	return Instruction(Assign, identifier);
@@ -69,6 +74,9 @@ std::ostream &operator<<(std::ostream &out, const Instruction &instruction)
 		break;
 	case Instruction::Jump:
 		out << "jump(" << instruction.value_ << ")";
+		break;
+	case Instruction::Loop:
+		out << "loop(" << instruction.value_ << ")";
 		break;
 	case Instruction::Assign:
 		out << "assign(" << instruction.value_ << ")";
