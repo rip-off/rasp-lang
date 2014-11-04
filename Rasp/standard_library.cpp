@@ -3,37 +3,11 @@
 #include <ctime>
 #include <iostream>
 
-// Platform specific includes for sleep()
-// TODO: move platform specific implementations to separate compilation unit?
-#if defined(WIN32)
-#define NOMINMAX
-#define WIN32_LEAN_AND_MEAN
-// TODO: to use this we must enable language extensions in MSVC, see if we can work around this...
-#include <windows.h>
-#elif defined(__linux__)
-#include <unistd.h>
-#endif
-
 #include "api.h"
 #include "exceptions.h"
 
 namespace
 {
-#if 0
-	Value set(CallContext &callContext)
-	{
-		const Arguments &arguments = callContext.arguments();
-		if(arguments.size() != 2 || !arguments[0].isString())
-		{
-			throw ExecutionError("Expected a string and a value");
-		}
-		
-		Bindings &bindings = callContext.bindings();
-		bindings[arguments[0].string()] = arguments[1];
-		return arguments[1];
-	}
-#endif
-
 	Value plus(const Arguments &arguments)
 	{
 		int result = 0;
@@ -113,24 +87,6 @@ namespace
 		return result;
 	}
 
-	Value sleep(const Arguments &arguments)
-	{
-		if(arguments.size() != 1 || !arguments[0].isNumber())
-		{
-			throw ExecutionError("Expected 1 numeric argument");
-		}
-	
-		int milliseconds = arguments[0].number();
-#if defined(WIN32)
-		Sleep(milliseconds);
-#elif defined(__linux__)
-		usleep(milliseconds * 1000);
-#else
-#error "please implement sleep() on your platform"
-#endif
-		return Value();
-	}
-
 	Value time(const Arguments &arguments)
 	{
 		if(!arguments.empty())
@@ -144,13 +100,11 @@ namespace
 
 	const ApiReg registry[] = 
 	{
-		// TODO: ApiReg("set", &set),
 		ApiReg("+", &plus),
 		ApiReg("-", &sub),
 		ApiReg("/", &div),
 		ApiReg("*", &mul),
 		ENTRY(time),
-		ENTRY(sleep),
 		ENTRY(print),
 		ENTRY(println),
 	};
