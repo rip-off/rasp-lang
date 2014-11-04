@@ -8,8 +8,6 @@
 #include "escape.h"
 #include "exceptions.h"
 
-// TODO: typedef std::string::const_iterator Iterator;
-
 namespace
 {
 	class Iterator : public std::iterator<std::forward_iterator_tag, char>
