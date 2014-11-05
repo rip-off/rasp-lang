@@ -131,7 +131,7 @@ Value Interpreter::exec(const InstructionList &instructions)
 
 				if(settings_.trace)
 				{				
-					std::cout << "DEBUG: looping back " << instructionCount << "instructions\n";
+					std::cout << "DEBUG: looping back " << instructionCount << " instructions\n";
 				}
 				it -= instructionCount;
 			}
@@ -155,14 +155,14 @@ Value Interpreter::exec(const InstructionList &instructions)
 		default:
 			throw std::logic_error("Compiler bug: unhandled instruction type: " + str(type));
 		}
-	}
-	
-	if (settings_.verbose)
-	{
-		std::cout << "Stack contains " << stack.size() << " entries:\n";
-		for(Stack::const_iterator it = stack.begin() ; it != stack.end() ; ++it)
+
+		if (settings_.trace && !stack.empty())
 		{
-			std::cout << " * " << *it;
+			std::cout << "Stack contains " << stack.size() << " entries:\n";
+			for(Stack::const_iterator it = stack.begin() ; it != stack.end() ; ++it)
+			{
+				std::cout << " * " << *it << '\n';
+			}
 		}
 	}
 	
