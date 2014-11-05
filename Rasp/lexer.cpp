@@ -40,6 +40,13 @@ namespace
 			return *this;
 		}
 
+		Iterator next() const
+		{
+			Iterator copy = *this;
+			++copy;
+			return copy;
+		}
+
 		bool operator==(const Iterator &other) const
 		{
 			return it == other.it;
@@ -222,6 +229,48 @@ namespace
 		else
 		{
 			char c = *current;
+			if(c == '/')
+			{
+				Iterator next = current.next();
+				if (next == end)
+				{
+					throw LexError(current.line(), "Stray / in program");
+				}
+
+				if(*next == '/')
+				{
+					// Single line comment, consume to end of line
+					current = std::find(next, end, '\n');
+				}
+				else if(*next == '*')
+				{
+					current = next;
+					// Block line comment, consume until end
+					int startLine = next.line();
+					bool found = false;
+					while(!found)
+					{
+						current = std::find(current, end, '*');
+						if(next == end)
+						{
+							throw LexError(startLine, "Cannot find end of block comment");
+						}
+						++current; // Skip asterisk
+						if(*current == '/')
+						{
+							++current; // Skip close comment
+							found = true;
+						}
+					}
+				}
+			}
+
+			if(current == end)
+			{
+				// TODO: ugly phantom tokens :[
+				return Token::root(current.line());
+			}
+			
 			if(c == ')')
 			{
 				throw LexError(current.line(), "Stray ) in program");
