@@ -65,5 +65,7 @@ int main(int argc, const char **argv)
 			execute(interpreter, *it, settings);
 		}
 	}
+	// If you use CTRL-D, nice to output a newline...
+	std::cout << '\n';
 }
 
