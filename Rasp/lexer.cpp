@@ -112,6 +112,56 @@ namespace
 		return std::find_if(begin, end, IsSpace(true));
 	}
 
+	Iterator consumeComment(const Iterator begin, const Iterator end)
+	{
+		if (begin == end)
+		{
+			return end;
+		}
+
+		char c = *begin;
+		if(c != '/')
+		{
+			return begin;
+		}
+
+		Iterator next = begin.next();
+		if (next == end)
+		{
+			throw LexError(begin.line(), "Stray / in program");
+		}
+
+		if(*next == '/')
+		{
+			// Single line comment, consume to end of line
+			return std::find(next, end, '\n');
+		}
+		
+		if(*next == '*')
+		{
+			Iterator current = next;
+			// Block line comment, consume until end
+			int startLine = next.line();
+			bool found = false;
+			while(!found)
+			{
+				current = std::find(current, end, '*');
+				if(current == end)
+				{
+					throw LexError(startLine, "Cannot find end of block comment");
+				}
+				++current; // Skip asterisk
+				if(*current == '/')
+				{
+					++current; // Skip close comment
+					found = true;
+				}
+			}
+			return current;
+		}
+		return begin;
+	}
+
 	Token literal(Iterator &current, const Iterator end)
 	{
 		current = consumeWhitespace(current, end);
@@ -220,7 +270,18 @@ namespace
 
 	Token next(Iterator &current, const Iterator end)
 	{
-		current = consumeWhitespace(current, end);
+		// Keep looping to handle cases like
+		// /* */ /* */ ...
+		bool loop;
+		do
+		{
+			Iterator begin = current;
+			current = consumeWhitespace(current, end);
+			current = consumeComment(current, end);
+			loop = (begin != current);
+		}
+		while(loop);
+
 		if(current == end)
 		{
 			// TODO: ugly phantom tokens :[
@@ -229,48 +290,6 @@ namespace
 		else
 		{
 			char c = *current;
-			if(c == '/')
-			{
-				Iterator next = current.next();
-				if (next == end)
-				{
-					throw LexError(current.line(), "Stray / in program");
-				}
-
-				if(*next == '/')
-				{
-					// Single line comment, consume to end of line
-					current = std::find(next, end, '\n');
-				}
-				else if(*next == '*')
-				{
-					current = next;
-					// Block line comment, consume until end
-					int startLine = next.line();
-					bool found = false;
-					while(!found)
-					{
-						current = std::find(current, end, '*');
-						if(next == end)
-						{
-							throw LexError(startLine, "Cannot find end of block comment");
-						}
-						++current; // Skip asterisk
-						if(*current == '/')
-						{
-							++current; // Skip close comment
-							found = true;
-						}
-					}
-				}
-			}
-
-			if(current == end)
-			{
-				// TODO: ugly phantom tokens :[
-				return Token::root(current.line());
-			}
-			
 			if(c == ')')
 			{
 				throw LexError(current.line(), "Stray ) in program");
