@@ -1,4 +1,5 @@
 Doing:
+* Better build system
 * Loops
 * Investigate stuff being left over in the stack
 
