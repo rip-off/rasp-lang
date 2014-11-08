@@ -17,6 +17,19 @@
 
 (println "\nAnd now...\nWith variables!\n\n")
 
+// Single line comment
+// (println "this is commented and should not be printed")
+/* block comments */ (println "This is not commented" /* but this is */ " and should be printed")
+/* (println "this should not be printed") */
+/*
+	Multi-line
+	Block comment
+*/
+
+
+/* Interesting */ /**/ /* comment */
+
+
 (def x nil)
 (def y nil)
 

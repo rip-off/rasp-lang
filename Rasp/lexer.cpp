@@ -40,6 +40,13 @@ namespace
 			return *this;
 		}
 
+		Iterator next() const
+		{
+			Iterator copy = *this;
+			++copy;
+			return copy;
+		}
+
 		bool operator==(const Iterator &other) const
 		{
 			return it == other.it;
@@ -103,6 +110,56 @@ namespace
 	Iterator consumeWhitespace(const Iterator begin, const Iterator end)
 	{
 		return std::find_if(begin, end, IsSpace(true));
+	}
+
+	Iterator consumeComment(const Iterator begin, const Iterator end)
+	{
+		if (begin == end)
+		{
+			return end;
+		}
+
+		char c = *begin;
+		if(c != '/')
+		{
+			return begin;
+		}
+
+		Iterator next = begin.next();
+		if (next == end)
+		{
+			throw LexError(begin.line(), "Stray / in program");
+		}
+
+		if(*next == '/')
+		{
+			// Single line comment, consume to end of line
+			return std::find(next, end, '\n');
+		}
+		
+		if(*next == '*')
+		{
+			Iterator current = next;
+			// Block line comment, consume until end
+			int startLine = next.line();
+			bool found = false;
+			while(!found)
+			{
+				current = std::find(current, end, '*');
+				if(current == end)
+				{
+					throw LexError(startLine, "Cannot find end of block comment");
+				}
+				++current; // Skip asterisk
+				if(*current == '/')
+				{
+					++current; // Skip close comment
+					found = true;
+				}
+			}
+			return current;
+		}
+		return begin;
 	}
 
 	Token literal(Iterator &current, const Iterator end)
@@ -213,7 +270,18 @@ namespace
 
 	Token next(Iterator &current, const Iterator end)
 	{
-		current = consumeWhitespace(current, end);
+		// Keep looping to handle cases like
+		// /* */ /* */ ...
+		bool loop;
+		do
+		{
+			Iterator begin = current;
+			current = consumeWhitespace(current, end);
+			current = consumeComment(current, end);
+			loop = (begin != current);
+		}
+		while(loop);
+
 		if(current == end)
 		{
 			// TODO: ugly phantom tokens :[
