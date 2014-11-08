@@ -123,7 +123,7 @@ namespace
 						Identifier identifier = Identifier(children[1].string());
 						if (!isDefined(declarations, identifier))
 						{
-							throw ParseError(token.line(), "Variable " + identifier.name() + " not defined");
+							throw ParseError(token.line(), "Variable '" + identifier.name() + "' not defined");
 						}	
 						parse(children[2], declarations, list);
 						list.push_back(Instruction::assign(identifier.name()));
@@ -176,7 +176,7 @@ namespace
 				Identifier identifier = Identifier(token.string());
 				if (!isDefined(declarations, identifier))
 				{
-					throw ParseError(token.line(), "Variable " + identifier.name() + " not defined");
+					throw ParseError(token.line(), "Variable '" + identifier.name() + "' not defined");
 				}
 				list.push_back(Instruction::ref(identifier));
 			}
