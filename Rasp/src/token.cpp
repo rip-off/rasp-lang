@@ -15,9 +15,9 @@ Token Token::condition(unsigned line)
 	return Token(line, Condition, "__if");
 }
 
-Token Token::declaration(unsigned line)
+Token Token::variableDeclaration(unsigned line)
 {
-	return Token(line, Declaration, "__def");
+	return Token(line, VariableDeclaration, "__var");
 }
 
 Token Token::assignment(unsigned line)

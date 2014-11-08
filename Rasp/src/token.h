@@ -23,7 +23,7 @@ public:
 		Condition,
 		Identifier,
 		Assignment,
-		Declaration,
+		VariableDeclaration,
 	};
 
 	static Token root(unsigned line);
@@ -32,7 +32,7 @@ public:
 
 	static Token condition(unsigned line);
 
-	static Token declaration(unsigned line);
+	static Token variableDeclaration(unsigned line);
 
 	static Token assignment(unsigned line);
 

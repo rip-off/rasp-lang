@@ -91,7 +91,7 @@ namespace
 						// Insert the remaining instructions into the stream
 						list.insert(list.end(), tempInstructions.begin(), tempInstructions.end());
 					}
-					else if(children.front().type() == Token::Declaration)
+					else if(children.front().type() == Token::VariableDeclaration)
 					{
 						if(children.size() == 2)
 						{
@@ -165,9 +165,9 @@ namespace
 				throw ParseError(token.line(), "'set' must be first element of a list");
 			}
 			break;
-		case Token::Declaration:
+		case Token::VariableDeclaration:
 			{
-				throw ParseError(token.line(), "'def' must be first element of a list");
+				throw ParseError(token.line(), "'var' must be first element of a list");
 			}
 			break;
 		case Token::Identifier:
@@ -236,9 +236,9 @@ namespace
 			assert(children.empty());
 			std::cout << "If";
 			break;
-		case Token::Declaration:
+		case Token::VariableDeclaration:
 			assert(children.empty());
-			std::cout << "Def";
+			std::cout << "Var";
 			break;
 		case Token::Assignment:
 			assert(children.empty());

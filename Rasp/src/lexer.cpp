@@ -178,9 +178,9 @@ namespace
 		{
 			return Token::condition(current.line());
 		}
-		else if(string == "def")
+		else if(string == "var")
 		{
-			return Token::declaration(current.line());
+			return Token::variableDeclaration(current.line());
 		}
 		else if(string == "set")
 		{
