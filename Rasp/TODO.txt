@@ -1,27 +1,19 @@
 Doing:
-* Comments
-
- > /*
-Lex error at line 1: Stray ) in program
-
- > /* nada */ "surf"
-	Root {
-		Identifier("surf")
-
-	}
-Parse error at line 1: Variable "surf" not defined
-
 * Loops
 * Investigate stuff being left over in the stack
 
 Next:
+* Identifier checks
 * Print line numbers associated with execution errors
 * User defined functions
 * Print stack traces for errors in functions?
-* Types
-* Types?
+* User defined types?
+* Booleans
+* Floating point numbers
+* String manipulation function
 
 Done:
+* Comments
 * Some basic stuff
 * Conditions
 * Variable declarations
