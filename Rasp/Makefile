@@ -4,8 +4,9 @@ CC_FLAGS = -std=c++11 -Wall -Werror
 
 # File names
 EXEC = rasp
-SOURCES = $(wildcard *.cpp)
-OBJECTS = $(SOURCES:.cpp=.o)
+SOURCES = $(wildcard src/*.cpp)
+OBJECTS = $(subst src/,obj/, $(subst .cpp,.o, $(SOURCES)))
+#$(SOURCES:.cpp=.o)
 
 all: $(EXEC)
 
@@ -15,7 +16,7 @@ clean:
 $(EXEC): $(OBJECTS)
 	$(CC) $(OBJECTS) -o $(EXEC)
 
-%.o: %.cpp
+obj/%.o: src/%.cpp
 	$(CC) -c $(CC_FLAGS) $< -o $@
 
 DEPS := $(OBJECTS:.o=.d)
