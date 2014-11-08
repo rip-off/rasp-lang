@@ -1,12 +1,9 @@
-# Declaration of variables
 CC = clang++
 CC_FLAGS = -std=c++11 -Wall -Werror 
 
-# File names
 EXEC = rasp
 SOURCES = $(wildcard src/*.cpp)
 OBJECTS = $(subst src/,obj/, $(subst .cpp,.o, $(SOURCES)))
-#$(SOURCES:.cpp=.o)
 
 all: $(EXEC)
 
