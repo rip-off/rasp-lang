@@ -1,5 +1,4 @@
 Doing:
-* Better build system
 * Loops
 * Investigate stuff being left over in the stack
 
@@ -14,6 +13,7 @@ Next:
 * String manipulation function
 
 Done:
+* Non-stupid build system
 * Comments
 * Some basic stuff
 * Conditions
