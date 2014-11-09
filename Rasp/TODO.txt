@@ -6,6 +6,8 @@ Next:
 * Identifier checks
 * Print line numbers associated with execution errors
 * Print stack traces for errors in functions?
+* Add a type system?
+* Demote nil from value to optional type?
 * User defined types?
 * Booleans
 * Floating point numbers
