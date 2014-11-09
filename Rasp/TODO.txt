@@ -3,7 +3,6 @@ Doing:
 ** Investigate stuff being left over in the stack
 
 Next:
-* Cleanup keyword handling
 * Identifier checks
 * Print line numbers associated with execution errors
 * Print stack traces for errors in functions?
@@ -13,6 +12,7 @@ Next:
 * String manipulation function
 
 Done:
+* Cleanup keyword handling
 * User defined functions
 ** Local variables
 ** Arguments
