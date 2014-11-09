@@ -11,8 +11,7 @@
 
 namespace
 {
-	// TODO: add reference	
-	bool isDefined(const std::vector<Identifier> &declarations, const Identifier identifier)
+	bool isDefined(const std::vector<Identifier> &declarations, const Identifier &identifier)
 	{
 		return std::find(declarations.begin(), declarations.end(), identifier) != declarations.end();
 	}
