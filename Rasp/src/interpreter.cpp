@@ -57,7 +57,13 @@ Interpreter::Interpreter(const Bindings &bindings, const Settings &settings)
 
 Value Interpreter::exec(const InstructionList &instructions)
 {
+	return exec(instructions, bindings_);
+}
+
+Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
+{
 	Stack stack;
+
 	for(InstructionList::const_iterator it = instructions.begin() ; it != instructions.end() ; ++it)
 	{
 		Instruction::Type type = it->type();
@@ -75,7 +81,7 @@ Value Interpreter::exec(const InstructionList &instructions)
 			{
 				// TODO: compiler bug: binding not found?
 				Identifier identifier = Identifier(value.string());
-				const Value &value = bindings_[identifier];
+				const Value &value = bindings[identifier];
 				if(settings_.trace)
 				{				
 					std::cout << "DEBUG: ref " << identifier.name() << "(" << value << ")" << '\n';
@@ -96,7 +102,7 @@ Value Interpreter::exec(const InstructionList &instructions)
 				std::cout << "DEBUG: call " << value << '\n';
 			}
 			// TODO: member function?
-			handleFunction(this, value, stack, bindings_);
+			handleFunction(this, value, stack, bindings);
 			break;
 		case Instruction::Jump:
 			{
@@ -150,7 +156,7 @@ Value Interpreter::exec(const InstructionList &instructions)
 					std::cout << "DEBUG: assigning " << value.string() << " to " << top << '\n';
 				}
 				Identifier identifier = Identifier(value.string());
-				bindings_[identifier] = top;
+				bindings[identifier] = top;
 			}
 			break;
 		default:

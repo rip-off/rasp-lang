@@ -136,11 +136,11 @@ namespace
 						{
 							throw ParseError(token.line(), "Function requires a name");
 						}
-						/* TODO: else if(children.size() == 3)
+						else if(children.size() == 3)
 						{
 							throw ParseError(token.line(), "Function requires parameter lists");
-						} */
-						else if(children.size() < /* TODO */ 3)
+						}
+						else if(children.size() < 4)
 						{
 							throw ParseError(token.line(), "Function lacks a body");
 						}
@@ -149,15 +149,35 @@ namespace
 						{
 							throw ParseError(token.line(), "Identifier " + identifier.name() + " already defined");
 						}
-						declarations.push_back(identifier);			
+						declarations.push_back(identifier);
 						
+						// TODO: work in progress
+						if (children[2].type() != Token::List)
+						{
+							throw ParseError(token.line(), "Function parameter list is incorrect");
+						}
+
+						std::vector<Identifier> parameters;
 						std::vector<Identifier> localDeclarations = declarations;
+						
+						const Token::Children &rawParameters = children[2].children();
+						for (unsigned i = 0 ; i < rawParameters.size()  ; ++i)
+						{
+							if (rawParameters[i].type() != Token::Identifier)
+							{
+								throw ParseError(token.line(), "Function parameter " + str(i) + " is incorrect");
+							}
+							Identifier parameter = Identifier(rawParameters[i].string());
+							parameters.push_back(parameter);
+							localDeclarations.push_back(parameter);
+						}
+
 						InstructionList tempInstructions;
-						for(unsigned i = 2 ; i < children.size() ; ++i)
+						for(unsigned i = 3 ; i < children.size() ; ++i)
 						{
 							parse(children[i], localDeclarations, tempInstructions);
 						}
-						InternalFunction function(identifier.name(), tempInstructions);
+						InternalFunction function(identifier.name(), parameters, tempInstructions);
 						list.push_back(Instruction::push(function));
 						list.push_back(Instruction::assign(identifier.name()));
 					}

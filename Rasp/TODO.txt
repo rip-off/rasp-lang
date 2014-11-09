@@ -6,6 +6,7 @@ Doing:
 ** Investigate stuff being left over in the stack
 
 Next:
+* Cleanup keyword handling
 * Identifier checks
 * Print line numbers associated with execution errors
 * Print stack traces for errors in functions?

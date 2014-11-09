@@ -7,7 +7,10 @@
 class InternalFunction : public Function
 {
 public:
-	InternalFunction(const std::string &name, const InstructionList &instructionList);
+	InternalFunction(
+		const std::string &name, 
+		const std::vector<Identifier> &parameters, 
+		const InstructionList &instructionList);
 
 	virtual Function *clone() const;
 	virtual Value call(CallContext &) const;
@@ -15,6 +18,7 @@ public:
 
 private:
 	std::string name_;
+	std::vector<Identifier> parameters_;
 	InstructionList instructionList_;
 };
 

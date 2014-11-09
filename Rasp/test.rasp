@@ -60,21 +60,25 @@
 (while (< i 5) (println "don't loop: " (+ i 1)) (set i (+ i 1)))
 
 
-(defun testFunction (println "Inside test function"))
+(defun testFunction () (println "Inside test function"))
 (testFunction)
 
-(defun testReturn "Return value from 'testReturn'")
+(defun testReturn () "Return value from 'testReturn'")
 (println "The result of (testReturn) -> " (testReturn))
 
-(defun testLoop
+(defun testLoop ()
 	(var loopy 0)
 	(while (< loopy 5)
 		(set loopy (+ loopy 1))
 		(println "Test loop in function: " loopy)))
 (testLoop)
 
-(defun testLocalFunction
-	(defun  localFunction "success")
+(defun testLocalFunction ()
+	(defun  localFunction () "success")
 	(println "Testing local functions: " (localFunction)))
 (testLocalFunction)
+
+(defun testParameters (x y) (println "Parameters: X is " x " and Y is " y))
+(testParameters 1 2)
+
 

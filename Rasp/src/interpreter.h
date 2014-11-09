@@ -13,6 +13,8 @@ public:
 
 	Value exec(const InstructionList &instructions);
 
+	Value exec(const InstructionList &instructions, Bindings &bindings);
+
 	const Value *binding(const Identifier &name) const;
 
 	Bindings &bindings()
