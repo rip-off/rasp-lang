@@ -190,6 +190,10 @@ namespace
 		{
 			return Token::loop(current.line());
 		}
+		else if(string == "defun")
+		{
+			return Token::functionDeclaration(current.line());
+		}
 		else if(is<int>(string))
 		{
 			return Token::number(current.line(), string);

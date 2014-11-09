@@ -20,6 +20,11 @@ Token Token::variableDeclaration(unsigned line)
 	return Token(line, VariableDeclaration, "__var");
 }
 
+Token Token::functionDeclaration(unsigned line)
+{
+	return Token(line, FunctionDeclaration, "__defun");
+}
+
 Token Token::assignment(unsigned line)
 {
 	return Token(line, Assignment, "__set");

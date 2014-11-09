@@ -24,6 +24,7 @@ public:
 		Identifier,
 		Assignment,
 		VariableDeclaration,
+		FunctionDeclaration,
 	};
 
 	static Token root(unsigned line);
@@ -33,6 +34,8 @@ public:
 	static Token condition(unsigned line);
 
 	static Token variableDeclaration(unsigned line);
+
+	static Token functionDeclaration(unsigned line);
 
 	static Token assignment(unsigned line);
 

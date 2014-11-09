@@ -7,17 +7,21 @@
 
 typedef std::vector<Value> Arguments;
 
+class Interpreter;
+
 class CallContext
 {
 public:
-	CallContext(Bindings *bindings, Arguments *arguments);
+	CallContext(Bindings *bindings, Arguments *arguments, Interpreter *);
 
 	const Arguments &arguments() const;
 	Bindings &bindings();
+	Interpreter &interpreter();
 
 private:
 	Bindings *bindings_;
 	Arguments *arguments_;
+	Interpreter *interpreter_;
 };
 
 

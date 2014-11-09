@@ -7,6 +7,7 @@
 #include "bindings.h"
 #include "settings.h"
 #include "exceptions.h"
+#include "internal_function.h"
 
 namespace
 {
@@ -37,7 +38,8 @@ namespace
 				}
 				else
 				{
-					if(children.front().type() == Token::Loop)
+					Token::Type firstTokenType = children.front().type();
+					if(firstTokenType == Token::Loop)
 					{
 						if(children.size() == 1)
 						{
@@ -68,7 +70,7 @@ namespace
 						// +1 for this loop instruction itself!
 						list.push_back(Instruction::loop(bodyInstructions + 1 + conditionExpressionInstructions + 1));
 					}
-					else if(children.front().type() == Token::Condition)
+					else if(firstTokenType == Token::Condition)
 					{
 						if(children.size() == 1)
 						{
@@ -91,7 +93,7 @@ namespace
 						// Insert the remaining instructions into the stream
 						list.insert(list.end(), tempInstructions.begin(), tempInstructions.end());
 					}
-					else if(children.front().type() == Token::VariableDeclaration)
+					else if(firstTokenType == Token::VariableDeclaration)
 					{
 						if(children.size() == 2)
 						{
@@ -104,13 +106,13 @@ namespace
 						Identifier identifier = Identifier(children[1].string());
 						if (isDefined(declarations, identifier))
 						{
-							throw ParseError(token.line(), "Variable " + identifier.name() + " already defined");
+							throw ParseError(token.line(), "Identity " + identifier.name() + " already defined");
 						}
 						declarations.push_back(identifier);				
 						parse(children[2], declarations, list);
 						list.push_back(Instruction::assign(identifier.name()));
 					}
-					else if(children.front().type() == Token::Assignment)
+					else if(firstTokenType == Token::Assignment)
 					{
 						if(children.size() == 2)
 						{
@@ -123,9 +125,39 @@ namespace
 						Identifier identifier = Identifier(children[1].string());
 						if (!isDefined(declarations, identifier))
 						{
-							throw ParseError(token.line(), "Variable '" + identifier.name() + "' not defined");
+							throw ParseError(token.line(), "Identifier '" + identifier.name() + "' not defined");
 						}	
 						parse(children[2], declarations, list);
+						list.push_back(Instruction::assign(identifier.name()));
+					}
+					else if(firstTokenType == Token::FunctionDeclaration)
+					{
+						if(children.size() == 2)
+						{
+							throw ParseError(token.line(), "Function requires a name");
+						}
+						/* TODO: else if(children.size() == 3)
+						{
+							throw ParseError(token.line(), "Function requires parameter lists");
+						} */
+						else if(children.size() < /* TODO */ 3)
+						{
+							throw ParseError(token.line(), "Function lacks a body");
+						}
+						Identifier identifier = Identifier(children[1].string());
+						if (isDefined(declarations, identifier))
+						{
+							throw ParseError(token.line(), "Identifier " + identifier.name() + " already defined");
+						}
+						declarations.push_back(identifier);			
+
+						InstructionList tempInstructions;
+						for(unsigned i = 2 ; i < children.size() ; ++i)
+						{
+							parse(children[i], declarations, tempInstructions);
+						}
+						InternalFunction function(identifier.name(), tempInstructions);
+						list.push_back(Instruction::push(function));
 						list.push_back(Instruction::assign(identifier.name()));
 					}
 					else
@@ -168,6 +200,11 @@ namespace
 		case Token::VariableDeclaration:
 			{
 				throw ParseError(token.line(), "'var' must be first element of a list");
+			}
+			break;
+		case Token::FunctionDeclaration:
+			{
+				throw ParseError(token.line(), "'defun' must be first element of a list");
 			}
 			break;
 		case Token::Identifier:
@@ -239,6 +276,10 @@ namespace
 		case Token::VariableDeclaration:
 			assert(children.empty());
 			std::cout << "Var";
+			break;
+		case Token::FunctionDeclaration:
+			assert(children.empty());
+			std::cout << "Defun";
 			break;
 		case Token::Assignment:
 			assert(children.empty());

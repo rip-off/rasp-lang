@@ -17,7 +17,7 @@ namespace
 		return result;
 	}
 
-	void handleFunction(const Value &value, Stack &stack, Bindings &bindings)
+	void handleFunction(Interpreter *interpreter, const Value &value, Stack &stack, Bindings &bindings)
 	{
 		if(!value.isNumber())
 		{
@@ -42,7 +42,7 @@ namespace
 			arguments.push_back(pop(stack));
 		}
 		const Function &function = top.function();
-		CallContext callContext(&bindings, &arguments);
+		CallContext callContext(&bindings, &arguments, interpreter);
 		Value result = function.call(callContext);
 		stack.push_back(result);
 	}
@@ -95,7 +95,8 @@ Value Interpreter::exec(const InstructionList &instructions)
 			{				
 				std::cout << "DEBUG: call " << value << '\n';
 			}
-			handleFunction(value, stack, bindings_);
+			// TODO: member function?
+			handleFunction(this, value, stack, bindings_);
 			break;
 		case Instruction::Jump:
 			{

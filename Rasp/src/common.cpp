@@ -1,9 +1,13 @@
 #include "common.h"
 
-CallContext::CallContext(Bindings *bindings, Arguments *arguments)
+CallContext::CallContext(
+	Bindings *bindings, 
+	Arguments *arguments, 
+	Interpreter *interpreter)
 :
 	bindings_(bindings),
-	arguments_(arguments)
+	arguments_(arguments),
+	interpreter_(interpreter)
 {
 }
 
@@ -15,5 +19,10 @@ const Arguments &CallContext::arguments() const
 Bindings &CallContext::bindings()
 {
 	return *bindings_;
+}
+
+Interpreter &CallContext::interpreter()
+{
+	return *interpreter_;
 }
 

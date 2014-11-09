@@ -60,3 +60,9 @@
 (while (< i 5) (println "don't loop: " (+ i 1)) (set i (+ i 1)))
 
 
+(defun testFunction (println "Inside test function"))
+(testFunction)
+
+(defun testReturn "Return value from 'testReturn'")
+(println "The result of (testReturn) -> " (testReturn))
+
