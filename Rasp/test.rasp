@@ -70,8 +70,11 @@
 	(var loopy 0)
 	(while (< loopy 5)
 		(set loopy (+ loopy 1))
-		(println "Test loop: " loopy)))
+		(println "Test loop in function: " loopy)))
 (testLoop)
 
-
+(defun testLocalFunction
+	(defun  localFunction "success")
+	(println "Testing local functions: " (localFunction)))
+(testLocalFunction)
 
