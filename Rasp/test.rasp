@@ -81,4 +81,9 @@
 (defun testParameters (x y) (println "Parameters: X is " x " and Y is " y))
 (testParameters 1 2)
 
+(defun testRecursion (x)
+	(println "Recursion test: " x)
+	(if (> x 0)
+		(testRecursion (- x 1))))
+(testRecursion 5)
 
