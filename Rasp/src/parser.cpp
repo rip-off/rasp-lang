@@ -144,7 +144,6 @@ namespace
 				}
 				declarations.push_back(identifier);
 				
-				// TODO: work in progress
 				if (children[2].type() != Token::List)
 				{
 					throw ParseError(token.line(), "Keyword 'defun' function parameter list is incorrect");
