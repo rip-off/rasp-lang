@@ -19,8 +19,11 @@ void repl(Interpreter &interpreter, const Settings &settings)
 			Token token = lex(line);
 			std::vector<Identifier> declarations = interpreter.declarations();
 			InstructionList instructions = parse(token, declarations, settings);
-			Value result = interpreter.exec(instructions);
-			std::cout << " < " << result << std::endl;
+			if (!instructions.empty())
+			{
+				Value result = interpreter.exec(instructions);
+				std::cout << " < " << result << std::endl;
+			}
 		}
 		catch(const LexError &e)
 		{
