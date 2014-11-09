@@ -23,9 +23,7 @@ namespace
 		const Token::Children &children = token.children();
 		if(children.empty())
 		{
-			// TODO: investigate this, compile time error?
-			instructions.push_back(Instruction::push(Value::nil()));
-			return;
+			throw ParseError(token.line(), "Empty list is not allowed");
 		}
 
 		const Token &firstChild = children.front();		
