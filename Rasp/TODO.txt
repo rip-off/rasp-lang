@@ -1,5 +1,6 @@
 Doing:
 * User defined functions
+** Local variables?
 ** Arguments 
 * Loops
 ** Investigate stuff being left over in the stack

@@ -150,11 +150,12 @@ namespace
 							throw ParseError(token.line(), "Identifier " + identifier.name() + " already defined");
 						}
 						declarations.push_back(identifier);			
-
+						
+						std::vector<Identifier> localDeclarations = declarations;
 						InstructionList tempInstructions;
 						for(unsigned i = 2 ; i < children.size() ; ++i)
 						{
-							parse(children[i], declarations, tempInstructions);
+							parse(children[i], localDeclarations, tempInstructions);
 						}
 						InternalFunction function(identifier.name(), tempInstructions);
 						list.push_back(Instruction::push(function));
