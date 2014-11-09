@@ -14,7 +14,6 @@ public:
 
 	enum Type
 	{
-		// TODO:
 		Nil,
 		Root,
 		List,
