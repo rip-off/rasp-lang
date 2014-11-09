@@ -1,7 +1,4 @@
 Doing:
-* User defined functions
-** Local variables?
-** Arguments 
 * Loops
 ** Investigate stuff being left over in the stack
 
@@ -16,6 +13,9 @@ Next:
 * String manipulation function
 
 Done:
+* User defined functions
+** Local variables
+** Arguments
 * Non-stupid build system
 * Comments
 * Some basic stuff
