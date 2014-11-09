@@ -13,6 +13,38 @@
 
 namespace
 {
+	class AssertionError
+	{
+	public:
+		AssertionError(const std::string &message) : message_(message)
+		{
+		}
+
+		virtual const char *what() const
+		{
+			return message_.c_str();
+		}
+	private:
+		std::string message_;
+	};
+
+	void assertTrue(bool expression, const std::string &message)
+	{
+		if(!expression)
+		{
+			throw AssertionError(message);
+		}
+	}
+
+	template <typename X, typename Y>
+	void assertEquals(const X &x, const Y &y)
+	{
+		if (x != y)
+		{
+			throw AssertionError("'" + str(x) + "' should equal '" + str(y) + "'");
+		}
+	}
+
 	InstructionList parse(const Token &token, std::vector<Identifier> &declarations)
 	{
 		Settings settings;
@@ -26,30 +58,36 @@ namespace
 		instructions.push_back(Instruction::push(13));
 		instructions.push_back(Instruction::push(16));
 		const Value *value = interpreter.binding(Identifier("+"));
-		assert(value);
+		assertTrue(value, "Expected there is a binding for '+'");
 		instructions.push_back(Instruction::push(*value));
 		instructions.push_back(Instruction::call(3));
 		Value result = interpreter.exec(instructions);
-		assert(result.isNumber());
-		assert(result.number() == (42 + 13 + 16));
+		assertEquals(Value::TNumber, result.type());
+		assertEquals(result.number(), (42 + 13 + 16));
 	}
 
 	void testLexer()
 	{
 		std::string source = "(+ 13 42)";
 		Token token = lex(source);
-		assert(token.type() == Token::Root);
+		assertEquals(token.type(), Token::Root);
 		
 		const Token::Children &rootChildren = token.children();
-		assert(rootChildren.size() == 1);
+		assertEquals(rootChildren.size(), 1);
 		const Token &list = rootChildren.front();
-		assert(list.type() == Token::List);
+		assertEquals(list.type(), Token::List);
 
 		const Token::Children &children = list.children();
-		assert(children.size() == 3);
-		assert(children[0].type() == Token::Identifier && children[0].string() == "+");
-		assert(children[1].type() == Token::Number && children[1].string() == "13");
-		assert(children[2].type() == Token::Number && children[2].string() == "42");
+		assertEquals(children.size(), 3);
+
+		assertEquals(children[0].type(), Token::Identifier);
+		assertEquals(children[0].string(), "+");
+
+		assertEquals(children[1].type(), Token::Number);
+		assertEquals(children[1].string(), "13");
+
+		assertEquals(children[2].type(), Token::Number);
+		assertEquals(children[2].string(), "42");
 	}
 
 	void testParser(Interpreter &interpreter)
@@ -66,11 +104,19 @@ namespace
 		root.addChild(list);
 		std::vector<Identifier> declarations = interpreter.declarations();
 		InstructionList result = parse(root, declarations);
-		assert(result.size() == 4);
-		assert(result[0].type() == Instruction::Push && result[0].value().number() == 13);
-		assert(result[1].type() == Instruction::Push && result[1].value().number() == 42);
-		assert(result[2].type() == Instruction::Ref && result[2].value().string() == "+");
-		assert(result[3].type() == Instruction::Call && result[3].value().number() == 2);
+		assertEquals(result.size(), 4);
+
+		assertEquals(result[0].type(), Instruction::Push);
+		assertEquals(result[0].value().number(), 13);
+
+		assertEquals(result[1].type(), Instruction::Push);
+		assertEquals(result[1].value().number(), 42);
+
+		assertEquals(result[2].type(), Instruction::Ref);
+		assertEquals(result[2].value().string(), "+");
+
+		assertEquals(result[3].type(), Instruction::Call);
+		assertEquals(result[3].value().number(), 2);
 	}
 
 	void testAll(Interpreter &interpreter)
@@ -80,8 +126,8 @@ namespace
 		std::vector<Identifier> declarations = interpreter.declarations();
 		InstructionList instructions = parse(token, declarations);
 		Value result = interpreter.exec(instructions);
-		assert(result.isNumber());
-		assert(result.number() == 84 + 13 - 5);
+		assertEquals(result.type(), Value::TNumber);
+		assertEquals(result.number(), 84 + 13 - 5);
 	}
 }
 
@@ -98,6 +144,9 @@ void runUnitTests(Interpreter &interpreter)
 	catch(const RaspError &e)
 	{
 		std::cerr << "Exception in unit tests: " << e.what() << '\n';
-		assert(false);
+	}
+	catch(const AssertionError &e)
+	{
+		std::cerr << "Assertion error in unit tests " << e.what() << '\n';
 	}
 }

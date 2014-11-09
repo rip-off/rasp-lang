@@ -1,43 +1,18 @@
 #include "token.h"
 
-Token Token::root(unsigned line)
-{
-	return Token(line, Root, "__root");
-}
-
 Token Token::nil(unsigned line)
 {
 	return Token(line, Nil, "__nil_literal");
 }
 
-Token Token::condition(unsigned line)
+Token Token::root(unsigned line)
 {
-	return Token(line, Condition, "__if");
-}
-
-Token Token::variableDeclaration(unsigned line)
-{
-	return Token(line, VariableDeclaration, "__var");
-}
-
-Token Token::functionDeclaration(unsigned line)
-{
-	return Token(line, FunctionDeclaration, "__defun");
-}
-
-Token Token::assignment(unsigned line)
-{
-	return Token(line, Assignment, "__set");
+	return Token(line, Root, "__root");
 }
 
 Token Token::list(unsigned line)
 {
 	return Token(line, List, "__list");
-}
-
-Token Token::loop(unsigned line)
-{
-	return Token(line, Loop, "__loop");
 }
 
 Token Token::string(unsigned line, const std::string &text)
@@ -49,6 +24,11 @@ Token Token::number(unsigned line, const std::string &number)
 {
 	assert(is<int>(number));
 	return Token(line, Number, number); 
+}
+
+Token Token::keyword(unsigned line, const std::string &keyword)
+{
+	return Token(line, Keyword, keyword);
 }
 
 Token Token::identifier(unsigned line, const std::string &identifier)

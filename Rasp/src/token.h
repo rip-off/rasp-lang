@@ -14,38 +14,27 @@ public:
 
 	enum Type
 	{
+		// TODO:
 		Nil,
 		Root,
 		List,
-		Loop,
 		String,
 		Number,
-		Condition,
+		Keyword,
 		Identifier,
-		Assignment,
-		VariableDeclaration,
-		FunctionDeclaration,
 	};
-
-	static Token root(unsigned line);
 
 	static Token nil(unsigned line);
 
-	static Token condition(unsigned line);
-
-	static Token variableDeclaration(unsigned line);
-
-	static Token functionDeclaration(unsigned line);
-
-	static Token assignment(unsigned line);
+	static Token root(unsigned line);
 
 	static Token list(unsigned line);
-
-	static Token loop(unsigned line);
 
 	static Token string(unsigned line, const std::string &text);
 
 	static Token number(unsigned line, const std::string &number);
+
+	static Token keyword(unsigned line, const std::string &keyword);
 
 	static Token identifier(unsigned line, const std::string &identifier);
 

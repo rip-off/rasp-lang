@@ -169,30 +169,23 @@ namespace
 		
 		std::string string(current, literalEnd);
 		current = literalEnd;
+
+		// TODO: duplicated with parser.cpp
+		static std::string keywords[] = {
+			"if",
+			"var",
+			"set",
+			"defun",
+			"while",
+		};
 		
 		if(string == "nil")
 		{
 			return Token::nil(current.line());
 		}
-		else if(string == "if")
+		else if(std::find(array_begin(keywords), array_end(keywords), string) != array_end(keywords))
 		{
-			return Token::condition(current.line());
-		}
-		else if(string == "var")
-		{
-			return Token::variableDeclaration(current.line());
-		}
-		else if(string == "set")
-		{
-			return Token::assignment(current.line());
-		}
-		else if(string == "while")
-		{
-			return Token::loop(current.line());
-		}
-		else if(string == "defun")
-		{
-			return Token::functionDeclaration(current.line());
+			return Token::keyword(current.line(), string);
 		}
 		else if(is<int>(string))
 		{
