@@ -1,11 +1,12 @@
 Doing:
+* User defined functions
+** Arguments 
 * Loops
-* Investigate stuff being left over in the stack
+** Investigate stuff being left over in the stack
 
 Next:
 * Identifier checks
 * Print line numbers associated with execution errors
-* User defined functions
 * Print stack traces for errors in functions?
 * User defined types?
 * Booleans
