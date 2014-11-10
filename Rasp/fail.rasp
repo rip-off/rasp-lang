@@ -1,2 +1,13 @@
 ((defun test2 () (println "test2")))
 Internal Error: Compiler bug: Not enough values on the stack to call function
+
+Starting program: /home/brian/programming/c++/rasp-lang/Rasp/rasp 
+Enter some code, or type 'exit' when finished:
+ > (defun infiniteRecursion () (infiniteRecursion))
+ < nil
+ > (infiniteRecursion)
+
+Program received signal SIGSEGV, Segmentation fault.
+_int_malloc (av=0x7ffff75b3760 <main_arena>, bytes=8) at malloc.c:3302
+3302	malloc.c: No such file or directory.
+

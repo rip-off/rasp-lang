@@ -42,9 +42,18 @@ namespace
 			arguments.push_back(pop(stack));
 		}
 		const Function &function = top.function();
-		CallContext callContext(&bindings, &arguments, interpreter);
-		Value result = function.call(callContext);
-		stack.push_back(result);
+		try
+		{
+			CallContext callContext(&bindings, &arguments, interpreter);
+			Value result = function.call(callContext);
+			stack.push_back(result);
+		}
+		catch (RaspError &error)
+		{
+			// TODO: line number?
+			error.buildStackTrace(" at function: " + function.name());
+			throw;
+		}
 	}
 }
 

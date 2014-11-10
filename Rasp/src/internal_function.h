@@ -8,6 +8,7 @@ class InternalFunction : public Function
 {
 public:
 	InternalFunction(
+		unsigned line,
 		const std::string &name, 
 		const std::vector<Identifier> &parameters, 
 		const InstructionList &instructionList);
@@ -17,6 +18,7 @@ public:
 	virtual	const std::string &name() const;
 
 private:
+	unsigned line_;
 	std::string name_;
 	std::vector<Identifier> parameters_;
 	InstructionList instructionList_;

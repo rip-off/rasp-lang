@@ -8,6 +8,23 @@
 
 namespace
 {
+	// TODO: print function name
+	class ExternalFunctionError : public RaspError
+	{
+	public:
+		ExternalFunctionError(const std::string &function, const std::string &message)
+		:
+			RaspError(message),
+			function_(function)
+		{
+		}
+
+	private:
+		std::string function_;
+	};
+
+	#define ExternalFunctionError(message) ExternalFunctionError(__FUNCTION__, message)
+
 	Value plus(const Arguments &arguments)
 	{
 		int result = 0;
@@ -15,7 +32,7 @@ namespace
 		{
 			if(!i->isNumber())
 			{
-				throw ExecutionError("Expected numeric argument");
+				throw ExternalFunctionError("Expected numeric argument");
 			}
 			result += i->number();
 		}
@@ -29,7 +46,7 @@ namespace
 		{
 			if(!i->isNumber())
 			{
-				throw ExecutionError("Expected numeric argument");
+				throw ExternalFunctionError("Expected numeric argument");
 			}
 			result *= i->number();
 		}
@@ -40,7 +57,7 @@ namespace
 	{
 		if(arguments.size() != 2 || !(arguments[0].isNumber() && arguments[1].isNumber()))
 		{
-			throw ExecutionError("Expected 2 numeric arguments");
+			throw ExternalFunctionError("Expected 2 numeric arguments");
 		}
 		return arguments[0].number() - arguments[1].number();
 	}
@@ -49,7 +66,7 @@ namespace
 	{
 		if(arguments.size() != 2 || !(arguments[0].isNumber() && arguments[1].isNumber()))
 		{
-			throw ExecutionError("Expected 2 numeric arguments");
+			throw ExternalFunctionError("Expected 2 numeric arguments");
 		}
 		return arguments[0].number() / arguments[1].number();
 	}
@@ -63,7 +80,7 @@ namespace
 	{
 		if(arguments.size() != 2 || !(arguments[0].isNumber() && arguments[1].isNumber()))
 		{
-			throw ExecutionError("Expected 2 numeric arguments");
+			throw ExternalFunctionError("Expected 2 numeric arguments");
 		}
 		return handleBool(arguments[0].number() < arguments[1].number());
 	}
@@ -72,7 +89,7 @@ namespace
 	{
 		if(arguments.size() != 2 || !(arguments[0].isNumber() && arguments[1].isNumber()))
 		{
-			throw ExecutionError("Expected 2 numeric arguments");
+			throw ExternalFunctionError("Expected 2 numeric arguments");
 		}
 		return handleBool(arguments[0].number() > arguments[1].number());
 	}
@@ -81,7 +98,7 @@ namespace
 	{
 		if(arguments.size() != 2 || !(arguments[0].isNumber() && arguments[1].isNumber()))
 		{
-			throw ExecutionError("Expected 2 numeric arguments");
+			throw ExternalFunctionError("Expected 2 numeric arguments");
 		}
 		return handleBool(arguments[0].number() == arguments[1].number());
 	}
@@ -90,7 +107,7 @@ namespace
 	{
 		if(arguments.size() != 2 || !(arguments[0].isNumber() && arguments[1].isNumber()))
 		{
-			throw ExecutionError("Expected 2 numeric arguments");
+			throw ExternalFunctionError("Expected 2 numeric arguments");
 		}
 		return handleBool(arguments[0].number() != arguments[1].number());
 	}
@@ -99,7 +116,7 @@ namespace
 	{
 		if(arguments.size() != 2 || !(arguments[0].isNumber() && arguments[1].isNumber()))
 		{
-			throw ExecutionError("Expected 2 numeric arguments");
+			throw ExternalFunctionError("Expected 2 numeric arguments");
 		}
 		return handleBool(arguments[0].number() <= arguments[1].number());
 	}
@@ -108,7 +125,7 @@ namespace
 	{
 		if(arguments.size() != 2 || !(arguments[0].isNumber() && arguments[1].isNumber()))
 		{
-			throw ExecutionError("Expected 2 numeric arguments");
+			throw ExternalFunctionError("Expected 2 numeric arguments");
 		}
 		return handleBool(arguments[0].number() >= arguments[1].number());
 	}
@@ -150,7 +167,7 @@ namespace
 	{
 		if(!arguments.empty())
 		{
-			throw ExecutionError("Expect no arguments");
+			throw ExternalFunctionError("Expect no arguments");
 		}
 		return static_cast<int>(std::time(0));
 	}

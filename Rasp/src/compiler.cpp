@@ -9,6 +9,7 @@
 #include "settings.h"
 #include "exceptions.h"
 #include "interpreter.h"
+#include "execution_error.h"
 
 void execute(Interpreter &interpreter, const std::string &filename, const Settings &settings)
 {
@@ -30,18 +31,22 @@ void execute(Interpreter &interpreter, const std::string &filename, const Settin
 		catch(const LexError &e)
 		{
 			std::cerr << "Lex error in " << filename << " at line " << e.line() << ": " << e.what() << '\n';
+			printStackTrace(std::cerr, e);
 		}
 		catch(const ParseError &e)
 		{
 			std::cerr << "Parse error in " << filename << " at line " << e.line() << ": " << e.what() << '\n';
+			printStackTrace(std::cerr, e);
 		}
 		catch(const ExecutionError &e)
 		{
-			std::cerr << "Execution error in " << filename << ": " << e.what() << '\n';
+			std::cerr << "Execution error in " << filename << " at line " << e.line() << ": " << e.what() << '\n';
+			printStackTrace(std::cerr, e);
 		}
 		catch(const RaspError &e)
 		{
 			std::cerr << "General error in " << filename << ": " << e.what() << '\n';
+			printStackTrace(std::cerr, e);
 		}
 		catch(const std::exception &error)
 		{
