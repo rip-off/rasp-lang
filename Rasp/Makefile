@@ -1,5 +1,5 @@
 CC = clang++
-CC_FLAGS = -std=c++11 -Wall -Werror 
+CC_FLAGS = -std=c++11 -Wall -Werror -g
 
 EXEC = rasp
 SOURCES = $(wildcard src/*.cpp)
