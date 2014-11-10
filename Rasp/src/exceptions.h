@@ -22,9 +22,6 @@ public:
 	void buildStackTrace(const std::string &entry);
 
 private:
-	RaspError(const RaspError &);
-	RaspError &operator=(const RaspError &);
-
 	StackTrace stacktrace_;
 };
 

@@ -8,19 +8,14 @@
 
 namespace
 {
-	// TODO: print function name
 	class ExternalFunctionError : public RaspError
 	{
 	public:
 		ExternalFunctionError(const std::string &function, const std::string &message)
 		:
-			RaspError(message),
-			function_(function)
+			RaspError(message + " in external function '" + function + "'")
 		{
 		}
-
-	private:
-		std::string function_;
 	};
 
 	#define ExternalFunctionError(message) ExternalFunctionError(__FUNCTION__, message)

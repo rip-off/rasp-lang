@@ -13,9 +13,7 @@ const RaspError::StackTrace &RaspError::stacktrace() const
 
 void RaspError::buildStackTrace(const std::string &entry)
 {
-	// TODO:
-	// stacktrace_.push_back(entry);
-	std::cerr << "\t" << entry << '\n';
+	stacktrace_.push_back(entry);
 }
 
 void printStackTrace(std::ostream &out, const RaspError &e)
