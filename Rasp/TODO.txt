@@ -1,19 +1,22 @@
 Doing:
-* Loops
-** Investigate stuff being left over in the stack
-
-Next:
-* Identifier checks
 * Print line numbers associated with execution errors
 * Print stack traces for errors in functions?
+
+Known bugs / issues:
+* Investigate stuff being left over in the stack
+
+Next:
+* "else" statement
+* Identifier checks
 * Add a type system?
 * Demote nil from value to optional type?
 * User defined types?
-* Booleans
 * Floating point numbers
 * String manipulation function
 
 Done:
+* Booleans
+* Loops
 * Cleanup keyword handling
 * User defined functions
 ** Local variables
