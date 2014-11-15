@@ -6,6 +6,7 @@ Known bugs / issues:
 * Investigate stuff being left over in the stack
 
 Next:
+* SourceLocation(File, Line, Column?) rather than just line
 * "else" statement
 * Add a type system?
 * Demote nil from value to optional type?
