@@ -31,6 +31,11 @@ Token Token::keyword(unsigned line, const std::string &keyword)
 	return Token(line, Keyword, keyword);
 }
 
+Token Token::boolean(unsigned line, const std::string &boolean)
+{
+	return Token(line, Boolean, boolean);
+}
+
 Token Token::identifier(unsigned line, const std::string &identifier)
 {
 	return Token(line, Identifier, identifier);

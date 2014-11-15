@@ -11,6 +11,7 @@ class Value
 {
 	union Data
 	{
+		bool boolean;
 		int number;
 		Function *function;
 		std::string *string;
@@ -22,13 +23,11 @@ public:
 		TNil,
 		TString,
 		TNumber,
+		TBoolean,
 		TFunction,
 	};
 
 	Value();
-	Value(int number);
-	Value(const std::string &text);
-	Value(const Function &function);
 
 	// Rule of three
 	~Value();
@@ -36,10 +35,11 @@ public:
 	Value &operator=(const Value &);
 	friend void swap(Value &a, Value &b);
 
-	static Value nil()
-	{
-		return Value();
-	}
+	static Value nil();
+	static Value boolean(bool boolean);
+	static Value number(int number);
+	static Value string(const std::string &text);
+	static Value function(const Function &function);
 
 	bool isNil() const
 	{
@@ -56,6 +56,11 @@ public:
 		return type_ == TString;
 	}
 
+	bool isBoolean() const
+	{
+		return type_ == TBoolean;
+	}
+
 	bool isFunction() const 
 	{ 
 		return type_ == TFunction; 
@@ -65,6 +70,12 @@ public:
 	{
 		assert(isNumber());
 		return data_.number;
+	}
+
+	bool boolean() const
+	{
+		assert(isBoolean());
+		return data_.boolean;
 	}
 
 	std::string string() const
@@ -84,9 +95,17 @@ public:
 		return type_;
 	}
 
+	bool asBool() const;
+
 	friend std::ostream &operator<<(std::ostream &out, const Value &value);
 
+
+	explicit Value(bool boolean);
+	/* TODO: explicit */ Value(int number);
+	/* TODO: explicit */ Value(const std::string &text);
+	/* TODO: explicit */ Value(const Function &function);
 private:
+
 	Type type_;
 	Data data_;
 };

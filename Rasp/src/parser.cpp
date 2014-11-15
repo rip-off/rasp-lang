@@ -215,6 +215,22 @@ namespace
 			assert(children.empty());
 			instructions.push_back(Instruction::push(to<int>(token.string())));
 			break;
+		case Token::Boolean:
+			assert(children.empty());
+			if (token.string() == "true")
+			{
+				instructions.push_back(Instruction::push(Value::boolean(true)));
+			}
+			else if (token.string() == "false")
+			{
+				instructions.push_back(Instruction::push(Value::boolean(false)));
+			}
+			else
+			{
+				// TODO: compiler bug class?
+				throw ParseError(token.line(), "BUG: illegal boolean literal '" + token.string() + "'");
+			}
+			break;
 		case Token::Keyword:
 			{
 				throw ParseError(token.line(), "Keyword '" + token.string() + "' must be first element of a list");
@@ -277,6 +293,10 @@ namespace
 		case Token::Number:
 			assert(children.empty());
 			std::cout << "Number(" << token.string() << ')' << '\n';
+			break;
+		case Token::Boolean:
+			assert(children.empty());
+			std::cout << "Boolean(" << token.string() << ')' << '\n';
 			break;
 		case Token::Keyword:
 			assert(children.empty());

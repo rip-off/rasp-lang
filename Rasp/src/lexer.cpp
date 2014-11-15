@@ -183,6 +183,10 @@ namespace
 		{
 			return Token::nil(current.line());
 		}
+		else if(string == "true" || string == "false")
+		{
+			return Token::boolean(current.line(), string);
+		}
 		else if(std::find(array_begin(keywords), array_end(keywords), string) != array_end(keywords))
 		{
 			return Token::keyword(current.line(), string);

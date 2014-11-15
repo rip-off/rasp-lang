@@ -16,7 +16,9 @@ namespace
 	class AssertionError
 	{
 	public:
-		AssertionError(const std::string &message) : message_(message)
+		AssertionError(int line, const std::string &message) 
+		:
+			message_(" at " + str(line) + " " + message)
 		{
 		}
 
@@ -28,22 +30,24 @@ namespace
 		std::string message_;
 	};
 
-	void assertTrue(bool expression, const std::string &message)
+	void assertTrue(int line, bool expression, const std::string &message)
 	{
 		if(!expression)
 		{
-			throw AssertionError(message);
+			throw AssertionError(line, message);
 		}
 	}
+	#define assertTrue(EXPRESSION, MESSAGE) assertTrue(__LINE__, EXPRESSION, MESSAGE)
 
 	template <typename X, typename Y>
-	void assertEquals(const X &x, const Y &y)
+	void assertEquals(int line, const X &x, const Y &y)
 	{
 		if (x != y)
 		{
-			throw AssertionError("'" + str(x) + "' should equal '" + str(y) + "'");
+			throw AssertionError(line, "'" + str(x) + "' should equal '" + str(y) + "'");
 		}
 	}
+	#define assertEquals(X, Y) assertEquals(__LINE__, X, Y)
 
 	InstructionList parse(const Token &token, std::vector<Identifier> &declarations)
 	{

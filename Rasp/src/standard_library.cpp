@@ -31,7 +31,7 @@ namespace
 			}
 			result += i->number();
 		}
-		return result;
+		return Value::number(result);
 	}
 
 	Value mul(const Arguments &arguments)
@@ -45,7 +45,7 @@ namespace
 			}
 			result *= i->number();
 		}
-		return result;
+		return Value::number(result);
 	}
 
 	Value sub(const Arguments &arguments)
@@ -54,7 +54,7 @@ namespace
 		{
 			throw ExternalFunctionError("Expected 2 numeric arguments");
 		}
-		return arguments[0].number() - arguments[1].number();
+		return Value::number(arguments[0].number() - arguments[1].number());
 	}
 
 	Value div(const Arguments &arguments)
@@ -63,12 +63,13 @@ namespace
 		{
 			throw ExternalFunctionError("Expected 2 numeric arguments");
 		}
-		return arguments[0].number() / arguments[1].number();
+		return Value::number(arguments[0].number() / arguments[1].number());
 	}
 
+	// TODO: probably don't need this anymore
 	Value handleBool(bool b)
 	{
-		return b ? Value(1) : Value::nil();
+		return Value::boolean(b);
 	}
 
 	Value less(const Arguments &arguments)
@@ -164,7 +165,7 @@ namespace
 		{
 			throw ExternalFunctionError("Expect no arguments");
 		}
-		return static_cast<int>(std::time(0));
+		return Value::number(std::time(0));
 	}
 
 #define ENTRY(X) ApiReg(#X, &X)

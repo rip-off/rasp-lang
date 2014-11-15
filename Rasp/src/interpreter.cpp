@@ -131,7 +131,8 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 				{				
 					std::cout << "DEBUG: jumping back " << instructionsToSkip << " if " << top << '\n';
 				}
-				if(top.isNil())
+
+				if(!top.asBool())
 				{
 					it += instructionsToSkip;
 				}

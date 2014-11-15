@@ -19,6 +19,12 @@ Value::Value(int number)
 	data_.number = number;
 }
 
+Value::Value(bool boolean)
+	: type_(TBoolean)
+{
+	data_.boolean = boolean;
+}
+
 Value::Value(const Function &function)
 	: type_(TFunction)
 {
@@ -67,11 +73,55 @@ Value &Value::operator=(const Value &value)
 	return *this;
 }
 
+Value Value::nil()
+{
+	return Value();
+}
+
+Value Value::boolean(bool boolean)
+{
+	return Value(boolean);
+}
+
+Value Value::number(int number)
+{
+	return Value(number);
+}
+
+Value Value::string(const std::string &text)
+{
+	return Value(text);
+}
+
+Value Value::function(const Function &function)
+{
+	return Value(function);
+}
+
 void swap(Value &a, Value &b)
 {
 	using std::swap;
 	swap(a.type_, b.type_);
 	swap(a.data_, b.data_);
+}
+
+bool Value::asBool() const
+{
+	switch(type_)
+	{
+	case Value::TNil:
+		return false;
+	case Value::TString:
+		return !data_.string->empty();
+	case Value::TNumber:
+		return data_.number != 0;
+	case Value::TBoolean:
+		return data_.boolean;
+	case Value::TFunction:
+		return true;
+	default:
+		throw std::logic_error("Type not implemented");
+	}
 }
 
 namespace
@@ -106,6 +156,8 @@ std::ostream &operator<<(std::ostream &out, const Value &value)
 		return out << '\"' << addEscapes(*value.data_.string) << '\"';
 	case Value::TNumber:
 		return out << value.data_.number;
+	case Value::TBoolean:
+		return out << (value.data_.boolean ? "true" : "false");
 	case Value::TFunction:
 		return out << "(function: " << value.data_.function->name() << ')';
 	default:

@@ -19,6 +19,7 @@ public:
 		List,
 		String,
 		Number,
+		Boolean,
 		Keyword,
 		Identifier,
 	};
@@ -32,6 +33,8 @@ public:
 	static Token string(unsigned line, const std::string &text);
 
 	static Token number(unsigned line, const std::string &number);
+
+	static Token boolean(unsigned line, const std::string &boolean);
 
 	static Token keyword(unsigned line, const std::string &keyword);
 
