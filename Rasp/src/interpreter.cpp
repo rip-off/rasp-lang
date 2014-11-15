@@ -3,6 +3,7 @@
 #include <stack>
 
 #include "api.h"
+#include "bug.h"
 #include "exceptions.h"
 
 namespace
@@ -21,20 +22,20 @@ namespace
 	{
 		if(!value.isNumber())
 		{
-			throw std::logic_error("Compiler bug: Call instruction expects a numeric argument");				
+			throw CompilerBug("Call instruction expects a numeric argument");				
 		}
 		// TODO: signed/unsigned mismatch...
 		unsigned argc = value.number();
 		if(stack.size() < argc + 1)
 		{
 			// TODO: include stack size and argc in exception information.
-			throw std::logic_error("Compiler bug: Not enough values on the stack to call function");
+			throw CompilerBug("Not enough values on the stack to call function");
 		}
 			
 		Value top = pop(stack);
 		if(!top.isFunction())
 		{
-			throw std::logic_error("Compiler bug: Call instruction expects top of the stack to be functional value");
+			throw CompilerBug("Call instruction expects top of the stack to be functional value");
 		}
 		Arguments arguments;
 		while(argc --> 0)
@@ -117,13 +118,13 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 			{
 				if(stack.empty())
 				{
-					throw std::logic_error("Compiler bug: empty stack when testing condition");
+					throw CompilerBug("empty stack when testing condition");
 				}
 				int instructionsToSkip = value.number();
 				int remaining = instructions.end() - it;
 				if(remaining < instructionsToSkip)
 				{
-					throw std::logic_error("Compiler bug: insufficient instructions available to skip!");
+					throw CompilerBug("insufficient instructions available to skip!");
 				}
 
 				Value top = pop(stack);
@@ -143,7 +144,7 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 				int instructionCount = value.number();
 				if(instructionCount > instructions.size())
 				{
-					throw std::logic_error("Compiler bug: insufficient instructions available to loop!");
+					throw CompilerBug("insufficient instructions available to loop!");
 				}
 
 				if(settings_.trace)
@@ -157,7 +158,7 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 			{
 				if(stack.empty())
 				{
-					throw std::logic_error("Compiler bug: empty stack during assignment");
+					throw CompilerBug("empty stack during assignment");
 				}
 				assert(value.isString());
 				Value top = pop(stack);
@@ -170,7 +171,7 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 			}
 			break;
 		default:
-			throw std::logic_error("Compiler bug: unhandled instruction type: " + str(type));
+			throw CompilerBug("unhandled instruction type: " + str(type));
 		}
 
 		if (settings_.trace && !stack.empty())

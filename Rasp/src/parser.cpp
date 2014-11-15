@@ -3,6 +3,7 @@
 #include <iostream>
 #include <algorithm>
 
+#include "bug.h"
 #include "token.h"
 #include "bindings.h"
 #include "settings.h"
@@ -184,7 +185,7 @@ namespace
 			}
 			else
 			{
-				throw ParseError(token.line(), "Compiler bug: unhandled keyword '" + token.string() + "'");
+				throw CompilerBug("unhandled keyword '" + token.string() + "' at line " + str(token.line()));
 			}
 		}
 		else
@@ -238,8 +239,7 @@ namespace
 			}
 			else
 			{
-				// TODO: compiler bug class?
-				throw ParseError(token.line(), "BUG: illegal boolean literal '" + token.string() + "'");
+				throw CompilerBug("illegal boolean literal '" + token.string() + "' " + str(token.line()));
 			}
 			break;
 		case Token::Keyword:

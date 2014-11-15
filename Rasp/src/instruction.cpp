@@ -1,5 +1,6 @@
 #include "instruction.h"
 #include "utils.h"
+#include "bug.h"
 
 Instruction::Instruction(Type type, const Value &value)
 	: type_(type), value_(value)
@@ -82,7 +83,7 @@ std::ostream &operator<<(std::ostream &out, const Instruction &instruction)
 		out << "assign(" << instruction.value_ << ")";
 		break;
 	default:
-		throw std::logic_error("Compiler bug: unhandled instruction type: " + str(instruction.type_));
+		throw CompilerBug("unhandled instruction type: " + str(instruction.type_));
 	}
 	return out;
 }
