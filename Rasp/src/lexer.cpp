@@ -187,7 +187,7 @@ namespace
 		{
 			return Token::boolean(current.line(), string);
 		}
-		else if(std::find(array_begin(keywords), array_end(keywords), string) != array_end(keywords))
+		else if(array_is_element(keywords, string))
 		{
 			return Token::keyword(current.line(), string);
 		}

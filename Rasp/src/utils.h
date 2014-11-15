@@ -17,6 +17,19 @@ const T *array_end(const T (&array)[N])
 	return array + N;
 }
 
+template<typename T, int N>
+bool array_is_element(const T (&haystack)[N], const T &needle)
+{
+	for (unsigned i = 0 ; i < N ; ++i)
+	{
+		if (haystack[i] == needle)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 template<class T>
 bool is(const std::string &arg)
 {

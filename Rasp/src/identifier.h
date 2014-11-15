@@ -6,14 +6,14 @@
 class Identifier
 {
 public:
-	explicit Identifier(const std::string &name) : name_(name)
-	{
-	}
+	explicit Identifier(const std::string &name);
 
-	const std::string /*&*/name() const
+	const std::string /* TODO: & */name() const
 	{
 		return name_;
 	}
+
+	static bool isValid(const std::string &name);
 
 private:
 	std::string name_;
