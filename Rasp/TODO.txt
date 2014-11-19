@@ -6,6 +6,7 @@ Known bugs / issues:
 * Investigate stuff being left over in the stack
 
 Next:
+* Linking (requires, provides) ?
 * SourceLocation(File, Line, Column?) rather than just line
 * "else" statement
 * Add a type system?
