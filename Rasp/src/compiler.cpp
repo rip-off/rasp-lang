@@ -22,7 +22,7 @@ void execute(Interpreter &interpreter, const std::string &filename, const Settin
 			std::istreambuf_iterator<char>());
 		try
 		{
-			Token token = lex(contents);
+			Token token = lex(filename, contents);
 			std::vector<Identifier> declarations = interpreter.declarations();
 			InstructionList instructions = parse(token, declarations, settings);
 			Value result = interpreter.exec(instructions);
@@ -30,7 +30,8 @@ void execute(Interpreter &interpreter, const std::string &filename, const Settin
 		}
 		catch(const LexError &e)
 		{
-			std::cerr << "Lex error in " << filename << " at line " << e.line() << ": " << e.what() << '\n';
+			// TODO: duplicate filename
+			std::cerr << "Lex error in " << filename << " at line " << e.sourceLocation() << ": " << e.what() << '\n';
 			printStackTrace(std::cerr, e);
 		}
 		catch(const ParseError &e)

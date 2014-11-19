@@ -7,22 +7,22 @@
 class LexError : public RaspError
 {
 public:
-	LexError(unsigned line, const std::string &message)
+	LexError(const SourceLocation &sourceLocation, const std::string &message)
 	: 
 		RaspError(message),
-		line_(line)
+		sourceLocation_(sourceLocation)
 	{
 	}
 
-	unsigned line() const
+	SourceLocation sourceLocation() const
 	{
-		return line_;
+		return sourceLocation_;
 	}
 
 private:
-	unsigned line_;
+	SourceLocation sourceLocation_;
 };
 
-Token lex(const std::string &source);
+Token lex(const std::string &filename, const std::string &source);
 
 #endif

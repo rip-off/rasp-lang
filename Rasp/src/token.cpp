@@ -1,49 +1,54 @@
 #include "token.h"
 
-Token Token::nil(unsigned line)
+Token Token::nil(const SourceLocation &sourceLocation)
 {
-	return Token(line, Nil, "__nil_literal");
+	return Token(sourceLocation, Nil, "__nil_literal");
 }
 
-Token Token::root(unsigned line)
+Token Token::root(const SourceLocation &sourceLocation)
 {
-	return Token(line, Root, "__root");
+	return Token(sourceLocation, Root, "__root");
 }
 
-Token Token::list(unsigned line)
+Token Token::list(const SourceLocation &sourceLocation)
 {
-	return Token(line, List, "__list");
+	return Token(sourceLocation, List, "__list");
 }
 
-Token Token::string(unsigned line, const std::string &text)
+Token Token::string(const SourceLocation &sourceLocation, const std::string &text)
 {
-	return Token(line, String, text);
+	return Token(sourceLocation, String, text);
 }
 
-Token Token::number(unsigned line, const std::string &number)
+Token Token::number(const SourceLocation &sourceLocation, const std::string &number)
 {
 	assert(is<int>(number));
-	return Token(line, Number, number); 
+	return Token(sourceLocation, Number, number); 
 }
 
-Token Token::keyword(unsigned line, const std::string &keyword)
+Token Token::keyword(const SourceLocation &sourceLocation, const std::string &keyword)
 {
-	return Token(line, Keyword, keyword);
+	return Token(sourceLocation, Keyword, keyword);
 }
 
-Token Token::boolean(unsigned line, const std::string &boolean)
+Token Token::boolean(const SourceLocation &sourceLocation, const std::string &boolean)
 {
-	return Token(line, Boolean, boolean);
+	return Token(sourceLocation, Boolean, boolean);
 }
 
-Token Token::identifier(unsigned line, const std::string &identifier)
+Token Token::identifier(const SourceLocation &sourceLocation, const std::string &identifier)
 {
-	return Token(line, Identifier, identifier);
+	return Token(sourceLocation, Identifier, identifier);
 }
 
 unsigned Token::line() const
 {
-	return line_;
+	return sourceLocation_.line();
+}
+
+const SourceLocation &Token::sourceLocation() const
+{
+	return sourceLocation_;
 }
 
 Token::Type Token::type() const
@@ -70,11 +75,11 @@ void Token::addChild(const Token &token)
 }
 
 
-Token::Token(unsigned line, Type type, const std::string &string)
+Token::Token(const SourceLocation &sourceLocation, Type type, const std::string &string)
 :
-	line_(line),
 	type_(type),
-	string_(string)
+	string_(string),
+	sourceLocation_(sourceLocation)
 {
 }
 

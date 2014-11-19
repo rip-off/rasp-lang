@@ -13,9 +13,10 @@ namespace
 	class Iterator : public std::iterator<std::forward_iterator_tag, char>
 	{
 	public:
-		Iterator(std::string::const_iterator it)
+		Iterator(const std::string &filename, std::string::const_iterator it)
 		:
 			line_(1),
+			filename_(filename),
 			it(it)
 		{
 		}
@@ -25,9 +26,9 @@ namespace
 			return *it;
 		}
 
-		unsigned line() const
+		SourceLocation sourceLocation() const
 		{
-			return line_;
+			return SourceLocation(filename_, line_);
 		}
 
 		Iterator &operator++()
@@ -59,6 +60,7 @@ namespace
 
 	private:
 		unsigned line_;
+		std::string filename_;
 		std::string::const_iterator it;
 	};
 
@@ -128,7 +130,7 @@ namespace
 		Iterator next = begin.next();
 		if (next == end)
 		{
-			throw LexError(begin.line(), "Stray / in program");
+			throw LexError(begin.sourceLocation(), "Stray / in program");
 		}
 
 		if(*next == '/')
@@ -141,14 +143,14 @@ namespace
 		{
 			Iterator current = next;
 			// Block line comment, consume until end
-			int startLine = next.line();
+			SourceLocation start = next.sourceLocation();
 			bool found = false;
 			while(!found)
 			{
 				current = std::find(current, end, '*');
 				if(current == end)
 				{
-					throw LexError(startLine, "Cannot find end of block comment");
+					throw LexError(start, "Cannot find end of block comment");
 				}
 				++current; // Skip asterisk
 				if(*current == '/')
@@ -181,23 +183,23 @@ namespace
 		
 		if(string == "nil")
 		{
-			return Token::nil(current.line());
+			return Token::nil(current.sourceLocation());
 		}
 		else if(string == "true" || string == "false")
 		{
-			return Token::boolean(current.line(), string);
+			return Token::boolean(current.sourceLocation(), string);
 		}
 		else if(array_is_element(keywords, string))
 		{
-			return Token::keyword(current.line(), string);
+			return Token::keyword(current.sourceLocation(), string);
 		}
 		else if(is<int>(string))
 		{
-			return Token::number(current.line(), string);
+			return Token::number(current.sourceLocation(), string);
 		}
 		else
 		{
-			return Token::identifier(current.line(), string);
+			return Token::identifier(current.sourceLocation(), string);
 		}
 	}
 
@@ -209,10 +211,10 @@ namespace
 		const Iterator endOfList = std::find_if(current, end, MatchParens());
 		if(endOfList == end)
 		{
-			throw LexError(current.line(), "Unterminated list");
+			throw LexError(current.sourceLocation(), "Unterminated list");
 		}
 
-		Token result = Token::list(current.line());
+		Token result = Token::list(current.sourceLocation());
 		while(current != endOfList)
 		{
 			result.addChild(next(current, endOfList));
@@ -244,7 +246,7 @@ namespace
 					std::string message = "Invalid escape sequence \'\\";
 					message += c;
 					message += "\' found in string literal";
-					throw LexError(current.line(), message);
+					throw LexError(current.sourceLocation(), message);
 				}
 				escape = false;
 			}
@@ -253,7 +255,7 @@ namespace
 				if (c == '\"')
 				{
 					++current;
-					return Token::string(current.line(), text);
+					return Token::string(current.sourceLocation(), text);
 				}
 				else if (c == '\\')
 				{
@@ -266,7 +268,7 @@ namespace
 			}
 		}
 		// TODO: file name & line number
-		throw LexError(current.line(), "String literal never closed");
+		throw LexError(current.sourceLocation(), "String literal never closed");
 	}
 
 	Token next(Iterator &current, const Iterator end)
@@ -286,14 +288,14 @@ namespace
 		if(current == end)
 		{
 			// TODO: ugly phantom tokens :[
-			return Token::root(current.line());
+			return Token::root(current.sourceLocation());
 		}
 		else
 		{
 			char c = *current;
 			if(c == ')')
 			{
-				throw LexError(current.line(), "Stray ) in program");
+				throw LexError(current.sourceLocation(), "Stray ) in program");
 			}
 			else if(c == '(')
 			{
@@ -313,12 +315,12 @@ namespace
 	}
 } // End anonymous namespace
 
-Token lex(const std::string &source)
+Token lex(const std::string &filename, const std::string &source)
 {
-	Token root = Token::root(0);
+	Token root = Token::root(SourceLocation(filename, 0));
 	
-	Iterator it = source.begin();
-	const Iterator end = source.end();
+	Iterator it = Iterator(filename, source.begin());
+	const Iterator end = Iterator(filename, source.end());
 	while(it != end)
 	{
 		Token token = next(it, end);

@@ -6,6 +6,7 @@
 #include <cassert>
 
 #include "utils.h"
+#include "source_location.h"
 
 class Token
 {
@@ -24,23 +25,26 @@ public:
 		Identifier,
 	};
 
-	static Token nil(unsigned line);
+	static Token nil(const SourceLocation &sourceLocation);
 
-	static Token root(unsigned line);
+	static Token root(const SourceLocation &sourceLocation);
 
-	static Token list(unsigned line);
+	static Token list(const SourceLocation &sourceLocation);
 
-	static Token string(unsigned line, const std::string &text);
+	static Token string(const SourceLocation &sourceLocation, const std::string &text);
 
-	static Token number(unsigned line, const std::string &number);
+	static Token number(const SourceLocation &sourceLocation, const std::string &number);
 
-	static Token boolean(unsigned line, const std::string &boolean);
+	static Token boolean(const SourceLocation &sourceLocation, const std::string &boolean);
 
-	static Token keyword(unsigned line, const std::string &keyword);
+	static Token keyword(const SourceLocation &sourceLocation, const std::string &keyword);
 
-	static Token identifier(unsigned line, const std::string &identifier);
+	static Token identifier(const SourceLocation &sourceLocation, const std::string &identifier);
 
+	// TODO: cleanup
 	unsigned line() const;
+
+	const SourceLocation &sourceLocation() const;
 
 	Type type() const;
 
@@ -51,14 +55,14 @@ public:
 	void addChild(const Token &token);
 
 private:
-	Token(unsigned line, Type type, const std::string &string);
+	Token(const SourceLocation &sourceLocation, Type type, const std::string &string);
 
 	bool isValidChild() const;
 
-	unsigned line_;
 	Type type_;
 	std::string string_;
 	Children children_;
+	SourceLocation sourceLocation_;
 };
 
 #endif

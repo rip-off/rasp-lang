@@ -30,6 +30,11 @@ namespace
 		std::string message_;
 	};
 
+	Token lex(const std::string &source)
+	{
+		return ::lex("<unit-test>", source);
+	}
+
 	void assertTrue(int line, bool expression, const std::string &message)
 	{
 		if(!expression)
@@ -96,15 +101,15 @@ namespace
 
 	void testParser(Interpreter &interpreter)
 	{
-		unsigned line = 1;
-		Token function = Token::identifier(line, "+");
-		Token left = Token::number(line, "42");
-		Token right = Token::number(line, "13");
-		Token list = Token::list(line);
+		SourceLocation sourceLocation = SourceLocation(__FILE__, __LINE__);
+		Token function = Token::identifier(sourceLocation, "+");
+		Token left = Token::number(sourceLocation, "42");
+		Token right = Token::number(sourceLocation, "13");
+		Token list = Token::list(sourceLocation);
 		list.addChild(function);
 		list.addChild(left);
 		list.addChild(right);
-		Token root = Token::root(line);
+		Token root = Token::root(sourceLocation);
 		root.addChild(list);
 		std::vector<Identifier> declarations = interpreter.declarations();
 		InstructionList result = parse(root, declarations);

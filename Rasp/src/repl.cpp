@@ -17,7 +17,7 @@ void repl(Interpreter &interpreter, const Settings &settings)
 	{
 		try
 		{
-			Token token = lex(line);
+			Token token = lex("<stdin>", line);
 			std::vector<Identifier> declarations = interpreter.declarations();
 			InstructionList instructions = parse(token, declarations, settings);
 			if (!instructions.empty())
@@ -28,7 +28,7 @@ void repl(Interpreter &interpreter, const Settings &settings)
 		}
 		catch(const LexError &e)
 		{
-			std::cerr << "Lex error at line " << e.line() << ": " << e.what() << '\n';
+			std::cerr << "Lex error at line " << e.sourceLocation() << ": " << e.what() << '\n';
 			printStackTrace(std::cerr, e);
 		}
 		catch(const ParseError &e)
