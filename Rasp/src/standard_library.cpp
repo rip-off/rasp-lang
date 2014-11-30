@@ -90,6 +90,15 @@ namespace
 		return handleBool(arguments[0].number() > arguments[1].number());
 	}
 
+	Value operator_not(const Arguments &arguments)
+	{
+		if(arguments.size() != 1 || !arguments[0].isBoolean())
+		{
+			throw ExternalFunctionError("Expected 1 boolean argument");
+		}
+		return !arguments[0].boolean();
+	}
+
 	Value equal(const Arguments &arguments)
 	{
 		if(arguments.size() != 2 || !(arguments[0].isNumber() && arguments[1].isNumber()))
@@ -178,6 +187,7 @@ namespace
 		ApiReg("*", &mul),
 		ApiReg("<", &less),
 		ApiReg(">", &greater),
+		ApiReg("!", &operator_not),
 		ApiReg("==", &equal),
 		ApiReg("!=", &notEqual),
 		ApiReg("<=", &lessEqual),
