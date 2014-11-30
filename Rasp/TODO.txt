@@ -14,6 +14,8 @@ Next:
 * User defined types?
 * Floating point numbers
 * String manipulation function
+* Arrays
+* Dictionaries
 
 Done:
 * Identifier checks
