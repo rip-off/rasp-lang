@@ -1,20 +1,21 @@
 Doing:
 * Print line numbers associated with execution errors
 * Print stack traces for errors in functions?
+* Arrays
+* SourceLocation(File, Line, Column?) rather than just line
 
 Known bugs / issues:
 * Investigate stuff being left over in the stack
 
 Next:
 * Linking (requires, provides) ?
-* SourceLocation(File, Line, Column?) rather than just line
 * "else" statement
+* "return" statement
 * Add a type system?
 * Demote nil from value to optional type?
 * User defined types?
 * Floating point numbers
 * String manipulation function
-* Arrays
 * Dictionaries
 
 Done:
