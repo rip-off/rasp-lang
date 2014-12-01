@@ -3,24 +3,30 @@
 
 #include <iosfwd>
 #include <string>
+#include <vector>
 #include <cassert>
 
 class Function;
 
 class Value
 {
+public:
+	typedef std::vector<Value> Array;
+private:
 	union Data
 	{
 		bool boolean;
 		int number;
 		Function *function;
 		std::string *string;
+		Array *array;
 	};
 
 public:
 	enum Type
 	{
 		TNil,
+		TArray,
 		TString,
 		TNumber,
 		TBoolean,
@@ -36,6 +42,7 @@ public:
 	friend void swap(Value &a, Value &b);
 
 	static Value nil();
+	static Value array(const Array &elements);
 	static Value boolean(bool boolean);
 	static Value number(int number);
 	static Value string(const std::string &text);
@@ -46,6 +53,11 @@ public:
 		return type_ == TNil;
 	}
 	
+	bool isArray() const
+	{
+		return type_ == TArray;
+	}
+
 	bool isNumber() const 
 	{ 
 		return type_ == TNumber; 
@@ -95,9 +107,21 @@ public:
 		return type_;
 	}
 
+	const Array &array() const
+	{
+		assert(isArray());
+		return *data_.array;	
+	}
+
 	bool asBool() const;
 
 	friend std::ostream &operator<<(std::ostream &out, const Value &value);
+	friend bool operator==(const Value &left, const Value &right);
+	friend bool operator!=(const Value &left, const Value &right)
+	{
+		bool equal = (left == right);
+		return !equal;
+	}
 
 
 	explicit Value(bool boolean);
@@ -105,6 +129,7 @@ public:
 	/* TODO: explicit */ Value(const std::string &text);
 	/* TODO: explicit */ Value(const Function &function);
 private:
+	explicit Value(const Array &array);
 
 	Type type_;
 	Data data_;

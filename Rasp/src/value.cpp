@@ -37,6 +37,12 @@ Value::Value(const std::string &text)
 	data_.string = new std::string(text);
 }
 
+Value::Value(const Array &elements)
+	: type_(TArray)
+{
+	data_.array = new Array(elements);
+}
+
 Value::~Value()
 {
 	if(type_ == TFunction)
@@ -46,6 +52,10 @@ Value::~Value()
 	else if(type_ == TString)
 	{
 		delete data_.string;
+	}
+	else if(type_ == TArray)
+	{
+		delete data_.array;
 	}
 }
 
@@ -59,6 +69,10 @@ Value::Value(const Value &value)
 	else if(type_ == TString)
 	{
 		data_.string = new std::string(*value.data_.string);
+	}
+	else if(type_ == TArray)
+	{
+		data_.array = new Array(*value.data_.array);
 	}
 	else
 	{
@@ -76,6 +90,11 @@ Value &Value::operator=(const Value &value)
 Value Value::nil()
 {
 	return Value();
+}
+
+Value Value::array(const Array &array)
+{
+	return Value(array);
 }
 
 Value Value::boolean(bool boolean)
@@ -119,6 +138,8 @@ bool Value::asBool() const
 		return data_.boolean;
 	case Value::TFunction:
 		return true;
+	case Value::TArray:
+		return !data_.array->empty();
 	default:
 		throw std::logic_error("Type not implemented");
 	}
@@ -152,6 +173,21 @@ std::ostream &operator<<(std::ostream &out, const Value &value)
 	{
 	case Value::TNil:
 		return out << "nil";
+	case Value::TArray:
+		{
+			out << '[';
+			const Value::Array &array = *value.data_.array;
+			for (unsigned i = 0 ; i < array.size() ; ++i)
+			{
+				if (i > 0)
+				{
+					out << ", ";
+				}
+				out << array[i];
+			}
+			out << ']';
+		}
+		return out;
 	case Value::TString:
 		return out << '\"' << addEscapes(*value.data_.string) << '\"';
 	case Value::TNumber:
@@ -164,3 +200,45 @@ std::ostream &operator<<(std::ostream &out, const Value &value)
 		throw std::logic_error("Type not implemented");
 	}
 }
+
+bool operator==(const Value &left, const Value &right)
+{
+	if (left.type_ != right.type_)
+	{
+		return false;
+	}
+	switch(left.type_)
+	{
+	case Value::TNil:
+		return true;
+	case Value::TArray:
+		{
+			const Value::Array &leftArray = *left.data_.array;
+			const Value::Array &rightArray = *right.data_.array;
+			if (leftArray.size() != rightArray.size()) 
+			{
+				return false;
+			}
+
+			for (unsigned i = 0 ; i < leftArray.size() ; ++i)
+			{
+				if (leftArray[i] != rightArray[i])
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+	case Value::TString:
+		return *left.data_.string == *right.data_.string;
+	case Value::TNumber:
+		return left.data_.number == right.data_.number;
+	case Value::TBoolean:
+		return left.data_.boolean == right.data_.boolean;
+	case Value::TFunction:
+		throw std::logic_error("Comparing functions is not supported");
+	default:
+		throw std::logic_error("Type not implemented");
+	}
+}
+

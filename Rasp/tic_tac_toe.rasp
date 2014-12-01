@@ -1,0 +1,100 @@
+
+(defun debug (message object)
+	(println "DEBUG " message ": " object))
+
+(defun print_state (state)
+	(var y 0)
+	(while (< y (array_length state))
+		(println "+-+-+-+")
+		(var row (array_element state y))
+		(var x 0)
+		(while (< x (array_length row))
+			(print "|")
+			(print (array_element row x))
+			/*(if (< x 3)
+				(print "|"))*/
+			(set x (+ 1 x)))
+		(println "|")
+		(set y (+ 1 y)))
+	(println "+-+-+-+"))
+
+(defun read_int (prompt)
+	(var result nil)
+	(var show_error false)
+	(while (is_nil result)
+		(if show_error
+			(println "Please enter a number"))
+		(print prompt)
+		(var input (read_line))
+		(set result (try_convert_string_to_int input))
+		// No need to check if there was actually an error
+		// we'll never print the message in that case...
+		(set show_error true))
+	/* TODO: return statement? */
+	result)
+
+(defun read_tic_tac_toe_position (description)
+	(var result nil)
+	(while (is_nil result)
+		(var input (read_int (format "Enter the " description " (1 to 3): ")))
+		(var valid true)
+		(if (< input 1)
+			(println "Input must be at least 1")
+			(set valid false))
+		(if (> input 3)
+			(println "Input must be at most 3")
+			(set valid false))
+		(if valid
+			(set result input)))
+	// Translate from human to array co-ordinates
+	(- result 1))
+
+(defun make_move (player state)
+	(println "Player " player "'s turn!")
+	(var moved false)
+	(while (! moved)
+		(var row_input (read_tic_tac_toe_position "row"))
+		(var column_input (read_tic_tac_toe_position "column"))
+		(println "You entered " (+ row_input 1) ", " (+ column_input 1))
+		(var row (array_element state row_input))
+		(var element (array_element row column_input))
+		(if (== element " ")
+			(set row (array_set_element row column_input player))
+			(debug "row" row)
+			(set state (array_set_element state row_input row))
+			(debug "state" state)
+			(set moved true))
+		// TODO: implement "else"!!!
+		(if (!= element " ")
+			(println "Sorry, that space is taken!")))
+	state)
+
+	
+	
+/* TODO: sweet array syntax?
+[
+	["X", " ", " "]
+	[" ", "X", "O"]
+	["O", " ", "X"]
+]
+*/
+(defun main ()
+	// Funny how "play_tic_tac_toe" isn't a library function then :D
+	(var state (create_tic_tac_toe_nested_array))
+	(var running true)
+	(var player "X")
+	// TODO: check game over / winner
+	(while running
+		(print_state state)
+		(set state (make_move player state))
+		(debug "main state" state)
+		(var next_player nil)
+		(if (== player "X")
+			(set next_player "Y"))
+		(if (!= player "X")
+			(set next_player "Y"))
+		(set player next_player))
+	(println "Thanks for playing!"))
+
+(main)
+
