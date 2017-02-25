@@ -52,16 +52,42 @@ namespace
 
 	Value plus(const Arguments &arguments)
 	{
-		int result = 0;
-		for(Arguments::const_iterator i = arguments.begin() ; i != arguments.end() ; ++i)
+		if(arguments.size() < 2)
 		{
-			if(!i->isNumber())
-			{
-				throw ExternalFunctionError("Expected numeric argument");
-			}
-			result += i->number();
+			throw ExternalFunctionError("Expected at least two arguments");
 		}
-		return Value::number(result);
+
+		Arguments::const_iterator i = arguments.begin();
+		if(i->isNumber())
+		{
+			int result = 0;
+			for( /* i */ ; i != arguments.end() ; ++i)
+			{
+				if(!i->isNumber())
+				{
+					throw ExternalFunctionError("Expected numeric argument");
+				}
+				result += i->number();
+			}
+			return Value::number(result);
+		}
+ 		else if(i->isString())
+		{
+			std::string result;
+			for( /* i */ ; i != arguments.end() ; ++i)
+			{
+				if(!i->isString())
+				{
+					throw ExternalFunctionError("Expected string argument");
+				}
+				result += i->string();
+			}
+			return Value::string(result);
+		}
+		else
+		{
+			throw ExternalFunctionError("Expected string or integer arguments");
+		}
 	}
 
 	Value mul(const Arguments &arguments)
