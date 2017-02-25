@@ -93,5 +93,7 @@
 (defun test3 () (test2))
 (defun test4 () (test3))
 (defun test5 () (test4))
-(test5)
+(println "Deep nesting: " (test5))
+
+"Done..."
 
