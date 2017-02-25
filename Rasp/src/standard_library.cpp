@@ -122,19 +122,13 @@ namespace
 		return Value::number(arguments[0].number() / arguments[1].number());
 	}
 
-	// TODO: probably don't need this anymore
-	Value handleBool(bool b)
-	{
-		return Value::boolean(b);
-	}
-
 	Value less(const Arguments &arguments)
 	{
 		if(arguments.size() != 2 || !(arguments[0].isNumber() && arguments[1].isNumber()))
 		{
 			throw ExternalFunctionError("Expected 2 numeric arguments");
 		}
-		return handleBool(arguments[0].number() < arguments[1].number());
+		return Value::boolean(arguments[0].number() < arguments[1].number());
 	}
 
 	Value greater(const Arguments &arguments)
@@ -143,7 +137,7 @@ namespace
 		{
 			throw ExternalFunctionError("Expected 2 numeric arguments");
 		}
-		return handleBool(arguments[0].number() > arguments[1].number());
+		return Value::boolean(arguments[0].number() > arguments[1].number());
 	}
 
 	Value operator_not(const Arguments &arguments)
@@ -161,7 +155,7 @@ namespace
 		{
 			throw ExternalFunctionError("Expected 2 arguments");
 		}
-		return handleBool(arguments[0] == arguments[1]);
+		return Value::boolean(arguments[0] == arguments[1]);
 	}
 
 	Value notEqual(const Arguments &arguments)
@@ -170,7 +164,7 @@ namespace
 		{
 			throw ExternalFunctionError("Expected 2 arguments");
 		}
-		return handleBool(arguments[0] != arguments[1]);
+		return Value::boolean(arguments[0] != arguments[1]);
 	}
 
 	Value lessEqual(const Arguments &arguments)
@@ -179,7 +173,7 @@ namespace
 		{
 			throw ExternalFunctionError("Expected 2 numeric arguments");
 		}
-		return handleBool(arguments[0].number() <= arguments[1].number());
+		return Value::boolean(arguments[0].number() <= arguments[1].number());
 	}
 
 	Value greaterEqual(const Arguments &arguments)
@@ -188,7 +182,7 @@ namespace
 		{
 			throw ExternalFunctionError("Expected 2 numeric arguments");
 		}
-		return handleBool(arguments[0].number() >= arguments[1].number());
+		return Value::boolean(arguments[0].number() >= arguments[1].number());
 	}
 
 	Value print(const Arguments &arguments)
