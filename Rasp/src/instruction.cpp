@@ -29,22 +29,22 @@ Instruction Instruction::function(const Function &func)
 
 Instruction Instruction::call(int argc)
 {
-	return Instruction(Call, argc);
+	return Instruction(Call, Value::number(argc));
 }
 
 Instruction Instruction::jump(int instructions)
 {
-	return Instruction(Jump, instructions);
+	return Instruction(Jump, Value::number(instructions));
 }
 
 Instruction Instruction::loop(int instructions)
 {
-	return Instruction(Loop, instructions);
+	return Instruction(Loop, Value::number(instructions));
 }
 
 Instruction Instruction::assign(const std::string &identifier)
 {
-	return Instruction(Assign, identifier);
+	return Instruction(Assign, Value::string(identifier));
 }
 
 Instruction::Type Instruction::type() const

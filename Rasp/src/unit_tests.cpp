@@ -63,9 +63,9 @@ namespace
 	void testInterpreter(Interpreter &interpreter)
 	{
 		InstructionList instructions;
-		instructions.push_back(Instruction::push(42));
-		instructions.push_back(Instruction::push(13));
-		instructions.push_back(Instruction::push(16));
+		instructions.push_back(Instruction::push(Value::number(42)));
+		instructions.push_back(Instruction::push(Value::number(13)));
+		instructions.push_back(Instruction::push(Value::number(16)));
 		const Value *value = interpreter.binding(Identifier("+"));
 		assertTrue(value, "Expected there is a binding for '+'");
 		instructions.push_back(Instruction::push(*value));

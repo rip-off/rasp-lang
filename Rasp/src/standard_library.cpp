@@ -146,7 +146,7 @@ namespace
 		{
 			throw ExternalFunctionError("Expected 1 boolean argument");
 		}
-		return !arguments[0].boolean();
+		return Value::boolean(!arguments[0].boolean());
 	}
 
 	Value equal(const Arguments &arguments)
@@ -213,7 +213,7 @@ namespace
 		{
 			throw ExternalFunctionError("Expected 1 array argument");
 		}
-		return arguments[0].array().size();
+		return Value::number(arguments[0].array().size());
 	}
 
 	Value array_element(const Arguments &arguments)
@@ -328,7 +328,7 @@ namespace
 		{
 			throw ExternalFunctionError("Expected 1 argument");
 		}
-		return arguments[0].isNil();
+		return Value::boolean(arguments[0].isNil());
 	}
 
 	Value format(const Arguments &arguments)

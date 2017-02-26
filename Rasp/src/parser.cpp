@@ -221,11 +221,11 @@ namespace
 			break;
 		case Token::String:
 			assert(children.empty());
-			instructions.push_back(Instruction::push(token.string()));
+			instructions.push_back(Instruction::push(Value::string(token.string())));
 			break;
 		case Token::Number:
 			assert(children.empty());
-			instructions.push_back(Instruction::push(to<int>(token.string())));
+			instructions.push_back(Instruction::push(Value::number(to<int>(token.string()))));
 			break;
 		case Token::Boolean:
 			assert(children.empty());
