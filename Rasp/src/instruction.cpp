@@ -14,7 +14,7 @@ Instruction Instruction::noop()
 
 Instruction Instruction::ref(const Identifier &identifier)
 {
-	return Instruction(Ref, identifier.name());
+	return Instruction(Ref, Value::string(identifier.name()));
 }
 
 Instruction Instruction::push(const Value &value) 
