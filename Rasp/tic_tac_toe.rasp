@@ -91,8 +91,8 @@
 		(var next_player nil)
 		(if (== player "X")
 			(set next_player "Y"))
-		(if (!= player "X")
-			(set next_player "Y"))
+		(if (!= player "X") // TODO: else
+			(set next_player "X"))
 		(set player next_player))
 	(println "Thanks for playing!"))
 
