@@ -17,7 +17,19 @@ ArgumentList gatherArguments(int argc, const char **argv, Settings &settings)
 	for (int i = 1 ; i < argc ; ++i)
 	{
 		std::string argument = argv[i];
-		if (argument == "--trace")
+		if (argument == "--help")
+		{
+			std::cout << "Usage: <file names to run...>\n";
+			std::cout << "\n";
+			std::cout << "When no file names are passed, a REPL is started\n";
+			std::cout << "\n";
+			std::cout << "Options:\n";
+			std::cout << " --trace: Trace program execution\n";
+			std::cout << " --verbose: Verbose mode\n";
+			std::cout << " --help: Print this help message\n";
+			std::exit(0);
+		}
+		else if (argument == "--trace")
 		{
 			std::cout << "INFO: Trace mode enabled!\n";
 			settings.trace = true;
