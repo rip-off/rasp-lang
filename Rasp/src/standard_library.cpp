@@ -274,20 +274,23 @@ namespace
 		return Value::array(array);
 	}
 
-	// TODO: probably not a reasonably library function :D
-	Value create_tic_tac_toe_nested_array(const Arguments &arguments)
+	Value array_new(const Arguments &arguments)
 	{
-		if(!arguments.empty())
+		if(arguments.size() != 1)
 		{
-			throw ExternalFunctionError("Expect no arguments");
+			throw ExternalFunctionError("Expect 1 argument");
 		}
+
+		if(!arguments[0].isNumber())
+		{
+			throw ExternalFunctionError("Expected numeric argument");
+		}
+
+		int size = arguments[0].number();
 		Value::Array result;
-		for (unsigned i = 0 ; i < 3 ; ++i) {
-			Value::Array row;
-			for (unsigned j = 0 ; j < 3 ; ++j) {
-				row.push_back(Value::string(" "));
-			}
-			result.push_back(Value::array(row));
+		for (unsigned i = 0 ; i < size ; ++i)
+		{
+			result.push_back(Value::nil());
 		}
 		return Value::array(result);
 	}
@@ -366,8 +369,8 @@ namespace
 		ENTRY(array_length),
 		ENTRY(array_element),
 		ENTRY(array_set_element),
+		ENTRY(array_new),
 		ENTRY(try_convert_string_to_int),
-		ENTRY(create_tic_tac_toe_nested_array),
 	};
 
 #undef ENTRY

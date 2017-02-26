@@ -69,7 +69,18 @@
 			(println "Sorry, that space is taken!")))
 	state)
 
-	
+(defun create_tic_tac_toe_state ()
+	(var state (array_new 3))
+	(var i 0)
+	(while (< i 3)
+		(var row (array_new 3))
+		(var j 0)
+		(while (< j 3)
+			(set row (array_set_element row j " "))
+			(set j (+ j 1)))
+		(set state (array_set_element state i row))
+		(set i (+ i 1)))
+	state)
 	
 /* TODO: sweet array syntax?
 [
@@ -79,8 +90,7 @@
 ]
 */
 (defun main ()
-	// Funny how "play_tic_tac_toe" isn't a library function then :D
-	(var state (create_tic_tac_toe_nested_array))
+	(var state (create_tic_tac_toe_state))
 	(var running true)
 	(var player "X")
 	// TODO: check game over / winner
