@@ -24,7 +24,7 @@ Instruction Instruction::push(const Value &value)
 
 Instruction Instruction::function(const Function &func) 
 {
-	return Instruction(Push, func);
+	return Instruction(Push, Value::function(func));
 }
 
 Instruction Instruction::call(int argc)

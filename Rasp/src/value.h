@@ -127,7 +127,7 @@ public:
 	explicit Value(bool boolean);
 	explicit Value(int number);
 	explicit Value(const std::string &text);
-	/* TODO: explicit */ Value(const Function &function);
+	explicit Value(const Function &function);
 private:
 	explicit Value(const Array &array);
 
