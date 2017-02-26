@@ -5,6 +5,8 @@ Doing:
 * SourceLocation(File, Line, Column?) rather than just line
 
 Known bugs / issues:
+* (*) returns 1
+* Short circuiting for &&, ||
 * Investigate stuff being left over in the stack
 
 Questions:

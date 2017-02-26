@@ -140,13 +140,55 @@ namespace
 		return Value::boolean(arguments[0].number() > arguments[1].number());
 	}
 
-	Value operator_not(const Arguments &arguments)
+	Value operatorNot(const Arguments &arguments)
 	{
 		if(arguments.size() != 1 || !arguments[0].isBoolean())
 		{
 			throw ExternalFunctionError("Expected 1 boolean argument");
 		}
 		return Value::boolean(!arguments[0].boolean());
+	}
+
+	Value operatorOr(const Arguments &arguments)
+	{
+		if(arguments.size() < 2)
+		{
+			throw ExternalFunctionError("Expected at least 2 arguments");
+		}
+		bool result = false;
+		for(Arguments::const_iterator i = arguments.begin() ; i != arguments.end() ; ++i)
+		{
+			if(!i->isBoolean())
+			{
+				throw ExternalFunctionError("Expected boolean argument");
+			}
+			if (i->boolean())
+			{
+				result = true;
+			}
+		}
+		return Value::boolean(result);
+	}
+
+	Value operatorAnd(const Arguments &arguments)
+	{
+		if(arguments.size() < 2)
+		{
+			throw ExternalFunctionError("Expected at least 2 arguments");
+		}
+		bool result = true;
+		for(Arguments::const_iterator i = arguments.begin() ; i != arguments.end() ; ++i)
+		{
+			if(!i->isBoolean())
+			{
+				throw ExternalFunctionError("Expected boolean argument");
+			}
+			if (!i->boolean())
+			{
+				result = false;
+			}
+		}
+		return Value::boolean(result);
 	}
 
 	Value equal(const Arguments &arguments)
@@ -355,11 +397,13 @@ namespace
 		ApiReg("*", &mul),
 		ApiReg("<", &less),
 		ApiReg(">", &greater),
-		ApiReg("!", &operator_not),
+		ApiReg("!", &operatorNot),
 		ApiReg("==", &equal),
 		ApiReg("!=", &notEqual),
 		ApiReg("<=", &lessEqual),
 		ApiReg(">=", &greaterEqual),
+		ApiReg("||", &operatorOr),
+		ApiReg("&&", &operatorAnd),
 		ENTRY(time),
 		ENTRY(print),
 		ENTRY(is_nil),

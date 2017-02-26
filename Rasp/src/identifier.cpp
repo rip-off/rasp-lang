@@ -26,6 +26,8 @@ bool Identifier::isValid(const std::string &name)
 		"!=",
 		"<=",
 		">=",
+		"||",
+		"&&",
 	};
 	if (array_is_element(whitelist, name))
 	{
