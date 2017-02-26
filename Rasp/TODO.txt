@@ -7,7 +7,16 @@ Doing:
 Known bugs / issues:
 * Investigate stuff being left over in the stack
 
+Questions:
+* Allow overloading? Currently "+" supports strings and numbers
+
 Next:
+* Implement advanced data structures
+** Dynamic arrays
+** Linked list
+** Trees
+** Set
+** Map
 * Linking (requires, provides) ?
 * "else" statement
 * "return" statement
