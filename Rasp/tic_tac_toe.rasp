@@ -90,7 +90,7 @@
 		(debug "main state" state)
 		(var next_player nil)
 		(if (== player "X")
-			(set next_player "Y"))
+			(set next_player "O"))
 		(if (!= player "X") // TODO: else
 			(set next_player "X"))
 		(set player next_player))
