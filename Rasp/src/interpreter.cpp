@@ -37,11 +37,13 @@ namespace
 		{
 			throw CompilerBug("Call instruction expects top of the stack to be functional value");
 		}
+
 		Arguments arguments;
 		while(argc --> 0)
 		{
 			arguments.push_back(pop(stack));
 		}
+
 		const Function &function = top.function();
 		try
 		{
@@ -161,7 +163,9 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 					throw CompilerBug("empty stack during assignment");
 				}
 				assert(value.isString());
-				Value top = pop(stack);
+				// Don't pop, allows this to be nested in larger statements
+				// e.g. ((defun foo () ...))
+				Value top = stack.back();
 				if(settings_.trace)
 				{
 					std::cout << "DEBUG: assigning " << value.string() << " to " << top << '\n';

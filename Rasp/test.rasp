@@ -95,5 +95,7 @@
 (defun test5 () (test4))
 (println "Deep nesting: " (test5))
 
+((defun immediate_function_call () (println "Calling function immediately")))
+
 "Done..."
 

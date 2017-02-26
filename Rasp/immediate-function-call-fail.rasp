@@ -1,3 +1,0 @@
-// Internal Error: Compiler bug: Not enough values on the stack to call function
-((defun test2 () (println "test2")))
-
