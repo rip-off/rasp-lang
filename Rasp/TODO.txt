@@ -8,6 +8,7 @@ Known bugs / issues:
 * (*) returns 1
 * Short circuiting for &&, ||
 * Investigate stuff being left over in the stack
+* Clean checkout, need to mkdir /obj
 
 Questions:
 * Allow overloading? Currently "+" supports strings and numbers
@@ -22,12 +23,21 @@ Next:
 * Linking (requires, provides) ?
 * "else" statement
 * "return" statement
+* way to trap errors?
+* Assertion mechanism?
+* Allow user to include files / modules?
+* Unit testing framework for rasp code
+* Reflection - scan scope for test_*
 * Add a type system?
 * Demote nil from value to optional type?
 * User defined types?
 * Floating point numbers
 * String manipulation function
 * Dictionaries
+* Named parameters
+* Nicer repl
+** Editing cursor: left & right
+** Command history: up & down
 
 Done:
 * Identifier checks
