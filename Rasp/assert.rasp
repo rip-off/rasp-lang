@@ -1,0 +1,8 @@
+// Hello, world
+
+(var i 0)
+(while (< i 3)
+  (assert (< i 3) "i should be less than 3!")
+  (set i (+ i 1)))
+
+

@@ -387,6 +387,32 @@ namespace
 		return Value::string(stream.str());
 	}
 
+
+	Value rasp_assert(const Arguments &arguments)
+	{
+		if(arguments.empty())
+		{
+			throw ExternalFunctionError("Too few arguments");
+		}
+		if(arguments.size() > 3)
+		{
+			throw ExternalFunctionError("Too few arguments");
+		}
+
+		// TODO: isTruthy()?
+		if(!arguments[0].asBool())
+		{
+			if (arguments.size() == 1)
+			{
+				throw ExternalFunctionError("assertion failed");
+			}
+			std::stringstream stream;
+			stream << arguments[1];
+			throw ExternalFunctionError("assertion failed: " + stream.str());
+		}
+		return Value::nil();
+	}
+
 #define ENTRY(X) ApiReg(#X, &X)
 
 	const ApiReg registry[] = 
@@ -404,6 +430,7 @@ namespace
 		ApiReg(">=", &greaterEqual),
 		ApiReg("||", &operatorOr),
 		ApiReg("&&", &operatorAnd),
+		ApiReg("assert", &rasp_assert),
 		ENTRY(time),
 		ENTRY(print),
 		ENTRY(is_nil),
