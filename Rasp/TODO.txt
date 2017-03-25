@@ -39,6 +39,9 @@ Next:
 ** Editing cursor: left & right
 ** Command history: up & down
 
+Wild ideas:
+* Invoke with multiple mains, each its own thread / process
+
 Done:
 * Identifier checks
 * Booleans
