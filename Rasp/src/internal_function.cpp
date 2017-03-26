@@ -5,12 +5,12 @@
 #include "execution_error.h"
 
 InternalFunction::InternalFunction(
-	unsigned line,
+	const SourceLocation &sourceLocation,
 	const std::string &name, 
 	const std::vector<Identifier> &parameters,
 	const InstructionList &instructionList)
 :
-	line_(line),
+	sourceLocation_(sourceLocation),
 	name_(name),
 	parameters_(parameters),
 	instructionList_(instructionList)
@@ -19,7 +19,7 @@ InternalFunction::InternalFunction(
 
 Function *InternalFunction::clone() const
 {
-	return new InternalFunction(line_, name_, parameters_, instructionList_);
+	return new InternalFunction(sourceLocation_, name_, parameters_, instructionList_);
 }
 
 Value InternalFunction::call(CallContext &callContext) const
@@ -27,7 +27,7 @@ Value InternalFunction::call(CallContext &callContext) const
 	const Arguments &arguments = callContext.arguments();
 	if (arguments.size() != parameters_.size())
 	{
-		throw ExecutionError(line_, "Function '" + name_ + "' passed " + str(arguments.size()) + " arguments but expected " + str(parameters_.size()));
+		throw ExecutionError(sourceLocation_.line(), "Function '" + name_ + "' passed " + str(arguments.size()) + " arguments but expected " + str(parameters_.size()));
 	}
 	Bindings localBindings = callContext.bindings();
 	for (unsigned i = 0 ; i < parameters_.size() ; ++i)

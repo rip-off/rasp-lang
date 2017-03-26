@@ -3,12 +3,13 @@
 
 #include "function.h"
 #include "instruction.h"
+#include "source_location.h"
 
 class InternalFunction : public Function
 {
 public:
 	InternalFunction(
-		unsigned line,
+		const SourceLocation &sourceLocation,
 		const std::string &name, 
 		const std::vector<Identifier> &parameters, 
 		const InstructionList &instructionList);
@@ -18,7 +19,7 @@ public:
 	virtual	const std::string &name() const;
 
 private:
-	unsigned line_;
+	SourceLocation sourceLocation_;
 	std::string name_;
 	std::vector<Identifier> parameters_;
 	InstructionList instructionList_;

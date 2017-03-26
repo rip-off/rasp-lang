@@ -179,7 +179,7 @@ namespace
 				{
 					parse(children[i], localDeclarations, tempInstructions);
 				}
-				InternalFunction function(token.line(), identifier.name(), parameters, tempInstructions);
+				InternalFunction function(token.sourceLocation(), identifier.name(), parameters, tempInstructions);
 				instructions.push_back(Instruction::push(Value::function(function)));
 				instructions.push_back(Instruction::assign(identifier.name()));
 			}
