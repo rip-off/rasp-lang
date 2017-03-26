@@ -2,49 +2,49 @@
 #include "utils.h"
 #include "bug.h"
 
-Instruction::Instruction(Type type, const Value &value)
-	: type_(type), value_(value)
+Instruction::Instruction(const SourceLocation &sourceLocation, Type type, const Value &value)
+	: type_(type), value_(value), sourceLocation_(sourceLocation)
 {
 }
 
-Instruction Instruction::noop()
+Instruction Instruction::noop(const SourceLocation &sourceLocation)
 {
-	return Instruction(NoOp, Value::nil());
+	return Instruction(sourceLocation, NoOp, Value::nil());
 }
 
-Instruction Instruction::ref(const Identifier &identifier)
+Instruction Instruction::ref(const SourceLocation &sourceLocation, const Identifier &identifier)
 {
-	return Instruction(Ref, Value::string(identifier.name()));
+	return Instruction(sourceLocation, Ref, Value::string(identifier.name()));
 }
 
-Instruction Instruction::push(const Value &value) 
+Instruction Instruction::push(const SourceLocation &sourceLocation, const Value &value)
 {
-	return Instruction(Push, value);
+	return Instruction(sourceLocation, Push, value);
 }
 
-Instruction Instruction::function(const Function &func) 
+Instruction Instruction::function(const SourceLocation &sourceLocation, const Function &func)
 {
-	return Instruction(Push, Value::function(func));
+	return Instruction(sourceLocation, Push, Value::function(func));
 }
 
-Instruction Instruction::call(int argc)
+Instruction Instruction::call(const SourceLocation &sourceLocation, int argc)
 {
-	return Instruction(Call, Value::number(argc));
+	return Instruction(sourceLocation, Call, Value::number(argc));
 }
 
-Instruction Instruction::jump(int instructions)
+Instruction Instruction::jump(const SourceLocation &sourceLocation, int instructions)
 {
-	return Instruction(Jump, Value::number(instructions));
+	return Instruction(sourceLocation, Jump, Value::number(instructions));
 }
 
-Instruction Instruction::loop(int instructions)
+Instruction Instruction::loop(const SourceLocation &sourceLocation, int instructions)
 {
-	return Instruction(Loop, Value::number(instructions));
+	return Instruction(sourceLocation, Loop, Value::number(instructions));
 }
 
-Instruction Instruction::assign(const std::string &identifier)
+Instruction Instruction::assign(const SourceLocation &sourceLocation, const std::string &identifier)
 {
-	return Instruction(Assign, Value::string(identifier));
+	return Instruction(sourceLocation, Assign, Value::string(identifier));
 }
 
 Instruction::Type Instruction::type() const

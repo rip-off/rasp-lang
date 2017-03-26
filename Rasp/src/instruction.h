@@ -6,6 +6,7 @@
 
 #include "value.h"
 #include "function.h"
+#include "source_location.h"
 
 class Instruction
 {
@@ -23,21 +24,21 @@ public:
 		Assign,
 	};
 
-	static Instruction noop();
+	static Instruction noop(const SourceLocation &sourceLocation);
 
-	static Instruction ref(const Identifier &identifier);
+	static Instruction ref(const SourceLocation &sourceLocation, const Identifier &identifier);
 
-	static Instruction push(const Value &value);
+	static Instruction push(const SourceLocation &sourceLocation, const Value &value);
 
-	static Instruction function(const Function &func);
+	static Instruction function(const SourceLocation &sourceLocation, const Function &func);
 
-	static Instruction call(int argc);
+	static Instruction call(const SourceLocation &sourceLocation, int argc);
 
-	static Instruction jump(int instructions);
+	static Instruction jump(const SourceLocation &sourceLocation, int instructions);
 
-	static Instruction loop(int instructions);
+	static Instruction loop(const SourceLocation &sourceLocation, int instructions);
 
-	static Instruction assign(const std::string &identifier);
+	static Instruction assign(const SourceLocation &sourceLocation, const std::string &identifier);
 
 	Type type() const;
 
@@ -46,10 +47,11 @@ public:
 	friend std::ostream &operator<<(std::ostream &out, const Instruction &);
 
 private:
-	Instruction(Type type, const Value &value);
+	Instruction(const SourceLocation &sourceLocation, Type type, const Value &value);
 
 	Type type_;
 	Value value_;
+	SourceLocation sourceLocation_;
 };
 
 typedef Instruction::InstructionList InstructionList;

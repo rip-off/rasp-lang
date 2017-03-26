@@ -63,13 +63,13 @@ namespace
 				unsigned bodyInstructions = tempInstructions.size();
 				// Actual branch instruction
 				// +1 for the loop instruction itself!
-				instructions.push_back(Instruction::jump(bodyInstructions + 1));
+				instructions.push_back(Instruction::jump(token.sourceLocation(), bodyInstructions + 1));
 				// Insert the remaining instructions into the stream
 				instructions.insert(instructions.end(), tempInstructions.begin(), tempInstructions.end());
 				// Return to loop start
 				// +1 for jump instruction
 				// +1 for this loop instruction itself!
-				instructions.push_back(Instruction::loop(bodyInstructions + 1 + conditionExpressionInstructions + 1));
+				instructions.push_back(Instruction::loop(token.sourceLocation(), bodyInstructions + 1 + conditionExpressionInstructions + 1));
 			}
 			else if(keyword == "if")
 			{
@@ -90,7 +90,7 @@ namespace
 					parse(children[i], declarations, tempInstructions);
 				}
 				// Actual branch instruction
-				instructions.push_back(Instruction::jump(tempInstructions.size()));
+				instructions.push_back(Instruction::jump(token.sourceLocation(), tempInstructions.size()));
 				// Insert the remaining instructions into the stream
 				instructions.insert(instructions.end(), tempInstructions.begin(), tempInstructions.end());
 			}
@@ -112,7 +112,7 @@ namespace
 				}
 				declarations.push_back(identifier);				
 				parse(children[2], declarations, instructions);
-				instructions.push_back(Instruction::assign(identifier.name()));
+				instructions.push_back(Instruction::assign(token.sourceLocation(), identifier.name()));
 			}
 			else if(keyword == "set")
 			{
@@ -130,7 +130,7 @@ namespace
 					throw ParseError(token.line(), "Keyword 'set' identifier '" + identifier.name() + "' not defined");
 				}	
 				parse(children[2], declarations, instructions);
-				instructions.push_back(Instruction::assign(identifier.name()));
+				instructions.push_back(Instruction::assign(token.sourceLocation(), identifier.name()));
 			}
 			else if(keyword == "defun")
 			{
@@ -180,8 +180,8 @@ namespace
 					parse(children[i], localDeclarations, tempInstructions);
 				}
 				InternalFunction function(token.sourceLocation(), identifier.name(), parameters, tempInstructions);
-				instructions.push_back(Instruction::push(Value::function(function)));
-				instructions.push_back(Instruction::assign(identifier.name()));
+				instructions.push_back(Instruction::push(token.sourceLocation(), Value::function(function)));
+				instructions.push_back(Instruction::assign(token.sourceLocation(), identifier.name()));
 			}
 			else
 			{
@@ -197,7 +197,7 @@ namespace
 			// Call expects the number of arguments, so we must omit 1 element
 			// This is because the function is the mandatory first element
 			// TODO: check the first element is a function at compile time
-			instructions.push_back(Instruction::call(children.size() - 1));
+			instructions.push_back(Instruction::call(token.sourceLocation(), children.size() - 1));
 		}
 	}
 
@@ -208,7 +208,7 @@ namespace
 		{
 		case Token::Nil:
 			assert(children.empty());
-			instructions.push_back(Instruction::push(Value::nil()));
+			instructions.push_back(Instruction::push(token.sourceLocation(), Value::nil()));
 			break;
 		case Token::Root:
 			assert(children.empty());
@@ -221,21 +221,21 @@ namespace
 			break;
 		case Token::String:
 			assert(children.empty());
-			instructions.push_back(Instruction::push(Value::string(token.string())));
+			instructions.push_back(Instruction::push(token.sourceLocation(), Value::string(token.string())));
 			break;
 		case Token::Number:
 			assert(children.empty());
-			instructions.push_back(Instruction::push(Value::number(to<int>(token.string()))));
+			instructions.push_back(Instruction::push(token.sourceLocation(), Value::number(to<int>(token.string()))));
 			break;
 		case Token::Boolean:
 			assert(children.empty());
 			if (token.string() == "true")
 			{
-				instructions.push_back(Instruction::push(Value::boolean(true)));
+				instructions.push_back(Instruction::push(token.sourceLocation(), Value::boolean(true)));
 			}
 			else if (token.string() == "false")
 			{
-				instructions.push_back(Instruction::push(Value::boolean(false)));
+				instructions.push_back(Instruction::push(token.sourceLocation(), Value::boolean(false)));
 			}
 			else
 			{
@@ -255,7 +255,7 @@ namespace
 				{
 					throw ParseError(token.line(), "Variable '" + identifier.name() + "' not defined");
 				}
-				instructions.push_back(Instruction::ref(identifier));
+				instructions.push_back(Instruction::ref(token.sourceLocation(), identifier));
 			}
 			break;
 		}
