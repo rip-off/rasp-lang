@@ -195,7 +195,7 @@ std::ostream &operator<<(std::ostream &out, const Value &value)
 	case Value::TBoolean:
 		return out << (value.data_.boolean ? "true" : "false");
 	case Value::TFunction:
-		return out << "(function: " << value.data_.function->name() << ')';
+		return out << "<function: " << value.data_.function->name() << '>';
 	default:
 		throw std::logic_error("Type not implemented");
 	}
