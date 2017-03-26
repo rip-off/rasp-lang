@@ -5,12 +5,14 @@ class Settings
 {
 public:
 	bool trace;
-	bool verbose;
+	bool printSyntaxTree;
+	bool printInstructions;
 
 	Settings() 
 	:
 		trace(false),
-		verbose(false)
+		printSyntaxTree(false),
+		printInstructions(false)
 	{
 	}
 };

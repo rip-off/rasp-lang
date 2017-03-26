@@ -261,72 +261,79 @@ namespace
 		}
 	}
 
-	void printTabs(int num)
+	void indent(int num)
 	{
 		while(num --> 0)
 		{
-			std::cout << '\t';
+			std::cout << "| ";
 		}
 	}
 
-	void printTree(const Token &token, int level)
+	void printTree(const Token &token, int level = 0)
 	{
-		printTabs(level);
+		indent(level);
 		const Token::Children &children = token.children();
 		switch(token.type())
 		{
 		case Token::Nil:
 			assert(children.empty());
-			std::cout << "Nil\n";
+			std::cout << "nil\n";
 			break;
 		case Token::Root:
-			std::cout << "Root {\n";
+			std::cout << "root {\n";
 			for(Token::Children::const_iterator i = children.begin() ; i != children.end() ; ++i)
 			{
 				printTree(*i, level + 1);
 			}
-			printTabs(level);
-			std::cout << "}";
+			indent(level);
+			std::cout << "}\n";
 			break;
 		case Token::List:
-			std::cout << "List {\n";
-			for(Token::Children::const_iterator i = children.begin() ; i != children.end() ; ++i)
+			if (children.empty())
 			{
-				printTree(*i, level + 1);
+				std::cout << "list <empty>\n";
 			}
-			printTabs(level);
-			std::cout << "}";
+			else
+			{
+				std::cout << "list {\n";
+				for(Token::Children::const_iterator i = children.begin() ; i != children.end() ; ++i)
+				{
+					printTree(*i, level + 1);
+				}
+				indent(level);
+				std::cout << "}\n";
+			}
 			break;
 		case Token::String:
 			assert(children.empty());
-			std::cout << "String(" << token.string() << ')' << '\n';
+			std::cout << "string: \"" << token.string() << "\"\n"; // TODO: quote(...)
 			break;
 		case Token::Number:
 			assert(children.empty());
-			std::cout << "Number(" << token.string() << ')' << '\n';
+			std::cout << "number: " << token.string() << '\n';
 			break;
 		case Token::Boolean:
 			assert(children.empty());
-			std::cout << "Boolean(" << token.string() << ')' << '\n';
+			std::cout << "boolean: " << token.string() << '\n';
 			break;
 		case Token::Keyword:
 			assert(children.empty());
-			std::cout << token.string();
+			std::cout << "keyword: " << token.string() << '\n';
 			break;
 		case Token::Identifier:
 			assert(children.empty());
-			std::cout << "Identifier(" << token.string() << ')' << '\n';
+			std::cout << "identifier: " << token.string() << '\n';
 			break;
 		}
-		std::cout << '\n';
+		// TODO:std::cout << '\n';
 	}
 }
 
 InstructionList parse(const Token &tree, std::vector<Identifier> &declarations, const Settings &settings)
 {
-	if (settings.verbose)
+	if (settings.printSyntaxTree)
 	{
-		printTree(tree,1);
+		printTree(tree);
 	}
 
 	InstructionList result;
@@ -337,7 +344,7 @@ InstructionList parse(const Token &tree, std::vector<Identifier> &declarations, 
 		parse(*it, declarations, result);
 	}
 
-	if (settings.verbose)
+	if (settings.printInstructions)
 	{
 		unsigned n = 0;
 		std::cout << "Generated " << result.size() << " instructions:\n";

@@ -25,19 +25,22 @@ ArgumentList gatherArguments(int argc, const char **argv, Settings &settings)
 			std::cout << "\n";
 			std::cout << "Options:\n";
 			std::cout << " --trace: Trace program execution\n";
-			std::cout << " --verbose: Verbose mode\n";
+			std::cout << " --print-ast: Print Abstract Syntax Tree\n";
+			std::cout << " --print-instructions: Print Generated Instructions\n";
 			std::cout << " --help: Print this help message\n";
 			std::exit(0);
 		}
 		else if (argument == "--trace")
 		{
-			std::cout << "INFO: Trace mode enabled!\n";
 			settings.trace = true;
 		}
-		else if (argument == "--verbose")
+		else if (argument == "--print-ast")
 		{
-			std::cout << "INFO: Verbose mode enabled!\n";
-			settings.verbose = true;
+			settings.printSyntaxTree = true;
+		}
+		else if (argument == "--print-instructions")
+		{
+			settings.printInstructions = true;
 		}
 		else
 		{
