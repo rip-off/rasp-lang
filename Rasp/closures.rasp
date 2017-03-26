@@ -1,0 +1,8 @@
+// TODO is "object_func" local or global?
+(defun outer_function (some_value)
+  (defun inner_function () some_value)
+  inner_function)
+
+(var captured_function (outer_function 42))
+(println "Value is: " (captured_function))
+
