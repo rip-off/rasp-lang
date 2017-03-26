@@ -18,7 +18,7 @@ namespace
 		return result;
 	}
 
-	void handleFunction(Interpreter *interpreter, const Value &value, Stack &stack, Bindings &bindings)
+	Value handleFunction(Interpreter *interpreter, const Value &value, Stack &stack, Bindings &bindings)
 	{
 		if(!value.isNumber())
 		{
@@ -48,8 +48,7 @@ namespace
 		try
 		{
 			CallContext callContext(&bindings, &arguments, interpreter);
-			Value result = function.call(callContext);
-			stack.push_back(result);
+			return function.call(callContext);
 		}
 		catch (RaspError &error)
 		{
@@ -96,7 +95,7 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 				const Value &value = bindings[identifier];
 				if(settings_.trace)
 				{				
-					std::cout << "DEBUG: ref " << identifier.name() << "(" << value << ")" << '\n';
+					std::cout << "DEBUG: ref " << identifier.name() << " = " << value << '\n';
 				}
 				stack.push_back(value);
 			}
@@ -109,12 +108,19 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 			stack.push_back(value);
 			break;
 		case Instruction::Call:
-			if(settings_.trace)
-			{				
-				std::cout << "DEBUG: call " << value << '\n';
+			{
+				if(settings_.trace)
+				{
+					std::cout << "DEBUG: call " << value << '\n';
+				}
+				// TODO: member function?
+				Value result = handleFunction(this, value, stack, bindings);
+				stack.push_back(result);
+				if(settings_.trace)
+				{
+					std::cout << "DEBUG: return value " << result << '\n';
+				}
 			}
-			// TODO: member function?
-			handleFunction(this, value, stack, bindings);
 			break;
 		case Instruction::Jump:
 			{
@@ -178,12 +184,21 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 			throw CompilerBug("unhandled instruction type: " + str(type));
 		}
 
-		if (settings_.trace && !stack.empty())
+		if (settings_.trace)
 		{
-			std::cout << "Stack contains " << stack.size() << " entries:\n";
-			for(Stack::const_iterator it = stack.begin() ; it != stack.end() ; ++it)
+			if (stack.empty())
 			{
-				std::cout << " * " << *it << '\n';
+				std::cout << "Stack is empty\n";
+			}
+			else
+			{
+				std::cout << "Stack contains " << stack.size() << " entries:\n";
+				int index = 0;
+				for(Stack::const_iterator it = stack.begin() ; it != stack.end() ; ++it)
+				{
+					++index;
+					std::cout << index << ":  " << *it << '\n';
+				}
 			}
 		}
 	}
