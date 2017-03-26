@@ -16,6 +16,6 @@ unsigned SourceLocation::line() const
 
 std::ostream &operator<<(std::ostream &out, const SourceLocation &sourceLocation)
 {
-	return out << sourceLocation.filename_ << " at line " << sourceLocation.line_;
+	return out << sourceLocation.filename_ << ":" << sourceLocation.line_;
 }
 

@@ -44,6 +44,8 @@ public:
 
 	const Value &value() const;
 
+	const SourceLocation &sourceLocation() const;
+
 	friend std::ostream &operator<<(std::ostream &out, const Instruction &);
 
 private:

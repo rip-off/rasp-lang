@@ -84,7 +84,7 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 		case Instruction::NoOp:
 			if(settings_.trace)
 			{				
-				std::cout << "DEBUG: noop!\n";
+				std::cout << "DEBUG: " << it->sourceLocation() << " noop!\n";
 			}
 			// Do nothing
 			break;
@@ -95,7 +95,7 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 				const Value &value = bindings[identifier];
 				if(settings_.trace)
 				{				
-					std::cout << "DEBUG: ref " << identifier.name() << " = " << value << '\n';
+					std::cout << "DEBUG: " << it->sourceLocation() << " ref " << identifier.name() << " = " << value << '\n';
 				}
 				stack.push_back(value);
 			}
@@ -103,7 +103,7 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 		case Instruction::Push:
 			if(settings_.trace)
 			{				
-				std::cout << "DEBUG: push " << value << '\n';
+				std::cout << "DEBUG: " << it->sourceLocation() << " push " << value << '\n';
 			}
 			stack.push_back(value);
 			break;
@@ -111,14 +111,14 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 			{
 				if(settings_.trace)
 				{
-					std::cout << "DEBUG: call " << value << '\n';
+					std::cout << "DEBUG: " << it->sourceLocation() << " call " << value << '\n';
 				}
 				// TODO: member function?
 				Value result = handleFunction(this, value, stack, bindings);
 				stack.push_back(result);
 				if(settings_.trace)
 				{
-					std::cout << "DEBUG: return value " << result << '\n';
+					std::cout << "DEBUG: " << it->sourceLocation() << " return value " << result << '\n';
 				}
 			}
 			break;
@@ -138,7 +138,7 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 				Value top = pop(stack);
 				if(settings_.trace)
 				{				
-					std::cout << "DEBUG: jumping back " << instructionsToSkip << " if " << top << '\n';
+					std::cout << "DEBUG: " << it->sourceLocation() << " jumping back " << instructionsToSkip << " if " << top << '\n';
 				}
 
 				if(!top.asBool())
@@ -157,7 +157,7 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 
 				if(settings_.trace)
 				{				
-					std::cout << "DEBUG: looping back " << instructionCount << " instructions\n";
+					std::cout << "DEBUG: " << it->sourceLocation() << " looping back " << instructionCount << " instructions\n";
 				}
 				it -= instructionCount;
 			}
@@ -174,7 +174,7 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 				Value top = stack.back();
 				if(settings_.trace)
 				{
-					std::cout << "DEBUG: assigning " << value.string() << " to " << top << '\n';
+					std::cout << "DEBUG: " << it->sourceLocation() << " assigning " << value.string() << " to " << top << '\n';
 				}
 				Identifier identifier = Identifier(value.string());
 				bindings[identifier] = top;

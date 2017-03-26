@@ -57,6 +57,11 @@ const Value &Instruction::value() const
 	return value_;
 }
 
+const SourceLocation &Instruction::sourceLocation() const
+{
+	return sourceLocation_;
+}
+
 std::ostream &operator<<(std::ostream &out, const Instruction &instruction)
 {
 	switch(instruction.type_)
