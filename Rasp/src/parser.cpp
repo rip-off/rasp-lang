@@ -12,6 +12,18 @@
 
 namespace
 {
+	void printInstructions(const std::string &context, const InstructionList &instructions)
+	{
+		unsigned n = 0;
+		std::cout << context << " generated " << instructions.size() << " instructions:\n";
+		for(InstructionList::const_iterator it = instructions.begin() ; it != instructions.end() ; ++it)
+		{
+			std::cout << (n + 1) << ": " << *it << '\n';
+			n += 1;
+		}
+		std::cout << '\n';
+	}
+
 	bool isDefined(const std::vector<Identifier> &declarations, const Identifier &identifier)
 	{
 		return std::find(declarations.begin(), declarations.end(), identifier) != declarations.end();
@@ -26,9 +38,9 @@ namespace
 		return Identifier(name);
 	}
 
-	void parse(const Token &token, std::vector<Identifier> &declarations, InstructionList &instructions);
+	void parse(const Token &token, std::vector<Identifier> &declarations, InstructionList &instructions, const Settings &settings);
 
-	void handleList(const Token &token, std::vector<Identifier> &declarations, InstructionList &instructions)
+	void handleList(const Token &token, std::vector<Identifier> &declarations, InstructionList &instructions, const Settings &settings)
 	{
 		const Token::Children &children = token.children();
 		if(children.empty())
@@ -52,13 +64,13 @@ namespace
 				}
 				unsigned previousInstructionCount = instructions.size();
 				// Evaluate the conditional expression first
-				parse(children[1], declarations, instructions);
+				parse(children[1], declarations, instructions, settings);
 				unsigned conditionExpressionInstructions = instructions.size() - previousInstructionCount;
 				// Generate the list of instructions to be executed if branch is taken
 				InstructionList tempInstructions;
 				for(unsigned i = 2 ; i < children.size() ; ++i)
 				{
-					parse(children[i], declarations, tempInstructions);
+					parse(children[i], declarations, tempInstructions, settings);
 				}
 				unsigned bodyInstructions = tempInstructions.size();
 				// Actual branch instruction
@@ -82,12 +94,12 @@ namespace
 					throw ParseError(token.line(), "Keyword 'if' expression is missing code to execute");
 				}
 				// Evaluate the conditional expression first
-				parse(children[1], declarations, instructions);
+				parse(children[1], declarations, instructions, settings);
 				// Generate the list of instructions to be executed if branch is taken
 				InstructionList tempInstructions;
 				for(unsigned i = 2 ; i < children.size() ; ++i)
 				{
-					parse(children[i], declarations, tempInstructions);
+					parse(children[i], declarations, tempInstructions, settings);
 				}
 				// Actual branch instruction
 				instructions.push_back(Instruction::jump(token.sourceLocation(), tempInstructions.size()));
@@ -111,7 +123,7 @@ namespace
 					throw ParseError(token.line(), "Keyword 'var' identity '" + identifier.name() + "' already defined");
 				}
 				declarations.push_back(identifier);				
-				parse(children[2], declarations, instructions);
+				parse(children[2], declarations, instructions, settings);
 				instructions.push_back(Instruction::assign(token.sourceLocation(), identifier.name()));
 			}
 			else if(keyword == "set")
@@ -129,7 +141,7 @@ namespace
 				{
 					throw ParseError(token.line(), "Keyword 'set' identifier '" + identifier.name() + "' not defined");
 				}	
-				parse(children[2], declarations, instructions);
+				parse(children[2], declarations, instructions, settings);
 				instructions.push_back(Instruction::assign(token.sourceLocation(), identifier.name()));
 			}
 			else if(keyword == "defun")
@@ -177,11 +189,16 @@ namespace
 				InstructionList tempInstructions;
 				for(unsigned i = 3 ; i < children.size() ; ++i)
 				{
-					parse(children[i], localDeclarations, tempInstructions);
+					parse(children[i], localDeclarations, tempInstructions, settings);
 				}
 				InternalFunction function(token.sourceLocation(), identifier.name(), parameters, tempInstructions);
 				instructions.push_back(Instruction::push(token.sourceLocation(), Value::function(function)));
 				instructions.push_back(Instruction::assign(token.sourceLocation(), identifier.name()));
+
+				if (settings.printInstructions)
+				{
+					printInstructions("Function \"" + identifier.name() + "\" @ " + str(token.sourceLocation()), tempInstructions);
+				}
 			}
 			else
 			{
@@ -192,7 +209,7 @@ namespace
 		{
 			for(Token::Children::const_reverse_iterator i = children.rbegin() ; i != children.rend() ; ++i)
 			{
-				parse(*i, declarations, instructions);
+				parse(*i, declarations, instructions, settings);
 			}
 			// Call expects the number of arguments, so we must omit 1 element
 			// This is because the function is the mandatory first element
@@ -201,7 +218,7 @@ namespace
 		}
 	}
 
-	void parse(const Token &token, std::vector<Identifier> &declarations, InstructionList &instructions)
+	void parse(const Token &token, std::vector<Identifier> &declarations, InstructionList &instructions, const Settings &settings)
 	{
 		const Token::Children &children = token.children();
 		switch(token.type())
@@ -216,7 +233,7 @@ namespace
 			break;
 		case Token::List:
 			{
-				handleList(token, declarations, instructions);
+				handleList(token, declarations, instructions, settings);
 			}
 			break;
 		case Token::String:
@@ -341,18 +358,12 @@ InstructionList parse(const Token &tree, std::vector<Identifier> &declarations, 
 	const Token::Children &children = tree.children();
 	for(Token::Children::const_iterator it = children.begin() ; it != children.end() ; ++it)
 	{
-		parse(*it, declarations, result);
+		parse(*it, declarations, result, settings);
 	}
 
 	if (settings.printInstructions)
 	{
-		unsigned n = 0;
-		std::cout << "Generated " << result.size() << " instructions:\n";
-		for(InstructionList::const_iterator it = result.begin() ; it != result.end() ; ++it)
-		{
-			std::cout << (n + 1) << ": " << *it << '\n';
-			n += 1;
-		}
+		printInstructions("Parsing " + str(tree.sourceLocation()), result);
 	}
 
 	return result;
