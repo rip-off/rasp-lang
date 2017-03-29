@@ -12,10 +12,10 @@
 
 namespace
 {
-	void printInstructions(const std::string &context, const InstructionList &instructions)
+	void printInstructions(const InstructionList &instructions)
 	{
+		std::cout << "Generated " << instructions.size() << " instructions:\n";
 		unsigned n = 0;
-		std::cout << context << " generated " << instructions.size() << " instructions:\n";
 		for(InstructionList::const_iterator it = instructions.begin() ; it != instructions.end() ; ++it)
 		{
 			std::cout << (n + 1) << ": " << *it << '\n';
@@ -197,7 +197,13 @@ namespace
 
 				if (settings.printInstructions)
 				{
-					printInstructions("Function \"" + identifier.name() + "\" @ " + str(token.sourceLocation()), tempInstructions);
+					std::cout << "Function (" << identifier.name();
+					for (unsigned i = 0 ; i < parameters.size()  ; ++i)
+					{
+						std::cout << " " << parameters[i].name();
+					}
+					std::cout << ") @ " << token.sourceLocation() << '\n';
+					printInstructions(tempInstructions);
 				}
 			}
 			else
@@ -363,7 +369,8 @@ InstructionList parse(const Token &tree, std::vector<Identifier> &declarations, 
 
 	if (settings.printInstructions)
 	{
-		printInstructions("Parsing " + str(tree.sourceLocation()), result);
+		std::cout << "Parsing " << tree.sourceLocation() << '\n';
+		printInstructions(result);
 	}
 
 	return result;
