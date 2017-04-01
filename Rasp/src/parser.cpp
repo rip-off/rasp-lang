@@ -23,12 +23,12 @@ namespace
 		std::cout << '\n';
 	}
 
-	// TODO: const Token &token
-	Identifier tryMakeIdentifier(const SourceLocation &sourceLocation, const std::string &name)
+	Identifier tryMakeIdentifier(const Token &token)
 	{
+		const std::string &name = token.string();
 		if (!Identifier::isValid(name))
 		{
-			throw ParseError(sourceLocation, "Illegal identifier '" + name + "'");
+			throw ParseError(token.sourceLocation(), "Illegal identifier '" + name + "'");
 		}
 		return Identifier(name);
 	}
@@ -112,7 +112,7 @@ namespace
 					throw ParseError(token.sourceLocation(), "Keyword 'var' missing initialisation value");
 				}
 
-				Identifier identifier = tryMakeIdentifier(children[1].sourceLocation(), children[1].string());
+				Identifier identifier = tryMakeIdentifier(children[1]);
 				if (declarations.isDefined(identifier))
 				{
 					throw ParseError(token.sourceLocation(), "Keyword 'var' identity '" + identifier.name() + "' already defined");
@@ -132,7 +132,7 @@ namespace
 				{
 					throw ParseError(token.sourceLocation(), "Keyword 'set' missing assignment value");
 				}
-				Identifier identifier = tryMakeIdentifier(children[1].sourceLocation(), children[1].string());
+				Identifier identifier = tryMakeIdentifier(children[1]);
 				if (!declarations.isDefined(identifier))
 				{
 					throw ParseError(token.sourceLocation(), "Keyword 'set' identifier '" + identifier.name() + "' not defined");
@@ -155,7 +155,7 @@ namespace
 					throw ParseError(token.sourceLocation(), "Keyword 'defun' function lacks a body");
 				}
 
-				Identifier identifier = tryMakeIdentifier(children[1].sourceLocation(), children[1].string());
+				Identifier identifier = tryMakeIdentifier(children[1]);
 				if (declarations.isDefined(identifier))
 				{
 					throw ParseError(token.sourceLocation(), "Keyword 'defun' identifier " + identifier.name() + " already defined");
@@ -178,7 +178,7 @@ namespace
 					{
 						throw ParseError(token.sourceLocation(), "Keyword 'defun' function parameter " + str(i) + " is incorrect");
 					}
-					Identifier parameter = tryMakeIdentifier(rawParameters[i].sourceLocation(), rawParameters[i].string());
+					Identifier parameter = tryMakeIdentifier(rawParameters[i]);
 					parameters.push_back(parameter);
 					localDeclarations.add(parameter);
 				}
@@ -270,7 +270,7 @@ namespace
 		case Token::Identifier:
 			{
 				assert(children.empty());
-				Identifier identifier = tryMakeIdentifier(token.sourceLocation(), token.string());
+				Identifier identifier = tryMakeIdentifier(token);
 				if (!declarations.isDefined(identifier))
 				{
 					throw ParseError(token.sourceLocation(), "Variable '" + identifier.name() + "' not defined");
