@@ -116,9 +116,9 @@ namespace
 				{
 					throw ParseError(token.line(), "Keyword 'var' identity '" + identifier.name() + "' already defined");
 				}
+				parse(children[2], declarations, instructions, settings);
 				// TODO: bug (var x (+ x 1)) ?
 				declarations.add(identifier);
-				parse(children[2], declarations, instructions, settings);
 				instructions.push_back(Instruction::assign(token.sourceLocation(), identifier.name()));
 			}
 			else if(keyword == "set")
