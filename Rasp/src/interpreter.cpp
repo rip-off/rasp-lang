@@ -88,14 +88,38 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 			}
 			// Do nothing
 			break;
-		case Instruction::Ref:
+		case Instruction::Local: // TODO: de-duplicate?
 			{
 				// TODO: compiler bug: binding not found?
 				Identifier identifier = Identifier(value.string());
 				const Value &value = bindings[identifier];
 				if(settings_.trace)
-				{				
-					std::cout << "DEBUG: " << it->sourceLocation() << " ref " << identifier.name() << " = " << value << '\n';
+				{
+					std::cout << "DEBUG: " << it->sourceLocation() << " local " << identifier.name() << " = " << value << '\n';
+				}
+				stack.push_back(value);
+			}
+			break;
+		case Instruction::Global:
+			{
+				// TODO: compiler bug: binding not found?
+				Identifier identifier = Identifier(value.string());
+				const Value &value = bindings[identifier];
+				if(settings_.trace)
+				{
+					std::cout << "DEBUG: " << it->sourceLocation() << " global " << identifier.name() << " = " << value << '\n';
+				}
+				stack.push_back(value);
+			}
+			break;
+		case Instruction::Closure:
+			{
+				// TODO: compiler bug: binding not found?
+				Identifier identifier = Identifier(value.string());
+				const Value &value = bindings[identifier];
+				if(settings_.trace)
+				{
+					std::cout << "DEBUG: " << it->sourceLocation() << " closure " << identifier.name() << " = " << value << '\n';
 				}
 				stack.push_back(value);
 			}

@@ -50,19 +50,19 @@ bool Declarations::isDefined(const Identifier &identifier) const
 	return checkIdentifier(identifier) != IDENTIFIER_DEFINITION_UNDEFINED;
 }
 
-Declarations::IdentifierDefinition Declarations::checkIdentifier(const Identifier &identifier) const
+IdentifierDefinition Declarations::checkIdentifier(const Identifier &identifier) const
 {
 	for(std::vector<Scope>::size_type i = 0 ; i < innerToOuterScopes.size() ; ++i)
 	{
 		if(innerToOuterScopes[i].isDefined(identifier))
 		{
-			if (i == 0)
-			{
-				return IDENTIFIER_DEFINITION_LOCAL;
-			}
-			else if (i == innerToOuterScopes.size() - 1)
+			if (i == innerToOuterScopes.size() - 1)
 			{
 				return IDENTIFIER_DEFINITION_GLOBAL;
+			}
+			else if (i == 0)
+			{
+				return IDENTIFIER_DEFINITION_LOCAL;
 			}
 			return IDENTIFIER_DEFINITION_CLOSURE;
 		}

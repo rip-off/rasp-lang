@@ -271,11 +271,23 @@ namespace
 			{
 				assert(children.empty());
 				Identifier identifier = tryMakeIdentifier(token);
-				if (!declarations.isDefined(identifier))
+				switch(declarations.checkIdentifier(identifier))
 				{
+				case IDENTIFIER_DEFINITION_UNDEFINED:
 					throw ParseError(token.sourceLocation(), "Variable '" + identifier.name() + "' not defined");
+					break;
+				case IDENTIFIER_DEFINITION_LOCAL:
+					instructions.push_back(Instruction::local(token.sourceLocation(), identifier));
+					break;
+				case IDENTIFIER_DEFINITION_CLOSURE:
+					instructions.push_back(Instruction::closure(token.sourceLocation(), identifier));
+					break;
+				case IDENTIFIER_DEFINITION_GLOBAL:
+					instructions.push_back(Instruction::global(token.sourceLocation(), identifier));
+					break;
+				default:
+					throw CompilerBug("Failed to classify identifier " + identifier.name() + " at " + str(token.sourceLocation()));
 				}
-				instructions.push_back(Instruction::ref(token.sourceLocation(), identifier));
 			}
 			break;
 		}

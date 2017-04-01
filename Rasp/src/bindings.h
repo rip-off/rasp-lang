@@ -18,16 +18,16 @@ private:
 	std::vector<Identifier> declarations;
 };
 
+enum IdentifierDefinition {
+	IDENTIFIER_DEFINITION_UNDEFINED,
+	IDENTIFIER_DEFINITION_LOCAL,
+	IDENTIFIER_DEFINITION_CLOSURE,
+	IDENTIFIER_DEFINITION_GLOBAL,
+};
+
 class Declarations
 {
 public:
-	enum IdentifierDefinition {
-		IDENTIFIER_DEFINITION_UNDEFINED,
-		IDENTIFIER_DEFINITION_LOCAL,
-		IDENTIFIER_DEFINITION_CLOSURE,
-		IDENTIFIER_DEFINITION_GLOBAL,
-	};
-
 	Declarations();
 	Declarations(const Bindings &globalScope);
 
