@@ -30,14 +30,12 @@ void execute(Interpreter &interpreter, const std::string &filename, const Settin
 		}
 		catch(const LexError &e)
 		{
-			// TODO: duplicate filename
-			std::cerr << "Lex error in " << filename << " at line " << e.sourceLocation() << ": " << e.what() << '\n';
+			std::cerr << "Lex error at " << e.sourceLocation() << " " << e.what() << '\n';
 			printStackTrace(std::cerr, e);
 		}
 		catch(const ParseError &e)
 		{
-			// TODO: e.sourceLocation?
-			std::cerr << "Parse error in " << filename << " at line " << e.line() << ": " << e.what() << '\n';
+			std::cerr << "Parse error at " << e.sourceLocation() << " " << e.what() << '\n';
 			printStackTrace(std::cerr, e);
 		}
 		catch(const ExecutionError &e)

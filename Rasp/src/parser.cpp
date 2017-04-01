@@ -23,11 +23,12 @@ namespace
 		std::cout << '\n';
 	}
 
-	Identifier tryMakeIdentifier(unsigned line, const std::string &name)
+	// TODO: const Token &token
+	Identifier tryMakeIdentifier(const SourceLocation &sourceLocation, const std::string &name)
 	{
 		if (!Identifier::isValid(name))
 		{
-			throw ParseError(line, "Illegal identifier '" + name + "'");
+			throw ParseError(sourceLocation, "Illegal identifier '" + name + "'");
 		}
 		return Identifier(name);
 	}
@@ -39,7 +40,7 @@ namespace
 		const Token::Children &children = token.children();
 		if(children.empty())
 		{
-			throw ParseError(token.line(), "Empty list is not allowed");
+			throw ParseError(token.sourceLocation(), "Empty list is not allowed");
 		}
 
 		const Token &firstChild = children.front();		
@@ -50,11 +51,11 @@ namespace
 			{
 				if(children.size() == 1)
 				{
-					throw ParseError(token.line(), "'while' expression is missing condition");
+					throw ParseError(token.sourceLocation(), "'while' expression is missing condition");
 				}
 				else if(children.size() == 2)
 				{
-					throw ParseError(token.line(), "'while' expression is missing code to execute");
+					throw ParseError(token.sourceLocation(), "'while' expression is missing code to execute");
 				}
 				unsigned previousInstructionCount = instructions.size();
 				// Evaluate the conditional expression first
@@ -81,11 +82,11 @@ namespace
 			{
 				if(children.size() == 1)
 				{
-					throw ParseError(token.line(), "Keyword 'if' expression is missing condition");
+					throw ParseError(token.sourceLocation(), "Keyword 'if' expression is missing condition");
 				}
 				else if(children.size() == 2)
 				{
-					throw ParseError(token.line(), "Keyword 'if' expression is missing code to execute");
+					throw ParseError(token.sourceLocation(), "Keyword 'if' expression is missing code to execute");
 				}
 				// Evaluate the conditional expression first
 				parse(children[1], declarations, instructions, settings);
@@ -104,17 +105,17 @@ namespace
 			{
 				if(children.size() == 2)
 				{
-					throw ParseError(token.line(), "Keyword 'var' declaration requires a name");
+					throw ParseError(token.sourceLocation(), "Keyword 'var' declaration requires a name");
 				}
 				else if(children.size() != 3)
 				{
-					throw ParseError(token.line(), "Keyword 'var' missing initialisation value");
+					throw ParseError(token.sourceLocation(), "Keyword 'var' missing initialisation value");
 				}
 
-				Identifier identifier = tryMakeIdentifier(children[1].line(), children[1].string());
+				Identifier identifier = tryMakeIdentifier(children[1].sourceLocation(), children[1].string());
 				if (declarations.isDefined(identifier))
 				{
-					throw ParseError(token.line(), "Keyword 'var' identity '" + identifier.name() + "' already defined");
+					throw ParseError(token.sourceLocation(), "Keyword 'var' identity '" + identifier.name() + "' already defined");
 				}
 				parse(children[2], declarations, instructions, settings);
 				// TODO: bug (var x (+ x 1)) ?
@@ -125,16 +126,16 @@ namespace
 			{
 				if(children.size() == 2)
 				{
-					throw ParseError(token.line(), "Keyword 'set' variable assignment requires a name");
+					throw ParseError(token.sourceLocation(), "Keyword 'set' variable assignment requires a name");
 				}
 				else if(children.size() != 3)
 				{
-					throw ParseError(token.line(), "Keyword 'set' missing assignment value");
+					throw ParseError(token.sourceLocation(), "Keyword 'set' missing assignment value");
 				}
-				Identifier identifier = tryMakeIdentifier(children[1].line(), children[1].string());
+				Identifier identifier = tryMakeIdentifier(children[1].sourceLocation(), children[1].string());
 				if (!declarations.isDefined(identifier))
 				{
-					throw ParseError(token.line(), "Keyword 'set' identifier '" + identifier.name() + "' not defined");
+					throw ParseError(token.sourceLocation(), "Keyword 'set' identifier '" + identifier.name() + "' not defined");
 				}	
 				parse(children[2], declarations, instructions, settings);
 				instructions.push_back(Instruction::assign(token.sourceLocation(), identifier.name()));
@@ -143,28 +144,28 @@ namespace
 			{
 				if(children.size() == 2)
 				{
-					throw ParseError(token.line(), "Keyword 'defun' function requires a name");
+					throw ParseError(token.sourceLocation(), "Keyword 'defun' function requires a name");
 				}
 				else if(children.size() == 3)
 				{
-					throw ParseError(token.line(), "Keyword 'defun' function requires parameter lists");
+					throw ParseError(token.sourceLocation(), "Keyword 'defun' function requires parameter lists");
 				}
 				else if(children.size() < 4)
 				{
-					throw ParseError(token.line(), "Keyword 'defun' function lacks a body");
+					throw ParseError(token.sourceLocation(), "Keyword 'defun' function lacks a body");
 				}
 
-				Identifier identifier = tryMakeIdentifier(children[1].line(), children[1].string());
+				Identifier identifier = tryMakeIdentifier(children[1].sourceLocation(), children[1].string());
 				if (declarations.isDefined(identifier))
 				{
-					throw ParseError(token.line(), "Keyword 'defun' identifier " + identifier.name() + " already defined");
+					throw ParseError(token.sourceLocation(), "Keyword 'defun' identifier " + identifier.name() + " already defined");
 				}
 				// Allow recursion
 				declarations.add(identifier);
 				
 				if (children[2].type() != Token::List)
 				{
-					throw ParseError(token.line(), "Keyword 'defun' function parameter list is incorrect");
+					throw ParseError(token.sourceLocation(), "Keyword 'defun' function parameter list is incorrect");
 				}
 
 				std::vector<Identifier> parameters;
@@ -175,9 +176,9 @@ namespace
 				{
 					if (rawParameters[i].type() != Token::Identifier)
 					{
-						throw ParseError(token.line(), "Keyword 'defun' function parameter " + str(i) + " is incorrect");
+						throw ParseError(token.sourceLocation(), "Keyword 'defun' function parameter " + str(i) + " is incorrect");
 					}
-					Identifier parameter = tryMakeIdentifier(rawParameters[i].line(), rawParameters[i].string());
+					Identifier parameter = tryMakeIdentifier(rawParameters[i].sourceLocation(), rawParameters[i].string());
 					parameters.push_back(parameter);
 					localDeclarations.add(parameter);
 				}
@@ -263,16 +264,16 @@ namespace
 			break;
 		case Token::Keyword:
 			{
-				throw ParseError(token.line(), "Keyword '" + token.string() + "' must be first element of a list");
+				throw ParseError(token.sourceLocation(), "Keyword '" + token.string() + "' must be first element of a list");
 			}
 			break;
 		case Token::Identifier:
 			{
 				assert(children.empty());
-				Identifier identifier = tryMakeIdentifier(token.line(), token.string());
+				Identifier identifier = tryMakeIdentifier(token.sourceLocation(), token.string());
 				if (!declarations.isDefined(identifier))
 				{
-					throw ParseError(token.line(), "Variable '" + identifier.name() + "' not defined");
+					throw ParseError(token.sourceLocation(), "Variable '" + identifier.name() + "' not defined");
 				}
 				instructions.push_back(Instruction::ref(token.sourceLocation(), identifier));
 			}

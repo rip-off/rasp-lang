@@ -11,20 +11,20 @@ class Settings;
 class ParseError : public RaspError
 {
 public:
-	ParseError(unsigned line, const std::string &message)
+	ParseError(const SourceLocation &sourceLocation, const std::string &message)
 	: 
 		RaspError(message),
-		line_(line)
+		sourceLocation_(sourceLocation)
 	{
 	}
 
-	unsigned line() const
+	const SourceLocation &sourceLocation() const
 	{
-		return line_;
+		return sourceLocation_;
 	}
 
 private:
-	unsigned line_;
+	SourceLocation sourceLocation_;
 };
 
 InstructionList parse(const Token &tree, Declarations &declarations, const Settings &settings);
