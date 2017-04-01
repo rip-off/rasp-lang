@@ -206,14 +206,9 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 	return stack.empty() ? Value::nil() : pop(stack);
 }
 
-std::vector<Identifier> Interpreter::declarations() const
+Declarations Interpreter::declarations() const
 {
-	std::vector<Identifier> result;
-	for(Bindings::const_iterator it = bindings_.begin() ; it != bindings_.end() ; ++it)
-	{
-		result.push_back(it->first);
-	}
-	return result;
+	return Declarations(bindings_);
 }
 
 const Value *Interpreter::binding(const Identifier &name) const

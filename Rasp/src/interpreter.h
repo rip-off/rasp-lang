@@ -27,7 +27,7 @@ public:
 		return bindings_;
 	}
 
-	std::vector<Identifier> declarations() const;
+	Declarations declarations() const;
 
 private:
 	Bindings bindings_;

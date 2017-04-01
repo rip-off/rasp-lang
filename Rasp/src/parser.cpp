@@ -1,7 +1,6 @@
 #include "parser.h"
 
 #include <iostream>
-#include <algorithm>
 
 #include "bug.h"
 #include "token.h"
@@ -24,11 +23,6 @@ namespace
 		std::cout << '\n';
 	}
 
-	bool isDefined(const std::vector<Identifier> &declarations, const Identifier &identifier)
-	{
-		return std::find(declarations.begin(), declarations.end(), identifier) != declarations.end();
-	}
-
 	Identifier tryMakeIdentifier(unsigned line, const std::string &name)
 	{
 		if (!Identifier::isValid(name))
@@ -38,9 +32,9 @@ namespace
 		return Identifier(name);
 	}
 
-	void parse(const Token &token, std::vector<Identifier> &declarations, InstructionList &instructions, const Settings &settings);
+	void parse(const Token &token, Declarations &declarations, InstructionList &instructions, const Settings &settings);
 
-	void handleList(const Token &token, std::vector<Identifier> &declarations, InstructionList &instructions, const Settings &settings)
+	void handleList(const Token &token, Declarations &declarations, InstructionList &instructions, const Settings &settings)
 	{
 		const Token::Children &children = token.children();
 		if(children.empty())
@@ -118,11 +112,12 @@ namespace
 				}
 
 				Identifier identifier = tryMakeIdentifier(children[1].line(), children[1].string());
-				if (isDefined(declarations, identifier))
+				if (declarations.isDefined(identifier))
 				{
 					throw ParseError(token.line(), "Keyword 'var' identity '" + identifier.name() + "' already defined");
 				}
-				declarations.push_back(identifier);				
+				// TODO: bug (var x (+ x 1)) ?
+				declarations.add(identifier);
 				parse(children[2], declarations, instructions, settings);
 				instructions.push_back(Instruction::assign(token.sourceLocation(), identifier.name()));
 			}
@@ -137,7 +132,7 @@ namespace
 					throw ParseError(token.line(), "Keyword 'set' missing assignment value");
 				}
 				Identifier identifier = tryMakeIdentifier(children[1].line(), children[1].string());
-				if (!isDefined(declarations, identifier))
+				if (!declarations.isDefined(identifier))
 				{
 					throw ParseError(token.line(), "Keyword 'set' identifier '" + identifier.name() + "' not defined");
 				}	
@@ -160,11 +155,12 @@ namespace
 				}
 
 				Identifier identifier = tryMakeIdentifier(children[1].line(), children[1].string());
-				if (isDefined(declarations, identifier))
+				if (declarations.isDefined(identifier))
 				{
 					throw ParseError(token.line(), "Keyword 'defun' identifier " + identifier.name() + " already defined");
 				}
-				declarations.push_back(identifier);
+				// Allow recursion
+				declarations.add(identifier);
 				
 				if (children[2].type() != Token::List)
 				{
@@ -172,10 +168,10 @@ namespace
 				}
 
 				std::vector<Identifier> parameters;
-				std::vector<Identifier> localDeclarations = declarations;
+				Declarations localDeclarations = declarations.newScope();
 				
 				const Token::Children &rawParameters = children[2].children();
-				for (unsigned i = 0 ; i < rawParameters.size()  ; ++i)
+				for (unsigned i = 0 ; i < rawParameters.size() ; ++i)
 				{
 					if (rawParameters[i].type() != Token::Identifier)
 					{
@@ -183,7 +179,7 @@ namespace
 					}
 					Identifier parameter = tryMakeIdentifier(rawParameters[i].line(), rawParameters[i].string());
 					parameters.push_back(parameter);
-					localDeclarations.push_back(parameter);
+					localDeclarations.add(parameter);
 				}
 
 				InstructionList tempInstructions;
@@ -224,7 +220,7 @@ namespace
 		}
 	}
 
-	void parse(const Token &token, std::vector<Identifier> &declarations, InstructionList &instructions, const Settings &settings)
+	void parse(const Token &token, Declarations &declarations, InstructionList &instructions, const Settings &settings)
 	{
 		const Token::Children &children = token.children();
 		switch(token.type())
@@ -274,7 +270,7 @@ namespace
 			{
 				assert(children.empty());
 				Identifier identifier = tryMakeIdentifier(token.line(), token.string());
-				if (!isDefined(declarations, identifier))
+				if (!declarations.isDefined(identifier))
 				{
 					throw ParseError(token.line(), "Variable '" + identifier.name() + "' not defined");
 				}
@@ -352,7 +348,7 @@ namespace
 	}
 }
 
-InstructionList parse(const Token &tree, std::vector<Identifier> &declarations, const Settings &settings)
+InstructionList parse(const Token &tree, Declarations &declarations, const Settings &settings)
 {
 	if (settings.printSyntaxTree)
 	{

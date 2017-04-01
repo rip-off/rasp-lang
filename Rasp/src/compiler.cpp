@@ -23,7 +23,7 @@ void execute(Interpreter &interpreter, const std::string &filename, const Settin
 		try
 		{
 			Token token = lex(filename, contents);
-			std::vector<Identifier> declarations = interpreter.declarations();
+			Declarations declarations = interpreter.declarations();
 			InstructionList instructions = parse(token, declarations, settings);
 			Value result = interpreter.exec(instructions);
 			std::cout << filename << ": " << result << '\n';
@@ -36,6 +36,7 @@ void execute(Interpreter &interpreter, const std::string &filename, const Settin
 		}
 		catch(const ParseError &e)
 		{
+			// TODO: e.sourceLocation?
 			std::cerr << "Parse error in " << filename << " at line " << e.line() << ": " << e.what() << '\n';
 			printStackTrace(std::cerr, e);
 		}

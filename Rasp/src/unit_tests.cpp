@@ -56,7 +56,7 @@ namespace
 	}
 	#define assertEquals(X, Y) assertEquals(__LINE__, X, Y)
 
-	InstructionList parse(const Token &token, std::vector<Identifier> &declarations)
+	InstructionList parse(const Token &token, Declarations &declarations)
 	{
 		Settings settings;
 		return parse(token, declarations, settings);
@@ -113,7 +113,7 @@ namespace
 		list.addChild(right);
 		Token root = Token::root(sourceLocation);
 		root.addChild(list);
-		std::vector<Identifier> declarations = interpreter.declarations();
+		Declarations declarations = interpreter.declarations();
 		InstructionList result = parse(root, declarations);
 		assertEquals(result.size(), 4);
 
@@ -134,7 +134,7 @@ namespace
 	{
 		std::string source = "(+ (* 2 42) (/ 133 10) (- 1 6))";
 		Token token = lex(source);
-		std::vector<Identifier> declarations = interpreter.declarations();
+		Declarations declarations = interpreter.declarations();
 		InstructionList instructions = parse(token, declarations);
 		Value result = interpreter.exec(instructions);
 		assertEquals(result.type(), Value::TNumber);
