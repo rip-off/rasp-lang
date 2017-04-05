@@ -123,7 +123,7 @@ namespace
 		assertEquals(result[1].type(), Instruction::Push);
 		assertEquals(result[1].value().number(), 42);
 
-		assertEquals(result[2].type(), Instruction::Global);
+		assertEquals(result[2].type(), Instruction::RefGlobal);
 		assertEquals(result[2].value().string(), "+");
 
 		assertEquals(result[3].type(), Instruction::Call);

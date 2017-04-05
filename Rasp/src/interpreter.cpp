@@ -88,7 +88,7 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 			}
 			// Do nothing
 			break;
-		case Instruction::Local: // TODO: de-duplicate?
+		case Instruction::RefLocal: // TODO: de-duplicate?
 			{
 				// TODO: compiler bug: binding not found?
 				Identifier identifier = Identifier(value.string());
@@ -100,7 +100,7 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 				stack.push_back(value);
 			}
 			break;
-		case Instruction::Global:
+		case Instruction::RefGlobal:
 			{
 				// TODO: compiler bug: binding not found?
 				Identifier identifier = Identifier(value.string());
@@ -112,7 +112,7 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 				stack.push_back(value);
 			}
 			break;
-		case Instruction::Closure:
+		case Instruction::RefClosure:
 			{
 				// TODO: compiler bug: binding not found?
 				Identifier identifier = Identifier(value.string());

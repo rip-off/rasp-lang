@@ -15,9 +15,9 @@ public:
 
 	enum Type
 	{
-		Local,
-		Global,
-		Closure,
+		RefLocal,
+		RefGlobal,
+		RefClosure,
 		Call,
 		Push,
 		NoOp,
@@ -28,11 +28,11 @@ public:
 
 	static Instruction noop(const SourceLocation &sourceLocation);
 
-	static Instruction local(const SourceLocation &sourceLocation, const Identifier &identifier);
+	static Instruction refLocal(const SourceLocation &sourceLocation, const Identifier &identifier);
 
-	static Instruction global(const SourceLocation &sourceLocation, const Identifier &identifier);
+	static Instruction refGlobal(const SourceLocation &sourceLocation, const Identifier &identifier);
 
-	static Instruction closure(const SourceLocation &sourceLocation, const Identifier &identifier);
+	static Instruction refClosure(const SourceLocation &sourceLocation, const Identifier &identifier);
 
 	static Instruction push(const SourceLocation &sourceLocation, const Value &value);
 

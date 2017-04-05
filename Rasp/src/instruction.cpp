@@ -12,19 +12,19 @@ Instruction Instruction::noop(const SourceLocation &sourceLocation)
 	return Instruction(sourceLocation, NoOp, Value::nil());
 }
 
-Instruction Instruction::local(const SourceLocation &sourceLocation, const Identifier &identifier)
+Instruction Instruction::refLocal(const SourceLocation &sourceLocation, const Identifier &identifier)
 {
-	return Instruction(sourceLocation, Local, Value::string(identifier.name()));
+	return Instruction(sourceLocation, RefLocal, Value::string(identifier.name()));
 }
 
-Instruction Instruction::global(const SourceLocation &sourceLocation, const Identifier &identifier)
+Instruction Instruction::refGlobal(const SourceLocation &sourceLocation, const Identifier &identifier)
 {
-	return Instruction(sourceLocation, Global, Value::string(identifier.name()));
+	return Instruction(sourceLocation, RefGlobal, Value::string(identifier.name()));
 }
 
-Instruction Instruction::closure(const SourceLocation &sourceLocation, const Identifier &identifier)
+Instruction Instruction::refClosure(const SourceLocation &sourceLocation, const Identifier &identifier)
 {
-	return Instruction(sourceLocation, Closure, Value::string(identifier.name()));
+	return Instruction(sourceLocation, RefClosure, Value::string(identifier.name()));
 }
 
 Instruction Instruction::push(const SourceLocation &sourceLocation, const Value &value)
@@ -74,14 +74,14 @@ std::ostream &operator<<(std::ostream &out, const Instruction &instruction)
 	case Instruction::NoOp:
 		out << "noop";
 		break;
-	case Instruction::Local:
-		out << "local(" << instruction.value_.string() << ")";
+	case Instruction::RefLocal:
+		out << "ref_local(" << instruction.value_.string() << ")";
 		break;
-	case Instruction::Global:
-		out << "global(" << instruction.value_.string() << ")";
+	case Instruction::RefGlobal:
+		out << "ref_global(" << instruction.value_.string() << ")";
 		break;
-	case Instruction::Closure:
-		out << "closure(" << instruction.value_.string() << ")";
+	case Instruction::RefClosure:
+		out << "ref_closure(" << instruction.value_.string() << ")";
 		break;
 	case Instruction::Push:
 		out << "push(" << instruction.value_ << ")";
