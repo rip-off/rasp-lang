@@ -3,6 +3,7 @@ Doing:
 * Print stack traces for errors in functions?
 * Arrays
 * SourceLocation(File, Line, Column?) rather than just line
+* SourceLocation in InternalFunction?
 
 Known bugs / issues:
 * (*) returns 1
