@@ -36,8 +36,6 @@ public:
 
 	static Instruction push(const SourceLocation &sourceLocation, const Value &value);
 
-	static Instruction function(const SourceLocation &sourceLocation, const Function &func);
-
 	static Instruction call(const SourceLocation &sourceLocation, int argc);
 
 	static Instruction jump(const SourceLocation &sourceLocation, int instructions);

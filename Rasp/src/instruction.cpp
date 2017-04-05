@@ -32,11 +32,6 @@ Instruction Instruction::push(const SourceLocation &sourceLocation, const Value 
 	return Instruction(sourceLocation, Push, value);
 }
 
-Instruction Instruction::function(const SourceLocation &sourceLocation, const Function &func)
-{
-	return Instruction(sourceLocation, Push, Value::function(func));
-}
-
 Instruction Instruction::call(const SourceLocation &sourceLocation, int argc)
 {
 	return Instruction(sourceLocation, Call, Value::number(argc));
