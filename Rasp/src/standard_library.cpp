@@ -4,7 +4,7 @@
 #include <iostream>
 
 #include "api.h"
-#include "exceptions.h"
+#include "execution_error.h"
 
 namespace
 {
@@ -38,17 +38,18 @@ namespace
 
 namespace
 {
-	class ExternalFunctionError : public RaspError
+	class ExternalFunctionError : public ExecutionError
 	{
 	public:
-		ExternalFunctionError(const std::string &function, const std::string &message)
+		ExternalFunctionError(const std::string &function, const SourceLocation &sourceLocation, const std::string &message)
 		:
-			RaspError(message + " in external function '" + function + "'")
+			ExecutionError(sourceLocation, message + " in external function '" + function + "'")
 		{
 		}
 	};
 
-	#define ExternalFunctionError(message) ExternalFunctionError(__FUNCTION__, message)
+	#define CURRENT_SOURCE_LOCATION SourceLocation(__FILE__, __LINE__)
+	#define ExternalFunctionError(message) ExternalFunctionError(__FUNCTION__, CURRENT_SOURCE_LOCATION, message)
 
 	Value plus(const Arguments &arguments)
 	{
@@ -413,24 +414,24 @@ namespace
 		return Value::nil();
 	}
 
-#define ENTRY(X) ApiReg(#X, &X)
+#define ENTRY(X) ApiReg(#X, CURRENT_SOURCE_LOCATION, &X)
 
 	const ApiReg registry[] = 
 	{
-		ApiReg("+", &plus),
-		ApiReg("-", &sub),
-		ApiReg("/", &div),
-		ApiReg("*", &mul),
-		ApiReg("<", &less),
-		ApiReg(">", &greater),
-		ApiReg("!", &operatorNot),
-		ApiReg("==", &equal),
-		ApiReg("!=", &notEqual),
-		ApiReg("<=", &lessEqual),
-		ApiReg(">=", &greaterEqual),
-		ApiReg("||", &operatorOr),
-		ApiReg("&&", &operatorAnd),
-		ApiReg("assert", &rasp_assert),
+		ApiReg("+", CURRENT_SOURCE_LOCATION, &plus),
+		ApiReg("-", CURRENT_SOURCE_LOCATION, &sub),
+		ApiReg("/", CURRENT_SOURCE_LOCATION, &div),
+		ApiReg("*", CURRENT_SOURCE_LOCATION, &mul),
+		ApiReg("<", CURRENT_SOURCE_LOCATION, &less),
+		ApiReg(">", CURRENT_SOURCE_LOCATION, &greater),
+		ApiReg("!", CURRENT_SOURCE_LOCATION, &operatorNot),
+		ApiReg("==", CURRENT_SOURCE_LOCATION, &equal),
+		ApiReg("!=", CURRENT_SOURCE_LOCATION, &notEqual),
+		ApiReg("<=", CURRENT_SOURCE_LOCATION, &lessEqual),
+		ApiReg(">=", CURRENT_SOURCE_LOCATION, &greaterEqual),
+		ApiReg("||", CURRENT_SOURCE_LOCATION, &operatorOr),
+		ApiReg("&&", CURRENT_SOURCE_LOCATION, &operatorAnd),
+		ApiReg("assert", CURRENT_SOURCE_LOCATION, &rasp_assert),
 		ENTRY(time),
 		ENTRY(print),
 		ENTRY(is_nil),

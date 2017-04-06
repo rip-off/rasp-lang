@@ -27,7 +27,7 @@ Value InternalFunction::call(CallContext &callContext) const
 	const Arguments &arguments = callContext.arguments();
 	if (arguments.size() != parameters_.size())
 	{
-		throw ExecutionError(sourceLocation_.line(), "Function '" + name_ + "' passed " + str(arguments.size()) + " arguments but expected " + str(parameters_.size()));
+		throw ExecutionError(sourceLocation_, "Function '" + name_ + "' passed " + str(arguments.size()) + " arguments but expected " + str(parameters_.size()));
 	}
 	Bindings localBindings = callContext.bindings();
 	for (unsigned i = 0 ; i < parameters_.size() ; ++i)
@@ -42,5 +42,10 @@ Value InternalFunction::call(CallContext &callContext) const
 const std::string &InternalFunction::name() const
 {
 	return name_;
+}
+
+const SourceLocation &InternalFunction::sourceLocation() const
+{
+	return sourceLocation_;
 }
 

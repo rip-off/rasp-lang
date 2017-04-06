@@ -2,24 +2,25 @@
 #define EXECUTION_ERROR_H
 
 #include "exceptions.h"
+#include "source_location.h"
 
 class ExecutionError : public RaspError
 {
 public:
-	ExecutionError(unsigned line, const std::string &message)
+	ExecutionError(const SourceLocation &sourceLocation, const std::string &message)
 	:
 		RaspError(message),
-		line_(line)
+		sourceLocation_(sourceLocation)
 	{
 	}
 
-	unsigned line() const
+	const SourceLocation &sourceLocation() const
 	{
-		return line_;
+		return sourceLocation_;
 	}
 
 private:
-	unsigned line_;
+	SourceLocation sourceLocation_;
 };
 
 #endif

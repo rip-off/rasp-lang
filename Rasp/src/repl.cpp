@@ -13,11 +13,13 @@ void repl(Interpreter &interpreter, const Settings &settings)
 {
 	std::cout << "Enter some code, or type \'exit\' when finished:\n";
 	std::string line;
+	int count = 0;
 	while((std::cout << " > ") && std::getline(std::cin, line) && !(line == "quit" || line == "exit"))
 	{
+		++count;
 		try
 		{
-			Token token = lex("REPL", line);
+			Token token = lex("repl(" + str(count) + ")", line);
 			Declarations declarations = interpreter.declarations();
 			InstructionList instructions = parse(token, declarations, settings);
 			if (!instructions.empty())
@@ -38,7 +40,7 @@ void repl(Interpreter &interpreter, const Settings &settings)
 		}
 		catch(const ExecutionError &e)
 		{
-			std::cerr << "Execution error at line " << e.line() << ": " << e.what() << '\n';
+			std::cerr << "Execution error at line " << e.sourceLocation() << ": " << e.what() << '\n';
 			printStackTrace(std::cerr, e);
 		}
 		catch(const RaspError &e)

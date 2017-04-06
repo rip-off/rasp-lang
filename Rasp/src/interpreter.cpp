@@ -4,7 +4,7 @@
 
 #include "api.h"
 #include "bug.h"
-#include "exceptions.h"
+#include "execution_error.h"
 
 namespace
 {
@@ -52,8 +52,7 @@ namespace
 		}
 		catch (RaspError &error)
 		{
-			// TODO: line number?
-			error.buildStackTrace(" at function: " + function.name());
+			error.buildStackTrace(" at function: " + function.name() + " " + str(function.sourceLocation()));
 			throw;
 		}
 	}

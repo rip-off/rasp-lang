@@ -3,6 +3,7 @@
 
 #include <string>
 #include "common.h"
+#include "source_location.h"
 
 class Function
 {
@@ -11,6 +12,7 @@ public:
 	virtual Function *clone() const = 0;
 	virtual Value call(CallContext &) const = 0;
 	virtual	const std::string &name() const = 0;
+	virtual	const SourceLocation &sourceLocation() const = 0;
 
 protected:
 	Function();

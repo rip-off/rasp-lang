@@ -3,7 +3,6 @@
 
 #include "function.h"
 #include "instruction.h"
-#include "source_location.h"
 
 class InternalFunction : public Function
 {
@@ -17,6 +16,7 @@ public:
 	virtual Function *clone() const;
 	virtual Value call(CallContext &) const;
 	virtual	const std::string &name() const;
+	virtual	const SourceLocation &sourceLocation() const;
 
 private:
 	SourceLocation sourceLocation_;
