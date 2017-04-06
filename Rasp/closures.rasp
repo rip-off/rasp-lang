@@ -6,3 +6,12 @@
 (var captured_function (outer_function 42))
 (println "Value is: " (captured_function))
 
+(defun make_closure (outer_parameter_a outer_parameter_b)
+	(var some_local_a "some-local-value-a")
+	(var some_local_b "some-local-value-b")
+	(defun some_closure (inner_parameter_a inner_parameter_b)
+		(println "Inner: " inner_parameter_a " " inner_parameter_b ", Outer parameter: " outer_parameter_a " " outer_parameter_b ", Some local: " some_local_a " " some_local_b)))
+
+(var closure (make_closure "outer-parameter-value-1" "outer-parameter-value-2"))
+(closure "inner-parameter-value-1" "inner-parameter-value-2")
+

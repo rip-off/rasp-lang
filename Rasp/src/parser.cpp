@@ -1,6 +1,7 @@
 #include "parser.h"
 
 #include <iostream>
+#include <algorithm>
 
 #include "bug.h"
 #include "token.h"
@@ -31,6 +32,23 @@ namespace
 			throw ParseError(token.sourceLocation(), "Illegal identifier '" + name + "'");
 		}
 		return Identifier(name);
+	}
+
+	std::vector<Identifier> getClosedValues(const InstructionList &instructions)
+	{
+		std::vector<Identifier> result;
+		for (const Instruction &instruction : instructions)
+		{
+			if (instruction.type() == Instruction::RefClosure)
+			{
+				Identifier identifier = Identifier(instruction.value().string());
+				if (std::find(result.begin(), result.end(), identifier) == result.end())
+				{
+					result.push_back(identifier);
+				}
+			}
+		}
+		return result;
 	}
 
 	void parse(const Token &token, Declarations &declarations, InstructionList &instructions, const Settings &settings);
@@ -188,8 +206,24 @@ namespace
 				{
 					parse(children[i], localDeclarations, tempInstructions, settings);
 				}
-				InternalFunction function(token.sourceLocation(), identifier.name(), parameters, tempInstructions);
-				instructions.push_back(Instruction::push(token.sourceLocation(), Value::function(function)));
+
+				std::vector<Identifier> closedValues = getClosedValues(tempInstructions);
+				if (closedValues.empty())
+				{
+					InternalFunction function(token.sourceLocation(), identifier.name(), parameters, tempInstructions);
+					instructions.push_back(Instruction::push(token.sourceLocation(), Value::function(function)));
+				}
+				else
+				{
+					for (unsigned i = 0 ; i < closedValues.size() ; ++i)
+					{
+						parameters.insert(parameters.begin(), closedValues[i]);
+						instructions.push_back(Instruction::refClosure(token.sourceLocation(), closedValues[i]));
+					}
+					InternalFunction function(token.sourceLocation(), identifier.name(), parameters, tempInstructions);
+					instructions.push_back(Instruction::push(token.sourceLocation(), Value::function(function)));
+					instructions.push_back(Instruction::capture(token.sourceLocation(), closedValues.size()));
+				}
 				instructions.push_back(Instruction::assign(token.sourceLocation(), identifier.name()));
 
 				if (settings.printInstructions)
