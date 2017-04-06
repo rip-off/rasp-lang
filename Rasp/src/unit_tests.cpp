@@ -140,6 +140,22 @@ namespace
 		assertEquals(result.type(), Value::TNumber);
 		assertEquals(result.number(), 84 + 13 - 5);
 	}
+
+	void testClosure(Interpreter &interpreter)
+	{
+		InstructionList instructions;
+		instructions.push_back(Instruction::push(CURRENT_SOURCE_LOCATION, Value::number(42)));
+		instructions.push_back(Instruction::push(CURRENT_SOURCE_LOCATION, Value::number(13)));
+		const Value *value = interpreter.binding(Identifier("+"));
+		assertTrue(value, "Expected there is a binding for '+'");
+		instructions.push_back(Instruction::push(CURRENT_SOURCE_LOCATION, *value));
+		int argumentsToCapture = 2;
+		instructions.push_back(Instruction::capture(CURRENT_SOURCE_LOCATION, argumentsToCapture));
+		instructions.push_back(Instruction::call(CURRENT_SOURCE_LOCATION, 0));
+		Value result = interpreter.exec(instructions);
+		assertEquals(Value::TNumber, result.type());
+		assertEquals(result.number(), 55);
+	}
 }
 
 void runUnitTests(Interpreter &interpreter)
@@ -151,6 +167,7 @@ void runUnitTests(Interpreter &interpreter)
 		testInterpreter(interpreter);
 
 		testAll(interpreter);
+		testClosure(interpreter);
 	}
 	catch(const RaspError &e)
 	{

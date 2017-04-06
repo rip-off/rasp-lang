@@ -5,6 +5,7 @@
 #include "api.h"
 #include "bug.h"
 #include "execution_error.h"
+#include "closure.h"
 
 namespace
 {
@@ -55,6 +56,36 @@ namespace
 			error.buildStackTrace(" at function: " + function.name() + " " + str(function.sourceLocation()));
 			throw;
 		}
+	}
+
+	Value handleCapture(Interpreter *interpreter, const Value &value, Stack &stack, Bindings &bindings)
+	{
+		if(!value.isNumber())
+		{
+			throw CompilerBug("Capture instruction expects a numeric argument");				
+		}
+		// TODO: signed/unsigned mismatch...
+		unsigned argc = value.number();
+		if(stack.size() < argc + 1)
+		{
+			// TODO: include stack size and argc in exception information.
+			throw CompilerBug("Not enough values on the stack to capture closure");
+		}
+			
+		Value top = pop(stack);
+		if(!top.isFunction())
+		{
+			throw CompilerBug("Capture instruction expects top of the stack to be functional value");
+		}
+
+		Arguments closedValues;
+		while(argc --> 0)
+		{
+			closedValues.push_back(pop(stack));
+		}
+
+		Closure closure(top.function(), closedValues);
+		return Value::function(closure);
 	}
 }
 
@@ -201,6 +232,17 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 				}
 				Identifier identifier = Identifier(value.string());
 				bindings[identifier] = top;
+			}
+			break;
+		case Instruction::Capture:
+			{
+				if(settings_.trace)
+				{
+					std::cout << "DEBUG: " << it->sourceLocation() << " capture " << value << '\n';
+				}
+				// TODO: member function?
+				Value result = handleCapture(this, value, stack, bindings);
+				stack.push_back(result);
 			}
 			break;
 		default:

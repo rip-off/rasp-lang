@@ -24,6 +24,7 @@ public:
 		Jump,
 		Loop,
 		Assign,
+		Capture,
 	};
 
 	static Instruction noop(const SourceLocation &sourceLocation);
@@ -43,6 +44,8 @@ public:
 	static Instruction loop(const SourceLocation &sourceLocation, int instructions);
 
 	static Instruction assign(const SourceLocation &sourceLocation, const std::string &identifier);
+
+	static Instruction capture(const SourceLocation &sourceLocation, int argc);
 
 	Type type() const;
 

@@ -52,6 +52,11 @@ Instruction Instruction::assign(const SourceLocation &sourceLocation, const std:
 	return Instruction(sourceLocation, Assign, Value::string(identifier));
 }
 
+Instruction Instruction::capture(const SourceLocation &sourceLocation, int argc)
+{
+	return Instruction(sourceLocation, Capture, Value::number(argc));
+}
+
 Instruction::Type Instruction::type() const
 {
 	return type_;
@@ -97,6 +102,9 @@ std::ostream &operator<<(std::ostream &out, const Instruction &instruction)
 		break;
 	case Instruction::Assign:
 		out << "assign(" << instruction.value_.string() << ")";
+		break;
+	case Instruction::Capture:
+		out << "capture(" << instruction.value_ << ")"; // TODO: expected type?
 		break;
 	default:
 		throw CompilerBug("unhandled instruction type: " + str(instruction.type_));
