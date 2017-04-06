@@ -15,6 +15,9 @@ Questions:
 * Allow overloading? Currently "+" supports strings and numbers
 
 Next:
+* Unit testing
+** For C++ code
+** Native rasp framework?
 * Implement advanced data structures
 ** Dynamic arrays
 ** Linked list
