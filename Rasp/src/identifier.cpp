@@ -19,6 +19,7 @@ bool Identifier::isValid(const std::string &name)
 		"-",
 		"/",
 		"*",
+		"%",
 		"<",
 		">",
 		"!",

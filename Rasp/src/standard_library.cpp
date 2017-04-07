@@ -123,6 +123,15 @@ namespace
 		return Value::number(arguments[0].number() / arguments[1].number());
 	}
 
+	Value mod(const Arguments &arguments)
+	{
+		if(arguments.size() != 2 || !(arguments[0].isNumber() && arguments[1].isNumber()))
+		{
+			throw ExternalFunctionError("Expected 2 numeric arguments");
+		}
+		return Value::number(arguments[0].number() % arguments[1].number());
+	}
+
 	Value less(const Arguments &arguments)
 	{
 		if(arguments.size() != 2 || !(arguments[0].isNumber() && arguments[1].isNumber()))
@@ -422,6 +431,7 @@ namespace
 		ApiReg("-", CURRENT_SOURCE_LOCATION, &sub),
 		ApiReg("/", CURRENT_SOURCE_LOCATION, &div),
 		ApiReg("*", CURRENT_SOURCE_LOCATION, &mul),
+		ApiReg("%", CURRENT_SOURCE_LOCATION, &mod),
 		ApiReg("<", CURRENT_SOURCE_LOCATION, &less),
 		ApiReg(">", CURRENT_SOURCE_LOCATION, &greater),
 		ApiReg("!", CURRENT_SOURCE_LOCATION, &operatorNot),
