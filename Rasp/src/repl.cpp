@@ -40,7 +40,7 @@ void repl(Interpreter &interpreter, const Settings &settings)
 		}
 		catch(const ExecutionError &e)
 		{
-			std::cerr << "Execution error at line " << e.sourceLocation() << ": " << e.what() << '\n';
+			std::cerr << "Execution error at " << e.sourceLocation() << " " << e.what() << '\n';
 			printStackTrace(std::cerr, e);
 		}
 		catch(const RaspError &e)

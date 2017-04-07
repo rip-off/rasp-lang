@@ -53,7 +53,7 @@ namespace
 		}
 		catch (RaspError &error)
 		{
-			error.buildStackTrace(" at function: " + function.name() + " " + str(function.sourceLocation()));
+			error.buildStackTrace(" at function: " + function.name(), function.sourceLocation());
 			throw;
 		}
 	}

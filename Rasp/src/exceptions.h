@@ -4,22 +4,21 @@
 #include <string>
 #include <vector>
 #include <stdexcept>
+#include "source_location.h"
 
 class RaspError : public std::runtime_error
 {
 public:
-	typedef std::vector<std::string> StackTrace;
+	struct StackElement {
+		SourceLocation sourceLocation;
+		std::string message;
+	};
+	typedef std::vector<StackElement> StackTrace;
 
-	RaspError(const std::string &message)
-		: std::runtime_error(message)
-	{
-	}
-
+	RaspError(const std::string &message, const SourceLocation &sourceLocation);
 	virtual ~RaspError();
-
 	const StackTrace &stacktrace() const;
-
-	void buildStackTrace(const std::string &entry);
+	void buildStackTrace(const std::string &message, const SourceLocation &sourceLocation);
 
 private:
 	StackTrace stacktrace_;

@@ -9,7 +9,7 @@ class ExecutionError : public RaspError
 public:
 	ExecutionError(const SourceLocation &sourceLocation, const std::string &message)
 	:
-		RaspError(message),
+		RaspError(message, sourceLocation),
 		sourceLocation_(sourceLocation)
 	{
 	}

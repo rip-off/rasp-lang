@@ -40,7 +40,7 @@ void execute(Interpreter &interpreter, const std::string &filename, const Settin
 		}
 		catch(const ExecutionError &e)
 		{
-			std::cerr << "Execution error in " << filename << " at line " << e.sourceLocation() << ": " << e.what() << '\n';
+			std::cerr << "Execution error @ " << e.sourceLocation() << " " << e.what() << '\n';
 			printStackTrace(std::cerr, e);
 		}
 		catch(const RaspError &e)

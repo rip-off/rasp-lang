@@ -9,7 +9,7 @@ class LexError : public RaspError
 public:
 	LexError(const SourceLocation &sourceLocation, const std::string &message)
 	: 
-		RaspError(message),
+		RaspError(message, sourceLocation),
 		sourceLocation_(sourceLocation)
 	{
 	}
