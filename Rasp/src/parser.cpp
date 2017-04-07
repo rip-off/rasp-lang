@@ -389,7 +389,6 @@ namespace
 			std::cout << "identifier: " << token.string() << '\n';
 			break;
 		}
-		// TODO:std::cout << '\n';
 	}
 }
 
