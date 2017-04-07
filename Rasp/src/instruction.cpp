@@ -104,7 +104,7 @@ std::ostream &operator<<(std::ostream &out, const Instruction &instruction)
 		out << "assign(" << instruction.value_.string() << ")";
 		break;
 	case Instruction::Capture:
-		out << "capture(" << instruction.value_ << ")"; // TODO: expected type?
+		out << "capture(" << instruction.value_ << ")";
 		break;
 	default:
 		throw CompilerBug("unhandled instruction type: " + str(instruction.type_));
