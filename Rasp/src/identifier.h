@@ -8,7 +8,7 @@ class Identifier
 public:
 	explicit Identifier(const std::string &name);
 
-	const std::string /* TODO: & */name() const
+	const std::string &name() const
 	{
 		return name_;
 	}
