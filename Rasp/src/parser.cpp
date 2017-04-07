@@ -136,7 +136,6 @@ namespace
 					throw ParseError(token.sourceLocation(), "Keyword 'var' identity '" + identifier.name() + "' already defined");
 				}
 				parse(children[2], declarations, instructions, settings);
-				// TODO: bug (var x (+ x 1)) ?
 				declarations.add(identifier);
 				instructions.push_back(Instruction::assign(token.sourceLocation(), identifier.name()));
 			}
