@@ -19,6 +19,13 @@ namespace
 		return result;
 	}
 
+	void handleRef(const Value &value, Stack &stack, Bindings &bindings)
+	{
+		// TODO: compiler bug: binding not found?
+		Identifier identifier = Identifier(value.string());
+		stack.push_back(bindings[identifier]);
+	}
+
 	Value handleFunction(Interpreter *interpreter, const Value &value, Stack &stack, Bindings &bindings)
 	{
 		if(!value.isNumber())
@@ -118,40 +125,25 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 			}
 			// Do nothing
 			break;
-		case Instruction::RefLocal: // TODO: de-duplicate?
+		case Instruction::RefLocal:
+			handleRef(value, stack, bindings);
+			if(settings_.trace)
 			{
-				// TODO: compiler bug: binding not found?
-				Identifier identifier = Identifier(value.string());
-				const Value &value = bindings[identifier];
-				if(settings_.trace)
-				{
-					std::cout << "DEBUG: " << it->sourceLocation() << " local " << identifier.name() << " = " << value << '\n';
-				}
-				stack.push_back(value);
+				std::cout << "DEBUG: " << it->sourceLocation() << " local ref " << value.string() << " = " << stack.back() << '\n';
 			}
 			break;
 		case Instruction::RefGlobal:
+			handleRef(value, stack, bindings);
+			if(settings_.trace)
 			{
-				// TODO: compiler bug: binding not found?
-				Identifier identifier = Identifier(value.string());
-				const Value &value = bindings[identifier];
-				if(settings_.trace)
-				{
-					std::cout << "DEBUG: " << it->sourceLocation() << " global " << identifier.name() << " = " << value << '\n';
-				}
-				stack.push_back(value);
+				std::cout << "DEBUG: " << it->sourceLocation() << " global ref " << value.string() << " = " << stack.back() << '\n';
 			}
 			break;
 		case Instruction::RefClosure:
+			handleRef(value, stack, bindings);
+			if(settings_.trace)
 			{
-				// TODO: compiler bug: binding not found?
-				Identifier identifier = Identifier(value.string());
-				const Value &value = bindings[identifier];
-				if(settings_.trace)
-				{
-					std::cout << "DEBUG: " << it->sourceLocation() << " closure " << identifier.name() << " = " << value << '\n';
-				}
-				stack.push_back(value);
+				std::cout << "DEBUG: " << it->sourceLocation() << " closure ref " << value.string() << " = " << stack.back() << '\n';
 			}
 			break;
 		case Instruction::Push:
