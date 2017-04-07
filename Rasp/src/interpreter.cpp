@@ -40,8 +40,7 @@ namespace
 		unsigned argc = value.number();
 		if(stack.size() < argc + 1)
 		{
-			// TODO: include stack size and argc in exception information.
-			throw CompilerBug("Not enough values on the stack to call function");
+			throw CompilerBug("Need " + str(argc + 1) + " values on stack to call function, but only have " + str(stack.size()));
 		}
 			
 		Value top = pop(stack);
@@ -79,8 +78,7 @@ namespace
 		unsigned argc = value.number();
 		if(stack.size() < argc + 1)
 		{
-			// TODO: include stack size and argc in exception information.
-			throw CompilerBug("Not enough values on the stack to capture closure");
+			throw CompilerBug("Need " + str(argc + 1) + " values on stack to capture closure, but only have " + str(stack.size()));
 		}
 			
 		Value top = pop(stack);
