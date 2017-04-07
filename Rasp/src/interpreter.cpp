@@ -19,11 +19,15 @@ namespace
 		return result;
 	}
 
-	void handleRef(const Value &value, Stack &stack, Bindings &bindings)
+	void handleRef(const Value &value, Stack &stack, const Bindings &bindings)
 	{
-		// TODO: compiler bug: binding not found?
 		Identifier identifier = Identifier(value.string());
-		stack.push_back(bindings[identifier]);
+		Bindings::const_iterator it = bindings.find(identifier);
+		if (it == bindings.end())
+		{
+			throw CompilerBug("Expected binding not found: " + identifier.name());
+		}
+		stack.push_back(it->second);
 	}
 
 	Value handleFunction(Interpreter *interpreter, const Value &value, Stack &stack, Bindings &bindings)
