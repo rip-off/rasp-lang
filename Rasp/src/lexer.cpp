@@ -267,7 +267,6 @@ namespace
 				}
 			}
 		}
-		// TODO: file name & line number
 		throw LexError(current.sourceLocation(), "String literal never closed");
 	}
 
