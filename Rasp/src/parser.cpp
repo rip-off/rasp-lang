@@ -5,6 +5,7 @@
 
 #include "bug.h"
 #include "token.h"
+#include "escape.h"
 #include "bindings.h"
 #include "settings.h"
 #include "exceptions.h"
@@ -370,7 +371,7 @@ namespace
 			break;
 		case Token::String:
 			assert(children.empty());
-			std::cout << "string: \"" << token.string() << "\"\n"; // TODO: quote(...)
+			std::cout << "string: \"" << addEscapes(token.string()) << "\"\n";
 			break;
 		case Token::Number:
 			assert(children.empty());

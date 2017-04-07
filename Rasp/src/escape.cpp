@@ -71,3 +71,22 @@ char reescape(char c)
 	return throwUnrecognisedEscape(c);
 }
 
+std::string addEscapes(const std::string &text)
+{
+	std::string result;
+	for (unsigned i = 0 ; i < text.size() ; ++i)
+	{
+		char c = text[i];
+		if (needsReescaping(c))
+		{
+			result += '\\';
+			result += reescape(c);
+		}
+		else
+		{
+			result += c;
+		}
+	}
+	return result;
+}
+

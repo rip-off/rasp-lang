@@ -145,28 +145,6 @@ bool Value::asBool() const
 	}
 }
 
-namespace
-{
-	std::string addEscapes(const std::string &text)
-	{
-		std::string result;
-		for (unsigned i = 0 ; i < text.size() ; ++i) 
-		{
-			char c = text[i];
-			if (needsReescaping(c)) 
-			{
-				result += '\\';
-				result += reescape(c);
-			}
-			else
-			{
-				result += c;
-			}
-		}
-		return result;
-	}
-}
-
 std::ostream &operator<<(std::ostream &out, const Value &value)
 {
 	switch(value.type_)
