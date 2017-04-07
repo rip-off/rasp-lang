@@ -1,3 +1,6 @@
-(defun infiniteRecursion () (infiniteRecursion))
-(infiniteRecursion)
+(defun infiniteRecursion (depth)
+	(println "Recursion depth: " depth)
+	(infiniteRecursion (+ depth 1)))
+
+(infiniteRecursion 0)
 
