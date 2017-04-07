@@ -239,7 +239,7 @@ namespace
 			}
 			else
 			{
-				throw CompilerBug("unhandled keyword '" + token.string() + "' at line " + str(token.line()));
+				throw CompilerBug("unhandled keyword '" + token.string() + "' at line " + str(token.sourceLocation()));
 			}
 		}
 		else
@@ -293,7 +293,7 @@ namespace
 			}
 			else
 			{
-				throw CompilerBug("illegal boolean literal '" + token.string() + "' " + str(token.line()));
+				throw CompilerBug("illegal boolean literal '" + token.string() + "' " + str(token.sourceLocation()));
 			}
 			break;
 		case Token::Keyword:

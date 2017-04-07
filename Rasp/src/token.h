@@ -41,9 +41,6 @@ public:
 
 	static Token identifier(const SourceLocation &sourceLocation, const std::string &identifier);
 
-	// TODO: cleanup
-	unsigned line() const;
-
 	const SourceLocation &sourceLocation() const;
 
 	Type type() const;

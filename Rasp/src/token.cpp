@@ -41,11 +41,6 @@ Token Token::identifier(const SourceLocation &sourceLocation, const std::string 
 	return Token(sourceLocation, Identifier, identifier);
 }
 
-unsigned Token::line() const
-{
-	return sourceLocation_.line();
-}
-
 const SourceLocation &Token::sourceLocation() const
 {
 	return sourceLocation_;

@@ -1,0 +1,20 @@
+
+(defun read_int (prompt)
+	(var result nil)
+	(var show_error false)
+	(while (is_nil result)
+		(if show_error
+			(println "Please enter a number"))
+		(print prompt)
+		(var input (read_line))
+		(set result (try_convert_string_to_int input))
+		// No need to check if there was actually an error
+		// we'll never print the message in that case...
+		(set show_error true))
+	/* TODO: return statement? */
+	result)
+
+(var x (read_int "Enter a number: "))
+(var even (== 0 (% x 2)))
+(if even (println x " is even") else (println x " is odd"))
+
