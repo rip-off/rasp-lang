@@ -1,9 +1,6 @@
 Doing:
-* Print line numbers associated with execution errors
-* Print stack traces for errors in functions?
 * Arrays
 * SourceLocation(File, Line, Column?) rather than just line
-* SourceLocation in InternalFunction?
 
 Known bugs / issues:
 * (*) returns 1
@@ -47,6 +44,9 @@ Wild ideas:
 * Invoke with multiple mains, each its own thread / process
 
 Done:
+* Print line numbers associated with execution errors
+* Print stack traces for errors in functions?
+* SourceLocation in InternalFunction?
 * Identifier checks
 * Booleans
 * Loops
