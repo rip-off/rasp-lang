@@ -249,7 +249,6 @@ namespace
 			}
 			// Call expects the number of arguments, so we must omit 1 element
 			// This is because the function is the mandatory first element
-			// TODO: check the first element is a function at compile time
 			instructions.push_back(Instruction::call(token.sourceLocation(), children.size() - 1));
 		}
 	}
