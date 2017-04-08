@@ -7,6 +7,7 @@
 #include <cassert>
 
 class Function;
+struct TypeDefinition;
 
 class Value
 {
@@ -20,6 +21,7 @@ private:
 		Function *function;
 		std::string *string;
 		Array *array;
+		TypeDefinition *typeDefinition;
 	};
 
 public:
@@ -31,6 +33,7 @@ public:
 		TNumber,
 		TBoolean,
 		TFunction,
+		TTypeDefinition,
 	};
 
 	Value();
@@ -47,6 +50,7 @@ public:
 	static Value number(int number);
 	static Value string(const std::string &text);
 	static Value function(const Function &function);
+	static Value typeDefinition(const TypeDefinition &typeDefinition);
 
 	bool isNil() const
 	{
@@ -123,13 +127,13 @@ public:
 		return !equal;
 	}
 
-
+private:
 	explicit Value(bool boolean);
 	explicit Value(int number);
 	explicit Value(const std::string &text);
 	explicit Value(const Function &function);
-private:
 	explicit Value(const Array &array);
+	explicit Value(const TypeDefinition &typeDefinition);
 
 	Type type_;
 	Data data_;

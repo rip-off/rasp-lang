@@ -1,0 +1,7 @@
+(type person id name)
+(println person)
+
+//(var alice (new person 1 "Alice"))
+//(print alice.name " has ID " alice.id)
+
+// (var bob (new person 2 "Bob"))

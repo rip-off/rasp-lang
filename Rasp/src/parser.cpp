@@ -9,6 +9,7 @@
 #include "bindings.h"
 #include "settings.h"
 #include "exceptions.h"
+#include "type_definition.h"
 #include "internal_function.h"
 
 namespace
@@ -158,8 +159,39 @@ namespace
 				parse(children[2], declarations, instructions, settings);
 				instructions.push_back(Instruction::assign(token.sourceLocation(), identifier.name()));
 			}
+			else if(keyword == "type")
+			{
+				if(children.empty())
+				{
+					throw ParseError(token.sourceLocation(), "Keyword 'type' requires a name");
+				}
+				else if(children.size() == 1)
+				{
+					throw ParseError(token.sourceLocation(), "Keyword 'type' function requires members");
+				}
+				Identifier identifier = tryMakeIdentifier(children[1]);
+				if (declarations.isDefined(identifier))
+				{
+					throw ParseError(token.sourceLocation(), "Keyword 'type' identifier " + identifier.name() + " already defined");
+				}
+
+				std::vector<Identifier> memberNames;
+				for (int i = 2 ; i < children.size() ; ++i)
+				{
+					Identifier identifier = tryMakeIdentifier(children[i]);
+					memberNames.push_back(identifier);
+				}
+
+				TypeDefinition typeDefinition = { identifier.name(), memberNames };
+				instructions.push_back(Instruction::push(token.sourceLocation(), Value::typeDefinition(typeDefinition)));
+				instructions.push_back(Instruction::assign(token.sourceLocation(), identifier.name()));
+
+				// For the moment, do not allow recursive types
+				declarations.add(identifier);
+			}
 			else if(keyword == "defun")
 			{
+				// TODO: error messages are incorrect
 				if(children.size() == 2)
 				{
 					throw ParseError(token.sourceLocation(), "Keyword 'defun' function requires a name");

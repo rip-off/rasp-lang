@@ -172,11 +172,12 @@ namespace
 		std::string string(current, literalEnd);
 		current = literalEnd;
 
-		// TODO: duplicated with parser.cpp
+		// Note: Duplicated with parser.cpp
 		static std::string keywords[] = {
 			"if",
 			"var",
 			"set",
+			"type",
 			"defun",
 			"while",
 		};

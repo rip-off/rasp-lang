@@ -7,6 +7,7 @@
 
 #include "escape.h"
 #include "function.h"
+#include "type_definition.h"
 
 Value::Value()
 	: type_(TNil)
@@ -43,6 +44,12 @@ Value::Value(const Array &elements)
 	data_.array = new Array(elements);
 }
 
+Value::Value(const TypeDefinition &typeDefinition)
+	: type_(TTypeDefinition)
+{
+	data_.typeDefinition = new TypeDefinition(typeDefinition);
+}
+
 Value::~Value()
 {
 	if(type_ == TFunction)
@@ -56,6 +63,10 @@ Value::~Value()
 	else if(type_ == TArray)
 	{
 		delete data_.array;
+	}
+	else if(type_ == TTypeDefinition)
+	{
+		delete data_.typeDefinition;
 	}
 }
 
@@ -73,6 +84,10 @@ Value::Value(const Value &value)
 	else if(type_ == TArray)
 	{
 		data_.array = new Array(*value.data_.array);
+	}
+	else if(type_ == TTypeDefinition)
+	{
+		data_.typeDefinition = new TypeDefinition(*value.data_.typeDefinition);
 	}
 	else
 	{
@@ -117,6 +132,11 @@ Value Value::function(const Function &function)
 	return Value(function);
 }
 
+Value Value::typeDefinition(const TypeDefinition &typeDefinition)
+{
+	return Value(typeDefinition);
+}
+
 void swap(Value &a, Value &b)
 {
 	using std::swap;
@@ -140,6 +160,8 @@ bool Value::asBool() const
 		return true;
 	case Value::TArray:
 		return !data_.array->empty();
+	case Value::TTypeDefinition:
+		return true;
 	default:
 		throw std::logic_error("Type not implemented");
 	}
@@ -174,6 +196,8 @@ std::ostream &operator<<(std::ostream &out, const Value &value)
 		return out << (value.data_.boolean ? "true" : "false");
 	case Value::TFunction:
 		return out << "<function: " << value.data_.function->name() << '>';
+	case Value::TTypeDefinition:
+		return out << "<type: " << value.data_.typeDefinition->name << '>';
 	default:
 		throw std::logic_error("Type not implemented");
 	}
@@ -215,6 +239,8 @@ bool operator==(const Value &left, const Value &right)
 		return left.data_.boolean == right.data_.boolean;
 	case Value::TFunction:
 		throw std::logic_error("Comparing functions is not supported");
+	case Value::TTypeDefinition:
+		throw std::logic_error("Comparing types is not supported"); // TODO different exception?
 	default:
 		throw std::logic_error("Type not implemented");
 	}
