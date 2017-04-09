@@ -82,6 +82,11 @@ public:
 		return type_ == TFunction; 
 	}
 
+	bool isTypeDefinition() const
+	{
+		return type_ == TTypeDefinition;
+	}
+
 	int number() const
 	{
 		assert(isNumber());
@@ -104,6 +109,12 @@ public:
 	{
 		assert(isFunction());
 		return *data_.function;
+	}
+
+	const TypeDefinition &typeDefinition() const
+	{
+		assert(isTypeDefinition());
+		return *data_.typeDefinition;
 	}
 
 	Type type() const

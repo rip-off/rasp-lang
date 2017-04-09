@@ -5,6 +5,7 @@
 
 #include "api.h"
 #include "execution_error.h"
+#include "type_definition.h"
 
 namespace
 {
@@ -397,7 +398,6 @@ namespace
 		return Value::string(stream.str());
 	}
 
-
 	Value rasp_assert(const Arguments &arguments)
 	{
 		if(arguments.empty())
@@ -423,6 +423,29 @@ namespace
 		return Value::nil();
 	}
 
+	Value rasp_new(const Arguments &arguments)
+	{
+		if(arguments.empty())
+		{
+			throw ExternalFunctionError("Too few arguments");
+		}
+		if(!arguments.front().isTypeDefinition())
+		{
+			throw ExternalFunctionError("Expected first argument to be a type definition");
+		}
+
+		const TypeDefinition &typeDefinition = arguments.front().typeDefinition();
+		int constructorArguments = arguments.size() - 1;
+		if (typeDefinition.memberNames.size() != constructorArguments)
+		{
+			throw ExternalFunctionError("Type " + typeDefinition.name + " requires " + str(typeDefinition.memberNames.size()) + " arguments, but only found " + str(constructorArguments));
+		}
+
+		// TODO: specific representation for user types
+		std::vector<Value> members(arguments.begin() + 1, arguments.end());
+		return Value::array(members);
+	}
+
 #define ENTRY(X) ApiReg(#X, CURRENT_SOURCE_LOCATION, &X)
 
 	const ApiReg registry[] = 
@@ -441,6 +464,7 @@ namespace
 		ApiReg(">=", CURRENT_SOURCE_LOCATION, &greaterEqual),
 		ApiReg("||", CURRENT_SOURCE_LOCATION, &operatorOr),
 		ApiReg("&&", CURRENT_SOURCE_LOCATION, &operatorAnd),
+		ApiReg("new", CURRENT_SOURCE_LOCATION, &rasp_new),
 		ApiReg("assert", CURRENT_SOURCE_LOCATION, &rasp_assert),
 		ENTRY(time),
 		ENTRY(print),
