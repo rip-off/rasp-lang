@@ -3,6 +3,14 @@
 
 (var alice (new person 1 "Alice"))
 (println alice)
-(print alice.name " has ID " alice.id)
+(println alice.name " has ID " alice.id)
 
-// (var bob (new person 2 "Bob"))
+(var bob (new person 2 "Bob"))
+(println bob.name " has ID " bob.id)
+
+(type relationship person1 person2)
+
+(var alice_and_bob (new relationship alice bob))
+(println alice_and_bob)
+(println alice_and_bob.person1.name " has relationship with " alice_and_bob.person2.name)
+

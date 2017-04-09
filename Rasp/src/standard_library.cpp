@@ -431,19 +431,25 @@ namespace
 		}
 		if(!arguments.front().isTypeDefinition())
 		{
-			throw ExternalFunctionError("Expected first argument to be a type definition");
+			throw ExternalFunctionError("Expected first argument to be a type definition, but got " + str(arguments.front()));
 		}
 
 		const TypeDefinition &typeDefinition = arguments.front().typeDefinition();
-		int constructorArguments = arguments.size() - 1;
-		if (typeDefinition.memberNames.size() != constructorArguments)
+		size_t memberCount = typeDefinition.memberNames.size();
+		size_t constructorArguments = arguments.size() - 1;
+		if (memberCount != constructorArguments)
 		{
-			throw ExternalFunctionError("Type " + typeDefinition.name + " requires " + str(typeDefinition.memberNames.size()) + " arguments, but only found " + str(constructorArguments));
+			throw ExternalFunctionError("Type " + typeDefinition.name + " requires " + str(memberCount) + " members, but found " + str(constructorArguments));
 		}
 
-		// TODO: specific representation for user types
-		std::vector<Value> members(arguments.begin() + 1, arguments.end());
-		return Value::array(members);
+		Value::Object object;
+		for (size_t i = 0 ; i < memberCount ; ++i)
+		{
+			const std::string &memberName = typeDefinition.memberNames[i].name();
+			object[memberName] = arguments[i + 1];
+		}
+
+		return Value::object(object);
 	}
 
 #define ENTRY(X) ApiReg(#X, CURRENT_SOURCE_LOCATION, &X)

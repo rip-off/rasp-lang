@@ -57,6 +57,11 @@ Instruction Instruction::capture(const SourceLocation &sourceLocation, int argc)
 	return Instruction(sourceLocation, Capture, Value::number(argc));
 }
 
+Instruction Instruction::memberAccess(const SourceLocation &sourceLocation, const std::string &identifier)
+{
+	return Instruction(sourceLocation, MemberAccess, Value::string(identifier));
+}
+
 Instruction::Type Instruction::type() const
 {
 	return type_;
@@ -105,6 +110,9 @@ std::ostream &operator<<(std::ostream &out, const Instruction &instruction)
 		break;
 	case Instruction::Capture:
 		out << "capture(" << instruction.value_ << ")";
+		break;
+	case Instruction::MemberAccess:
+		out << "member(" << instruction.value_.string() << ")";
 		break;
 	default:
 		throw CompilerBug("unhandled instruction type: " + str(instruction.type_));

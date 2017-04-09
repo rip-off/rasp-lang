@@ -169,26 +169,22 @@ namespace
 		const std::string::const_iterator end = string.end();
 		std::string::const_iterator current = string.begin();
 		std::string::const_iterator dotDelimiter = std::find(current, end, '.');
-		if(dotDelimiter == end)
-		{
-			return Token::identifier(sourceLocation, string);
-		}
+		Token identifier = Token::identifier(sourceLocation, std::string(current, dotDelimiter));
 
-		Token memberAccess = Token::dot(sourceLocation);
-		do
+		while(dotDelimiter != end)
 		{
-			Token identifier = Token::identifier(sourceLocation, std::string(current, dotDelimiter));
-			memberAccess.addChild(identifier);
-
 			current = dotDelimiter + 1;
 			dotDelimiter = std::find(current, end, '.');
+
+			Token memberAccess = Token::identifier(sourceLocation, std::string(current, dotDelimiter));
+			identifier.addChild(memberAccess);
 		}
-		while(dotDelimiter != end);
 
-		Token identifier = Token::identifier(sourceLocation, std::string(current, end));
-		memberAccess.addChild(identifier);
+// TODO: cleanup?
+//		Token identifier = Token::identifier(sourceLocation, std::string(current, end));
+//		memberAccess.addChild(identifier);
 
-		return memberAccess;
+		return identifier;
 	}
 
 	Token literal(Iterator &current, const Iterator end)

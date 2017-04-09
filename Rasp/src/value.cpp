@@ -32,6 +32,12 @@ Value::Value(const Function &function)
 	data_.function = function.clone();
 }
 
+Value::Value(const Object &object)
+	: type_(TObject)
+{
+	data_.object = new Object(object);
+}
+
 Value::Value(const std::string &text)
 	: type_(TString)
 {
@@ -60,6 +66,10 @@ Value::~Value()
 	{
 		delete data_.string;
 	}
+	else if(type_ == TObject)
+	{
+		delete data_.object;
+	}
 	else if(type_ == TArray)
 	{
 		delete data_.array;
@@ -80,6 +90,10 @@ Value::Value(const Value &value)
 	else if(type_ == TString)
 	{
 		data_.string = new std::string(*value.data_.string);
+	}
+	else if(type_ == TObject)
+	{
+		data_.object = new Object(*value.data_.object);
 	}
 	else if(type_ == TArray)
 	{
@@ -122,6 +136,11 @@ Value Value::number(int number)
 	return Value(number);
 }
 
+Value Value::object(const Object &object)
+{
+	return Value(object);
+}
+
 Value Value::string(const std::string &text)
 {
 	return Value(text);
@@ -154,6 +173,8 @@ bool Value::asBool() const
 		return !data_.string->empty();
 	case Value::TNumber:
 		return data_.number != 0;
+	case Value::TObject:
+		return true;
 	case Value::TBoolean:
 		return data_.boolean;
 	case Value::TFunction:
@@ -192,6 +213,21 @@ std::ostream &operator<<(std::ostream &out, const Value &value)
 		return out << '\"' << addEscapes(*value.data_.string) << '\"';
 	case Value::TNumber:
 		return out << value.data_.number;
+	case Value::TObject:
+		{
+			out << '{';
+			const Value::Object &object = *value.data_.object;
+			for (Value::Object::const_iterator it = object.begin() ; it != object.end() ; ++it)
+			{
+				if (it != object.begin())
+				{
+					out << ", ";
+				}
+				out << it->first << " = " << it->second;
+			}
+			out << '}';
+		}
+		return out;
 	case Value::TBoolean:
 		return out << (value.data_.boolean ? "true" : "false");
 	case Value::TFunction:
@@ -235,6 +271,9 @@ bool operator==(const Value &left, const Value &right)
 		return *left.data_.string == *right.data_.string;
 	case Value::TNumber:
 		return left.data_.number == right.data_.number;
+	case Value::TObject:
+		// TODO:
+		throw std::logic_error("Comparing objects not implemented!");
 	case Value::TBoolean:
 		return left.data_.boolean == right.data_.boolean;
 	case Value::TFunction:

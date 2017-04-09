@@ -25,6 +25,7 @@ public:
 		Loop,
 		Assign,
 		Capture,
+		MemberAccess,
 	};
 
 	static Instruction noop(const SourceLocation &sourceLocation);
@@ -46,6 +47,8 @@ public:
 	static Instruction assign(const SourceLocation &sourceLocation, const std::string &identifier);
 
 	static Instruction capture(const SourceLocation &sourceLocation, int argc);
+
+	static Instruction memberAccess(const SourceLocation &sourceLocation, const std::string &identifier);
 
 	Type type() const;
 

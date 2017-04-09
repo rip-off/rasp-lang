@@ -296,7 +296,37 @@ namespace
 			instructions.push_back(Instruction::push(token.sourceLocation(), Value::nil()));
 			break;
 		case Token::Dot:
-			throw CompilerBug("TODO member access"); // TODO
+			{
+				// TODO: de-duplicate!
+				Identifier identifier = tryMakeIdentifier(token);
+				switch(declarations.checkIdentifier(identifier))
+				{
+				case IDENTIFIER_DEFINITION_UNDEFINED:
+					throw ParseError(token.sourceLocation(), "Variable '" + identifier.name() + "' not defined");
+					break;
+				case IDENTIFIER_DEFINITION_LOCAL:
+					instructions.push_back(Instruction::refLocal(token.sourceLocation(), identifier));
+					break;
+				case IDENTIFIER_DEFINITION_CLOSURE:
+					instructions.push_back(Instruction::refClosure(token.sourceLocation(), identifier));
+					break;
+				case IDENTIFIER_DEFINITION_GLOBAL:
+					instructions.push_back(Instruction::refGlobal(token.sourceLocation(), identifier));
+					break;
+				default:
+					throw CompilerBug("Failed to classify identifier " + identifier.name() + " at " + str(token.sourceLocation()));
+				}
+
+				for(Token::Children::const_iterator i = children.begin() ; i != children.end() ; ++i)
+				{
+					const Token &child = *i;
+					if (child.type() != Token::Identifier)
+					{
+						throw CompilerBug("Expected identifier but got " + str(child.type()));
+					}
+					instructions.push_back(Instruction::memberAccess(token.sourceLocation(), identifier.name()));
+				}
+			}
 			break;
 		case Token::Root:
 			assert(children.empty());
@@ -337,7 +367,6 @@ namespace
 			break;
 		case Token::Identifier:
 			{
-				assert(children.empty());
 				Identifier identifier = tryMakeIdentifier(token);
 				switch(declarations.checkIdentifier(identifier))
 				{
@@ -355,6 +384,17 @@ namespace
 					break;
 				default:
 					throw CompilerBug("Failed to classify identifier " + identifier.name() + " at " + str(token.sourceLocation()));
+				}
+
+				// TODO: unity with 'dot'?
+				for(Token::Children::const_iterator i = children.begin() ; i != children.end() ; ++i)
+				{
+					const Token &child = *i;
+					if (child.type() != Token::Identifier)
+					{
+						throw CompilerBug("Expected identifier but got " + str(child.type()));
+					}
+					instructions.push_back(Instruction::memberAccess(token.sourceLocation(), child.string()));
 				}
 			}
 			break;

@@ -46,6 +46,7 @@ namespace
 		Value top = pop(stack);
 		if(!top.isFunction())
 		{
+			// TODO: runtime error, not a bug?
 			throw CompilerBug("Call instruction expects top of the stack to be functional value");
 		}
 
@@ -237,6 +238,34 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 				// TODO: member function?
 				Value result = handleCapture(this, value, stack, bindings);
 				stack.push_back(result);
+			}
+			break;
+		case Instruction::MemberAccess:
+			{
+				if(settings_.trace)
+				{
+					std::cout << "DEBUG: " << it->sourceLocation() << " member access " << value << '\n';
+				}
+				// TODO: RASP_ASSERT (throws CompilerBug(__FILE__, __LINE__, ...)?
+				assert(value.isString());
+				const std::string &memberName = value.string();
+
+				Value top = pop(stack);
+				if(!top.isObject())
+				{
+					throw ExecutionError(it->sourceLocation(), "Member access instruction requires an object but got " + str(top));
+				}
+				const Value::Object &object = top.object();
+				Value::Object::const_iterator memberIterator = object.find(memberName);
+				if (memberIterator == object.end())
+				{
+					throw ExecutionError(it->sourceLocation(), "Unknown member name " + memberName + " for " + str(top));
+				}
+				if(settings_.trace)
+				{
+					std::cout << "DEBUG: " << it->sourceLocation() << " member access " << value.string() << "." << memberName << " was " << memberIterator->second << '\n';
+				}
+				stack.push_back(memberIterator->second);
 			}
 			break;
 		default:
