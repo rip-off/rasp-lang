@@ -164,6 +164,33 @@ namespace
 		return begin;
 	}
 
+	Token identifierOrMemberAccess(const SourceLocation &sourceLocation, const std::string string)
+	{
+		const std::string::const_iterator end = string.end();
+		std::string::const_iterator current = string.begin();
+		std::string::const_iterator dotDelimiter = std::find(current, end, '.');
+		if(dotDelimiter == end)
+		{
+			return Token::identifier(sourceLocation, string);
+		}
+
+		Token memberAccess = Token::dot(sourceLocation);
+		do
+		{
+			Token identifier = Token::identifier(sourceLocation, std::string(current, dotDelimiter));
+			memberAccess.addChild(identifier);
+
+			current = dotDelimiter + 1;
+			dotDelimiter = std::find(current, end, '.');
+		}
+		while(dotDelimiter != end);
+
+		Token identifier = Token::identifier(sourceLocation, std::string(current, end));
+		memberAccess.addChild(identifier);
+
+		return memberAccess;
+	}
+
 	Token literal(Iterator &current, const Iterator end)
 	{
 		current = consumeWhitespace(current, end);
@@ -200,7 +227,7 @@ namespace
 		}
 		else
 		{
-			return Token::identifier(current.sourceLocation(), string);
+			return identifierOrMemberAccess(current.sourceLocation(), string);
 		}
 	}
 

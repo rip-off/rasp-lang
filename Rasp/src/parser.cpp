@@ -295,6 +295,9 @@ namespace
 			assert(children.empty());
 			instructions.push_back(Instruction::push(token.sourceLocation(), Value::nil()));
 			break;
+		case Token::Dot:
+			throw CompilerBug("TODO member access"); // TODO
+			break;
 		case Token::Root:
 			assert(children.empty());
 			// do nothing;
@@ -375,6 +378,15 @@ namespace
 		case Token::Nil:
 			assert(children.empty());
 			std::cout << "nil\n";
+			break;
+		case Token::Dot:
+			std::cout << "dot {\n";
+			for(Token::Children::const_iterator i = children.begin() ; i != children.end() ; ++i)
+			{
+				printTree(*i, level + 1);
+			}
+			indent(level);
+			std::cout << "}\n";
 			break;
 		case Token::Root:
 			std::cout << "root {\n";

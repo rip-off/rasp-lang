@@ -5,6 +5,11 @@ Token Token::nil(const SourceLocation &sourceLocation)
 	return Token(sourceLocation, Nil, "__nil_literal");
 }
 
+Token Token::dot(const SourceLocation &sourceLocation)
+{
+	return Token(sourceLocation, Dot, "__dot");
+}
+
 Token Token::root(const SourceLocation &sourceLocation)
 {
 	return Token(sourceLocation, Root, "__root");
