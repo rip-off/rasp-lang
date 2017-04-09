@@ -16,7 +16,6 @@ public:
 	enum Type
 	{
 		Nil,
-		Dot,
 		Root,
 		List,
 		String,
@@ -27,8 +26,6 @@ public:
 	};
 
 	static Token nil(const SourceLocation &sourceLocation);
-
-	static Token dot(const SourceLocation &sourceLocation);
 
 	static Token root(const SourceLocation &sourceLocation);
 

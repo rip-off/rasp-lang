@@ -180,10 +180,6 @@ namespace
 			identifier.addChild(memberAccess);
 		}
 
-// TODO: cleanup?
-//		Token identifier = Token::identifier(sourceLocation, std::string(current, end));
-//		memberAccess.addChild(identifier);
-
 		return identifier;
 	}
 

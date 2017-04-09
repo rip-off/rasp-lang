@@ -295,39 +295,6 @@ namespace
 			assert(children.empty());
 			instructions.push_back(Instruction::push(token.sourceLocation(), Value::nil()));
 			break;
-		case Token::Dot:
-			{
-				// TODO: de-duplicate!
-				Identifier identifier = tryMakeIdentifier(token);
-				switch(declarations.checkIdentifier(identifier))
-				{
-				case IDENTIFIER_DEFINITION_UNDEFINED:
-					throw ParseError(token.sourceLocation(), "Variable '" + identifier.name() + "' not defined");
-					break;
-				case IDENTIFIER_DEFINITION_LOCAL:
-					instructions.push_back(Instruction::refLocal(token.sourceLocation(), identifier));
-					break;
-				case IDENTIFIER_DEFINITION_CLOSURE:
-					instructions.push_back(Instruction::refClosure(token.sourceLocation(), identifier));
-					break;
-				case IDENTIFIER_DEFINITION_GLOBAL:
-					instructions.push_back(Instruction::refGlobal(token.sourceLocation(), identifier));
-					break;
-				default:
-					throw CompilerBug("Failed to classify identifier " + identifier.name() + " at " + str(token.sourceLocation()));
-				}
-
-				for(Token::Children::const_iterator i = children.begin() ; i != children.end() ; ++i)
-				{
-					const Token &child = *i;
-					if (child.type() != Token::Identifier)
-					{
-						throw CompilerBug("Expected identifier but got " + str(child.type()));
-					}
-					instructions.push_back(Instruction::memberAccess(token.sourceLocation(), identifier.name()));
-				}
-			}
-			break;
 		case Token::Root:
 			assert(children.empty());
 			// do nothing;
@@ -386,7 +353,6 @@ namespace
 					throw CompilerBug("Failed to classify identifier " + identifier.name() + " at " + str(token.sourceLocation()));
 				}
 
-				// TODO: unity with 'dot'?
 				for(Token::Children::const_iterator i = children.begin() ; i != children.end() ; ++i)
 				{
 					const Token &child = *i;
@@ -418,15 +384,6 @@ namespace
 		case Token::Nil:
 			assert(children.empty());
 			std::cout << "nil\n";
-			break;
-		case Token::Dot:
-			std::cout << "dot {\n";
-			for(Token::Children::const_iterator i = children.begin() ; i != children.end() ; ++i)
-			{
-				printTree(*i, level + 1);
-			}
-			indent(level);
-			std::cout << "}\n";
 			break;
 		case Token::Root:
 			std::cout << "root {\n";
