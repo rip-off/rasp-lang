@@ -115,8 +115,7 @@ public:
 		return *data_.object;
 	}
 
-	// TODO: reference?
-	std::string string() const
+	const std::string &string() const
 	{
 		assert(isString());
 		return *data_.string;
