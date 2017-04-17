@@ -163,7 +163,7 @@ void swap(Value &a, Value &b)
 	swap(a.data_, b.data_);
 }
 
-bool Value::asBool() const
+bool Value::isTruthy() const
 {
 	switch(type_)
 	{

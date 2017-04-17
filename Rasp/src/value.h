@@ -144,7 +144,11 @@ public:
 		return *data_.array;	
 	}
 
-	bool asBool() const;
+	bool isTruthy() const;
+  bool isFalsey() const
+  {
+    return !isTruthy();
+  }
 
 	friend std::ostream &operator<<(std::ostream &out, const Value &value);
 	friend bool operator==(const Value &left, const Value &right);

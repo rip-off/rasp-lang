@@ -190,7 +190,7 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 					std::cout << "DEBUG: " << it->sourceLocation() << " jumping back " << instructionsToSkip << " if " << top << '\n';
 				}
 
-				if(!top.asBool())
+				if(top.isFalsey())
 				{
 					it += instructionsToSkip;
 				}

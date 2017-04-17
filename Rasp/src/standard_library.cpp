@@ -409,8 +409,7 @@ namespace
 			throw ExternalFunctionError("Too few arguments");
 		}
 
-		// TODO: isTruthy()?
-		if(!arguments[0].asBool())
+		if(arguments[0].isFalsey())
 		{
 			if (arguments.size() == 1)
 			{
