@@ -241,6 +241,47 @@ std::ostream &operator<<(std::ostream &out, const Value &value)
 	}
 }
 
+namespace {
+	bool arraysEqual(const Value::Array &leftArray, const Value::Array &rightArray)
+	{
+		if (leftArray.size() != rightArray.size())
+		{
+			return false;
+		}
+
+		for (unsigned i = 0 ; i < leftArray.size() ; ++i)
+		{
+			if (leftArray[i] != rightArray[i])
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
+	bool objectsEquals(const Value::Object &leftObject, const Value::Object &rightObject)
+	{
+		if (leftObject.size() != rightObject.size())
+		{
+			return false;
+		}
+
+		for (Value::Object::const_iterator it = leftObject.begin() ; it != leftObject.end() ; ++it)
+		{
+			Value::Object::const_iterator rightElement = rightObject.find(it->first);
+			if (rightElement == rightObject.end())
+			{
+				return false;
+			}
+			if (it->second != rightElement->second)
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+}
+
 bool operator==(const Value &left, const Value &right)
 {
 	if (left.type_ != right.type_)
@@ -252,30 +293,13 @@ bool operator==(const Value &left, const Value &right)
 	case Value::TNil:
 		return true;
 	case Value::TArray:
-		{
-			const Value::Array &leftArray = *left.data_.array;
-			const Value::Array &rightArray = *right.data_.array;
-			if (leftArray.size() != rightArray.size()) 
-			{
-				return false;
-			}
-
-			for (unsigned i = 0 ; i < leftArray.size() ; ++i)
-			{
-				if (leftArray[i] != rightArray[i])
-				{
-					return false;
-				}
-			}
-			return true;
-		}
+		return arraysEqual(*left.data_.array, *right.data_.array);
 	case Value::TString:
 		return *left.data_.string == *right.data_.string;
 	case Value::TNumber:
 		return left.data_.number == right.data_.number;
 	case Value::TObject:
-		// TODO:
-		throw std::logic_error("Comparing objects not implemented!");
+		return objectsEquals(*left.data_.object, *right.data_.object);
 	case Value::TBoolean:
 		return left.data_.boolean == right.data_.boolean;
 	case Value::TFunction:

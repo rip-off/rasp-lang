@@ -1,0 +1,14 @@
+ > (type person (id name))
+Parse error at repl(1):1 Illegal identifier '__list'
+repl(1):1 Illegal identifier '__list'
+
+==================================
+
+// Execution errors in top level statements lack file / line numbers...
+
+ > (assert false)
+Execution error at src/standard_library.cpp:416 assertion failed in external function 'rasp_assert'
+src/standard_library.cpp:416 assertion failed in external function 'rasp_assert'
+src/standard_library.cpp:473  at function: assert
+
+

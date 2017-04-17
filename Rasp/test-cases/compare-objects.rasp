@@ -1,0 +1,50 @@
+(defun assertEquals (left right)
+  (println left " == " right "?")
+  (assert (== left right))
+  (assert (== right left)))
+
+(defun assertNotEquals (left right)
+  (println left " != " right "?")
+  (assert (!= left right))
+  (assert (!= right left)))
+
+(type person id name)
+
+(var bob (new person 42 "Bob"))
+
+(assertEquals bob bob)
+
+(var alice (new person 13 "Alice"))
+
+(assertEquals alice alice)
+
+(assertNotEquals alice bob)
+
+(var anotherBob (new person 42 "Bob"))
+
+(assertEquals bob anotherBob)
+
+(type vector x y)
+
+(var point (new vector 13 42))
+
+(assertNotEquals alice point)
+
+(type dog id name)
+
+(var bobTheDog (new dog 42 "Bob"))
+
+(assertEquals bob bobTheDog)
+
+(type shoppingCart id owner)
+
+(var someShoppingCart (new shoppingCart 42 "Bob"))
+
+(assertNotEquals bob someShoppingCart)
+
+(type personWithAge id name age)
+
+(var bobWithAge (new personWithAge bob.id bob.name 54))
+
+(assertNotEquals bob bobWithAge)
+
