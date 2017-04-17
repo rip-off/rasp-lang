@@ -46,7 +46,7 @@ namespace
 		Value top = pop(stack);
 		if(!top.isFunction())
 		{
-			// TODO: runtime error, not a bug?
+			// TODO: this is a runtime error, as we currently cannot prove this statically
 			throw CompilerBug("Call instruction expects top of the stack to be functional value");
 		}
 
