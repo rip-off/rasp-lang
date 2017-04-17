@@ -29,7 +29,7 @@ namespace
 				out << (value.boolean() ? "true" : "false");
 				break;
 			default:
-				// TODO: Handle such values better?
+				// TODO: Should printing arbitrary types (functions, user defined types, ...) be allowed?
 				out << value;
 				break;
 			}
