@@ -1,4 +1,3 @@
-// TODO is "object_func" local or global?
 (defun outer_function (some_value)
   (defun inner_function () some_value)
   inner_function)

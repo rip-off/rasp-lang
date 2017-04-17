@@ -1,0 +1,11 @@
+(defun outer_function ()
+  (println "Entering outer_function")
+  (defun inner_function () 
+    (println "Inside inner_function"))
+  (println "Calling inner_function while it is in scope")
+  (inner_function)
+  (println "Leaving outer_function"))
+
+(outer_function)
+(println "Attempting to call inner_function from global context")
+(inner_function)
