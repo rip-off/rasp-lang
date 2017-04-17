@@ -1,5 +1,5 @@
 Doing:
-* Arrays
+* Decide!
 
 Known bugs / issues:
 * (*) returns 1
@@ -10,42 +10,47 @@ Known bugs / issues:
 Questions:
 * Allow overloading? Currently "+" supports strings and numbers
 
+Feels missing:
+* "else"
+* "return"
+
 Next:
 * Unit testing
 ** For C++ code
-** Native rasp framework?
-* Implement advanced data structures
+** For rasp
+** Reflection - scan scope for test_*
+* way to trap errors?
+* Allow user to include files / modules?
+* Add a type system?
+* Demote nil from value to optional type?
+
+Bucket list:
+* Floating point numbers
+* String manipulation function
+* Rasp based implementation of advanced data structures
 ** Dynamic arrays
 ** Linked list
 ** Trees
 ** Set
 ** Map
 * Linking (requires, provides) ?
-* "else" statement
-* "return" statement
-* way to trap errors?
-* Assertion mechanism?
-* Allow user to include files / modules?
-* Unit testing framework for rasp code
-* Reflection - scan scope for test_*
-* Add a type system?
-* Demote nil from value to optional type?
-* User defined types?
-* Floating point numbers
-* String manipulation function
-* Dictionaries
-* Named parameters
-* Nicer repl
-** Editing cursor: left & right
-** Command history: up & down
 
 Nice to have:
 * Column in SourceLocation
+* Named parameters
+* Array literals
+* Dictionary literals
+* Nicer repl
+** Editing cursor: left & right
+** Command history: up & down
 
 Wild ideas:
 * Invoke with multiple mains, each its own thread / process
 
 Done:
+* User defined types
+* Arrays
+* Assertion mechanism
 * Print line numbers associated with execution errors
 * Print stack traces for errors in functions?
 * SourceLocation in InternalFunction?
