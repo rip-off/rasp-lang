@@ -18,9 +18,9 @@ namespace
 	class AssertionError
 	{
 	public:
-		AssertionError(int line, const std::string &message) 
+		AssertionError(const SourceLocation &sourceLocation, const std::string &message)
 		:
-			message_(" (line: " + str(line) + ") " + message)
+			message_(message + " at " + str(sourceLocation))
 		{
 		}
 
@@ -37,24 +37,24 @@ namespace
 		return ::lex("<unit-test>", source);
 	}
 
-	void assertTrue(int line, bool expression, const std::string &message)
+	void assertTrue(const SourceLocation &sourceLocation, bool expression, const std::string &message)
 	{
 		if(!expression)
 		{
-			throw AssertionError(line, message);
+			throw AssertionError(sourceLocation, message);
 		}
 	}
-	#define assertTrue(EXPRESSION, MESSAGE) assertTrue(__LINE__, EXPRESSION, MESSAGE)
+	#define assertTrue(EXPRESSION, MESSAGE) assertTrue(CURRENT_SOURCE_LOCATION, EXPRESSION, MESSAGE)
 
 	template <typename X, typename Y>
-	void assertEquals(int line, const X &x, const Y &y)
+	void assertEquals(const SourceLocation &sourceLocation, const X &x, const Y &y)
 	{
 		if (x != y)
 		{
-			throw AssertionError(line, "'" + str(x) + "' should equal '" + str(y) + "'");
+			throw AssertionError(sourceLocation, "'" + str(x) + "' should equal '" + str(y) + "'");
 		}
 	}
-	#define assertEquals(X, Y) assertEquals(__LINE__, X, Y)
+	#define assertEquals(X, Y) assertEquals(CURRENT_SOURCE_LOCATION, X, Y)
 
 	InstructionList parse(const Token &token, Declarations &declarations)
 	{

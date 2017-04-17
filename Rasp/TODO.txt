@@ -1,6 +1,5 @@
 Doing:
 * Arrays
-* SourceLocation(File, Line, Column?) rather than just line
 
 Known bugs / issues:
 * (*) returns 1
@@ -39,6 +38,9 @@ Next:
 * Nicer repl
 ** Editing cursor: left & right
 ** Command history: up & down
+
+Nice to have:
+* Column in SourceLocation
 
 Wild ideas:
 * Invoke with multiple mains, each its own thread / process
