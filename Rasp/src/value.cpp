@@ -5,6 +5,8 @@
 #include <algorithm>
 #include <stdexcept>
 
+#include "bug.h"
+#include "utils.h"
 #include "escape.h"
 #include "function.h"
 #include "type_definition.h"
@@ -235,7 +237,7 @@ std::ostream &operator<<(std::ostream &out, const Value &value)
 	case Value::TTypeDefinition:
 		return out << "<type: " << value.data_.typeDefinition->name << '>';
 	default:
-		throw std::logic_error("Type not implemented");
+		throw CompilerBug("Type " + str(value.type_) + " not implemented");
 	}
 }
 
@@ -281,7 +283,7 @@ bool operator==(const Value &left, const Value &right)
 	case Value::TTypeDefinition:
 		throw std::logic_error("Comparing types is not supported"); // TODO different exception?
 	default:
-		throw std::logic_error("Type not implemented");
+		throw CompilerBug("Type " + str(left.type_) + " not implemented");
 	}
 }
 
