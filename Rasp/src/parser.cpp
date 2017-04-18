@@ -427,8 +427,12 @@ namespace
 			std::cout << "keyword: " << token.string() << '\n';
 			break;
 		case Token::Identifier:
-			assert(children.empty());
-			std::cout << "identifier: " << token.string() << '\n';
+			std::cout << "identifier: " << token.string();
+			for(Token::Children::const_iterator i = children.begin() ; i != children.end() ; ++i)
+			{
+				std::cout << '.' << i->string();
+			}
+			std::cout << '\n';
 			break;
 		}
 	}
