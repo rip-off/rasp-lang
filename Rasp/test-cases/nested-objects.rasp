@@ -1,0 +1,10 @@
+(type has_z z)
+(type has_y y)
+(type has_x x)
+(var object 
+	(new has_x
+		(new has_y
+			(new has_z 42))))
+(println object)
+(assert (== 42 object.x.y.z))
+
