@@ -25,8 +25,7 @@ void execute(Interpreter &interpreter, const std::string &filename, const Settin
 			Token token = lex(filename, contents);
 			Declarations declarations = interpreter.declarations();
 			InstructionList instructions = parse(token, declarations, settings);
-			Value result = interpreter.exec(instructions);
-			std::cout << filename << ": " << result << '\n';
+			interpreter.exec(instructions);
 		}
 		catch(const LexError &e)
 		{

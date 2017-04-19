@@ -53,5 +53,7 @@ void repl(Interpreter &interpreter, const Settings &settings)
 			std::cerr << "Internal Error: " << error.what() << std::endl;
 		}
 	}
+	// If you use CTRL-D, nice to output a newline...
+	std::cout << '\n';
 }
 
