@@ -1,0 +1,9 @@
+(var i 13)
+(println "Global: " i)
+
+(defun foo ()
+	(var i 42)
+	(println ("Local" i)))
+
+(foo)
+
