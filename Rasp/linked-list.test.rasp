@@ -1,0 +1,35 @@
+(var assertions 0)
+(var failures 0)
+(defun assert_equals (expected actual)
+	// TODO: message for assert(...)
+	// TODO: cannot set a global from here?
+	(set assertions (+ assertions 1))
+	(if (!= expected actual)
+		(println "Test Failed! Expected: '" expected "', Actual: '" actual "'")
+		(set failures (+ failures 1))))
+
+
+// TODO: (require "linked-list")
+
+(defun linked_list_assert_empty (list)
+	(assert_equals 0 list.length)
+	(assert_equals nil list.head))
+
+(defun linked_list_test_suite ()
+	(var list (new_linked_list))
+	(linked_list_assert_empty list)
+
+	(var original_list list)
+	(set list (push_linked_list original_list "Hello"))
+	(assert_equals 1 list.length)
+	(assert_equals "Hello" (get_linked_list list 0))
+	(linked_list_assert_empty original_list)
+
+	(set list (push_linked_list list "World"))
+	(assert_equals 2 list.length)
+	(assert_equals "World" (get_linked_list list 0))
+	(assert_equals "Hello" (get_linked_list list 1)))
+
+(linked_list_test_suite)
+(println "Assertions " assertions ", Failures " failures)
+

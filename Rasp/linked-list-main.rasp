@@ -1,0 +1,16 @@
+(defun visitor (element) (println "Visited: " element))
+(var numbers (new_linked_list))
+(var number 0)
+(while (< number 10)
+	(set numbers (push_linked_list numbers number))
+	(set number (+ number 1)))
+(each_linked_list numbers visitor)
+
+(var list (new_linked_list))
+
+(while true
+	(print_linked_list list)
+	(print "Enter value to add: ")
+	(var input (read_line))
+	(set list (push_linked_list list input)))
+
