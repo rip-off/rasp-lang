@@ -5,6 +5,13 @@
 
 (defun lengthLinkedList (list) list.length)
 
+(defun visitListNode (node callback)
+	(if node
+		(callback node.element)
+		(visitListNode node.next callback)))
+
+(defun eachLinkedList (list callback) (visitListNode list.head callback))
+
 (defun pushLinkedList (list element)
 	(var newHead (new LinkedListNode element list.head))
 	(var newLength (+ 1 list.length))
@@ -16,6 +23,14 @@
 		node.element)
 	(if (!= 0 index)
 		(getLinkedListNode node.next (- index 1))))
+
+(defun visitor (element) (println "Visited: " element))
+(var numbers (newLinkedList))
+(var number 0)
+(while (< number 10)
+	(set numbers (pushLinkedList numbers number))
+	(set number (+ number 1)))
+(eachLinkedList numbers visitor)
 
 (defun getLinkedList (list index)
 	(assert (< index list.length) "Index too big!")
