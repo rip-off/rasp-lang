@@ -1,0 +1,16 @@
+(type person id name)
+
+(var x (new person 42 "Bob"))
+/*
+(assert (== x.id 42))
+(assert (== x.name "Bob"))
+*/
+
+(set x.name "Joe")
+/*
+(assert (== x.id 42))
+(assert (== x.name "Bob"))
+*/
+
+(assert false) // TODO:
+
