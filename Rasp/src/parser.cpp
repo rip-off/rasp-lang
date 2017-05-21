@@ -125,13 +125,17 @@ namespace
 			}
 			else if(keyword == "var")
 			{
-				if(children.size() == 2)
+				if(children.size() == 1)
 				{
 					throw ParseError(token.sourceLocation(), "Keyword 'var' declaration requires a name");
 				}
-				else if(children.size() != 3)
+				else if(children.size() == 2)
 				{
 					throw ParseError(token.sourceLocation(), "Keyword 'var' missing initialisation value");
+				}
+				else if(children.size() > 3)
+				{
+					throw ParseError(token.sourceLocation(), "Keyword 'var' too many arguments");
 				}
 
 				Identifier identifier = tryMakeIdentifier(children[1]);
