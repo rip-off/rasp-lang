@@ -15,26 +15,22 @@ public:
 
 	enum Type
 	{
-		RefLocal,
-		RefGlobal,
-		RefClosure,
 		Call,
 		Push,
 		NoOp,
 		Jump,
 		Loop,
-		Assign,
 		Capture,
+		RefLocal,
+		AssignLocal,
+		RefGlobal,
+		AssignGlobal,
+		RefClosure,
+		AssignClosure,
 		MemberAccess,
 	};
 
 	static Instruction noop(const SourceLocation &sourceLocation);
-
-	static Instruction refLocal(const SourceLocation &sourceLocation, const Identifier &identifier);
-
-	static Instruction refGlobal(const SourceLocation &sourceLocation, const Identifier &identifier);
-
-	static Instruction refClosure(const SourceLocation &sourceLocation, const Identifier &identifier);
 
 	static Instruction push(const SourceLocation &sourceLocation, const Value &value);
 
@@ -44,9 +40,19 @@ public:
 
 	static Instruction loop(const SourceLocation &sourceLocation, int instructions);
 
-	static Instruction assign(const SourceLocation &sourceLocation, const std::string &identifier);
-
 	static Instruction capture(const SourceLocation &sourceLocation, int argc);
+	
+	static Instruction refLocal(const SourceLocation &sourceLocation, const Identifier &identifier);
+	
+	static Instruction assignLocal(const SourceLocation &sourceLocation, const std::string &identifier);
+
+	static Instruction refGlobal(const SourceLocation &sourceLocation, const Identifier &identifier);
+	
+	static Instruction assignGlobal(const SourceLocation &sourceLocation, const std::string &identifier);
+
+	static Instruction refClosure(const SourceLocation &sourceLocation, const Identifier &identifier);
+	
+	static Instruction assignClosure(const SourceLocation &sourceLocation, const std::string &identifier);
 
 	static Instruction memberAccess(const SourceLocation &sourceLocation, const std::string &identifier);
 

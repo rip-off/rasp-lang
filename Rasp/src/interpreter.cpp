@@ -128,27 +128,6 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 			}
 			// Do nothing
 			break;
-		case Instruction::RefLocal:
-			handleRef(value, stack, bindings);
-			if(settings_.trace)
-			{
-				std::cout << "DEBUG: " << it->sourceLocation() << " local ref " << value.string() << " = " << stack.back() << '\n';
-			}
-			break;
-		case Instruction::RefGlobal:
-			handleRef(value, stack, bindings);
-			if(settings_.trace)
-			{
-				std::cout << "DEBUG: " << it->sourceLocation() << " global ref " << value.string() << " = " << stack.back() << '\n';
-			}
-			break;
-		case Instruction::RefClosure:
-			handleRef(value, stack, bindings);
-			if(settings_.trace)
-			{
-				std::cout << "DEBUG: " << it->sourceLocation() << " closure ref " << value.string() << " = " << stack.back() << '\n';
-			}
-			break;
 		case Instruction::Push:
 			if(settings_.trace)
 			{				
@@ -211,24 +190,6 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 				it -= instructionCount;
 			}
 			break;
-		case Instruction::Assign:
-			{
-				if(stack.empty())
-				{
-					throw CompilerBug("empty stack during assignment");
-				}
-				assert(value.isString());
-				// Don't pop, allows this to be nested in larger statements
-				// e.g. ((defun foo () ...))
-				Value top = stack.back();
-				if(settings_.trace)
-				{
-					std::cout << "DEBUG: " << it->sourceLocation() << " assigning " << value.string() << " to " << top << '\n';
-				}
-				Identifier identifier = Identifier(value.string());
-				bindings[identifier] = top;
-			}
-			break;
 		case Instruction::Capture:
 			{
 				if(settings_.trace)
@@ -238,6 +199,81 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 				// TODO: member function?
 				Value result = handleCapture(this, value, stack, bindings);
 				stack.push_back(result);
+			}
+			break;
+		case Instruction::RefLocal:
+			handleRef(value, stack, bindings);
+			if(settings_.trace)
+			{
+				std::cout << "DEBUG: " << it->sourceLocation() << " local ref " << value.string() << " = " << stack.back() << '\n';
+			}
+			break;
+		case Instruction::AssignLocal:
+			{
+				if(stack.empty())
+				{
+					throw CompilerBug("empty stack during assign_local");
+				}
+				assert(value.isString());
+				// Don't pop, allows this to be nested in larger statements
+				// e.g. ((defun foo () ...))
+				Value top = stack.back();
+				if(settings_.trace)
+				{
+					std::cout << "DEBUG: " << it->sourceLocation() << " assign_local " << value.string() << " to " << top << '\n';
+				}
+				Identifier identifier = Identifier(value.string());
+				bindings[identifier] = top;
+			}
+			break;
+		case Instruction::RefGlobal:
+			handleRef(value, stack, bindings);
+			if(settings_.trace)
+			{
+				std::cout << "DEBUG: " << it->sourceLocation() << " global ref " << value.string() << " = " << stack.back() << '\n';
+			}
+			break;
+		case Instruction::AssignGlobal:
+			{
+				if(stack.empty())
+				{
+					throw CompilerBug("empty stack during assign_global");
+				}
+				assert(value.isString());
+				// Don't pop, allows this to be nested in larger statements
+				// e.g. ((defun foo () ...))
+				Value top = stack.back();
+				if(settings_.trace)
+				{
+					std::cout << "DEBUG: " << it->sourceLocation() << " assign_global " << value.string() << " to " << top << '\n';
+				}
+				Identifier identifier = Identifier(value.string());
+				bindings[identifier] = top; // TODO: this doesn't work
+			}
+			break;
+		case Instruction::RefClosure:
+			handleRef(value, stack, bindings);
+			if(settings_.trace)
+			{
+				std::cout << "DEBUG: " << it->sourceLocation() << " closure ref " << value.string() << " = " << stack.back() << '\n';
+			}
+			break;
+		case Instruction::AssignClosure:
+			{
+				if(stack.empty())
+				{
+					throw CompilerBug("empty stack during assign_closure");
+				}
+				assert(value.isString());
+				// Don't pop, allows this to be nested in larger statements
+				// e.g. ((defun foo () ...))
+				Value top = stack.back();
+				if(settings_.trace)
+				{
+					std::cout << "DEBUG: " << it->sourceLocation() << " assign_closure " << value.string() << " to " << top << '\n';
+				}
+				Identifier identifier = Identifier(value.string());
+				throw CompilerBug("TODO: implement AssignClosure");
 			}
 			break;
 		case Instruction::MemberAccess:

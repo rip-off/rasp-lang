@@ -145,7 +145,8 @@ namespace
 				}
 				parse(children[2], declarations, instructions, settings);
 				declarations.add(identifier);
-				instructions.push_back(Instruction::assign(token.sourceLocation(), identifier.name()));
+				// TODO: local? add an "init" instruction?
+				instructions.push_back(Instruction::assignLocal(token.sourceLocation(), identifier.name()));
 			}
 			else if(keyword == "set")
 			{
@@ -158,12 +159,32 @@ namespace
 					throw ParseError(token.sourceLocation(), "Keyword 'set' missing assignment value");
 				}
 				Identifier identifier = tryMakeIdentifier(children[1]);
+                // TODO: cleanup
+                /*
 				if (!declarations.isDefined(identifier))
 				{
 					throw ParseError(token.sourceLocation(), "Keyword 'set' identifier '" + identifier.name() + "' not defined");
-				}	
+				}
+				*/
 				parse(children[2], declarations, instructions, settings);
-				instructions.push_back(Instruction::assign(token.sourceLocation(), identifier.name()));
+				switch(declarations.checkIdentifier(identifier))
+				{
+				case IDENTIFIER_DEFINITION_UNDEFINED:
+					throw ParseError(token.sourceLocation(), "Variable '" + identifier.name() + "' not defined");
+					break;
+				case IDENTIFIER_DEFINITION_LOCAL:
+					instructions.push_back(Instruction::assignLocal(token.sourceLocation(), identifier.name()));
+					break;
+				case IDENTIFIER_DEFINITION_CLOSURE:
+					instructions.push_back(Instruction::assignClosure(token.sourceLocation(), identifier.name()));
+					break;
+				case IDENTIFIER_DEFINITION_GLOBAL:
+					instructions.push_back(Instruction::assignGlobal(token.sourceLocation(), identifier.name()));
+					break;
+				default:
+					throw CompilerBug("Failed to classify identifier " + identifier.name() + " at " + str(token.sourceLocation()));
+				}
+				// TODO: instructions.push_back(Instruction::assign(token.sourceLocation(), identifier.name()));
 			}
 			else if(keyword == "type")
 			{
@@ -190,7 +211,8 @@ namespace
 
 				TypeDefinition typeDefinition = { identifier.name(), memberNames };
 				instructions.push_back(Instruction::push(token.sourceLocation(), Value::typeDefinition(typeDefinition)));
-				instructions.push_back(Instruction::assign(token.sourceLocation(), identifier.name()));
+				// TODO: local?
+				instructions.push_back(Instruction::assignLocal(token.sourceLocation(), identifier.name()));
 
 				// For the moment, do not allow recursive types
 				declarations.add(identifier);
@@ -262,7 +284,8 @@ namespace
 					instructions.push_back(Instruction::push(token.sourceLocation(), Value::function(function)));
 					instructions.push_back(Instruction::capture(token.sourceLocation(), closedValues.size()));
 				}
-				instructions.push_back(Instruction::assign(token.sourceLocation(), identifier.name()));
+				// TODO: local?
+				instructions.push_back(Instruction::assignLocal(token.sourceLocation(), identifier.name()));
 
 				if (settings.printInstructions)
 				{

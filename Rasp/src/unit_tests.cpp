@@ -140,6 +140,55 @@ namespace
 		assertEquals(result.type(), Value::TNumber);
 		assertEquals(result.number(), 84 + 13 - 5);
 	}
+	
+	void testVariablesInGlobalScope(Interpreter &interpreter)
+	{
+		std::stringstream source;
+        source << "(var global 1)";
+        source << "(set global (+ global 1))";
+        source << "global";
+		Token token = lex(source.str());
+		Declarations declarations = interpreter.declarations();
+		InstructionList instructions = parse(token, declarations);
+		Value result = interpreter.exec(instructions);
+		assertEquals(result.type(), Value::TNumber);
+		assertEquals(result.number(), 2);
+	}
+
+	void testGlobalsReferencesInFunction(Interpreter &interpreter)
+	{
+	    /* TODO:
+		std::stringstream source;
+        source << "(var global 1)";
+        source << "(defun incrementGlobal () (set global (+ global 1)))";
+        source << "(incrementGlobal)";
+        source << "global";
+		Token token = lex(source.str());
+		Declarations declarations = interpreter.declarations();
+		InstructionList instructions = parse(token, declarations);
+		Value result = interpreter.exec(instructions);
+		assertEquals(result.type(), Value::TNumber);
+		assertEquals(result.number(), 2);
+		*/
+	}
+	
+	void testLocalsInFunction(Interpreter &interpreter)
+	{
+		std::stringstream source;
+        source << "(defun incrementLocal ()";
+        source << "  (var local 1)";
+        source << "  (set local (+ local 1))";
+        source << "  local)";
+        source << "(incrementLocal)";
+		Token token = lex(source.str());
+		Declarations declarations = interpreter.declarations();
+		InstructionList instructions = parse(token, declarations);
+		Value result = interpreter.exec(instructions);
+		assertEquals(result.type(), Value::TNumber);
+		assertEquals(result.number(), 2);
+	}
+	
+	// TODO: test closure variable access
 
 	void testClosure(Interpreter &interpreter)
 	{
@@ -167,6 +216,11 @@ void runUnitTests(Interpreter &interpreter)
 		testInterpreter(interpreter);
 
 		testAll(interpreter);
+		
+        testVariablesInGlobalScope(interpreter);
+        testGlobalsReferencesInFunction(interpreter);
+        testLocalsInFunction(interpreter);
+        
 		testClosure(interpreter);
 	}
 	catch(const RaspError &e)

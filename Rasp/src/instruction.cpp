@@ -12,21 +12,6 @@ Instruction Instruction::noop(const SourceLocation &sourceLocation)
 	return Instruction(sourceLocation, NoOp, Value::nil());
 }
 
-Instruction Instruction::refLocal(const SourceLocation &sourceLocation, const Identifier &identifier)
-{
-	return Instruction(sourceLocation, RefLocal, Value::string(identifier.name()));
-}
-
-Instruction Instruction::refGlobal(const SourceLocation &sourceLocation, const Identifier &identifier)
-{
-	return Instruction(sourceLocation, RefGlobal, Value::string(identifier.name()));
-}
-
-Instruction Instruction::refClosure(const SourceLocation &sourceLocation, const Identifier &identifier)
-{
-	return Instruction(sourceLocation, RefClosure, Value::string(identifier.name()));
-}
-
 Instruction Instruction::push(const SourceLocation &sourceLocation, const Value &value)
 {
 	return Instruction(sourceLocation, Push, value);
@@ -47,14 +32,39 @@ Instruction Instruction::loop(const SourceLocation &sourceLocation, int instruct
 	return Instruction(sourceLocation, Loop, Value::number(instructions));
 }
 
-Instruction Instruction::assign(const SourceLocation &sourceLocation, const std::string &identifier)
-{
-	return Instruction(sourceLocation, Assign, Value::string(identifier));
-}
-
 Instruction Instruction::capture(const SourceLocation &sourceLocation, int argc)
 {
 	return Instruction(sourceLocation, Capture, Value::number(argc));
+}
+
+Instruction Instruction::refLocal(const SourceLocation &sourceLocation, const Identifier &identifier)
+{
+	return Instruction(sourceLocation, RefLocal, Value::string(identifier.name()));
+}
+
+Instruction Instruction::assignLocal(const SourceLocation &sourceLocation, const std::string &identifier)
+{
+	return Instruction(sourceLocation, AssignLocal, Value::string(identifier));
+}
+
+Instruction Instruction::refGlobal(const SourceLocation &sourceLocation, const Identifier &identifier)
+{
+	return Instruction(sourceLocation, RefGlobal, Value::string(identifier.name()));
+}
+
+Instruction Instruction::assignGlobal(const SourceLocation &sourceLocation, const std::string &identifier)
+{
+	return Instruction(sourceLocation, AssignGlobal, Value::string(identifier));
+}
+
+Instruction Instruction::refClosure(const SourceLocation &sourceLocation, const Identifier &identifier)
+{
+	return Instruction(sourceLocation, RefClosure, Value::string(identifier.name()));
+}
+
+Instruction Instruction::assignClosure(const SourceLocation &sourceLocation, const std::string &identifier)
+{
+	return Instruction(sourceLocation, AssignClosure, Value::string(identifier));
 }
 
 Instruction Instruction::memberAccess(const SourceLocation &sourceLocation, const std::string &identifier)
@@ -84,15 +94,6 @@ std::ostream &operator<<(std::ostream &out, const Instruction &instruction)
 	case Instruction::NoOp:
 		out << "noop";
 		break;
-	case Instruction::RefLocal:
-		out << "ref_local(" << instruction.value_.string() << ")";
-		break;
-	case Instruction::RefGlobal:
-		out << "ref_global(" << instruction.value_.string() << ")";
-		break;
-	case Instruction::RefClosure:
-		out << "ref_closure(" << instruction.value_.string() << ")";
-		break;
 	case Instruction::Push:
 		out << "push(" << instruction.value_ << ")";
 		break;
@@ -105,11 +106,26 @@ std::ostream &operator<<(std::ostream &out, const Instruction &instruction)
 	case Instruction::Loop:
 		out << "loop(" << instruction.value_ << ")";
 		break;
-	case Instruction::Assign:
-		out << "assign(" << instruction.value_.string() << ")";
-		break;
 	case Instruction::Capture:
 		out << "capture(" << instruction.value_ << ")";
+		break;
+	case Instruction::RefLocal:
+		out << "ref_local(" << instruction.value_.string() << ")";
+		break;
+	case Instruction::AssignLocal:
+		out << "assign_local(" << instruction.value_.string() << ")";
+		break;
+	case Instruction::RefGlobal:
+		out << "ref_global(" << instruction.value_.string() << ")";
+		break;
+	case Instruction::AssignGlobal:
+		out << "assign_global(" << instruction.value_.string() << ")";
+		break;
+	case Instruction::RefClosure:
+		out << "ref_closure(" << instruction.value_.string() << ")";
+		break;
+	case Instruction::AssignClosure:
+		out << "assign_closure(" << instruction.value_.string() << ")";
 		break;
 	case Instruction::MemberAccess:
 		out << "member(" << instruction.value_.string() << ")";
@@ -117,5 +133,6 @@ std::ostream &operator<<(std::ostream &out, const Instruction &instruction)
 	default:
 		throw CompilerBug("unhandled instruction type: " + str(instruction.type_));
 	}
+	// TODO: replace break with return
 	return out;
 }
