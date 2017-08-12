@@ -6,7 +6,20 @@
 #include "value.h"
 #include "identifier.h"
 
-typedef std::map<Identifier, Value> Bindings;
+class Bindings
+{
+    typedef std::map<Identifier, Value> Mapping;
+public:
+    typedef Mapping::const_iterator const_iterator;
+    
+    const_iterator begin() const;
+    const_iterator end() const;
+    const_iterator find(const Identifier &name) const;
+    
+    Value &operator[](const Identifier &name);
+private:
+    Mapping valuesByName;
+};
 
 class Scope
 {

@@ -68,8 +68,8 @@ void registerBindings(Bindings &bindings, const ApiReg (&registry)[N])
 	for(const ApiReg *current = registry ; current != registry + N ; ++current)
 	{
 		Identifier identifier = Identifier(current->name());
-		Value functionValue = Value::function(current->function());
-		bindings.insert(std::make_pair(identifier, functionValue));
+		// TODO: call bindings.init(...)?
+		bindings[identifier] = Value::function(current->function());
 	}
 }
 

@@ -3,6 +3,28 @@
 #include <algorithm>
 #include "bug.h"
 
+Bindings::const_iterator Bindings::begin() const
+{
+    return valuesByName.begin();
+}
+
+Bindings::const_iterator Bindings::end() const
+{
+    return valuesByName.end();
+}
+
+Bindings::const_iterator Bindings::find(const Identifier &name) const
+{
+    return valuesByName.find(name);
+}
+
+Value &Bindings::operator[](const Identifier &name)
+{
+    return valuesByName[name];
+}
+
+    
+
 void Scope::add(const Identifier &identifier)
 {
 	if(isDefined(identifier))

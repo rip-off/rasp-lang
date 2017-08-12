@@ -337,6 +337,7 @@ Declarations Interpreter::declarations() const
 
 const Value *Interpreter::binding(const Identifier &name) const
 {
-	return tryFind(bindings_, name);
+	Bindings::const_iterator i = bindings_.find(name);
+	return (i == bindings_.end() ? 0 : &(i->second));
 }
 

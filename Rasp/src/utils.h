@@ -1,7 +1,6 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include <map>
 #include <string>
 #include <sstream>
 
@@ -59,13 +58,6 @@ std::string str(const Type &type)
 	std::stringstream stream;
 	stream << type;
 	return stream.str();
-}
-
-template<typename Key, typename Value>
-const Value *tryFind(const std::map<Key, Value> &map, const Key &key)
-{
-	typename std::map<Key,Value>::const_iterator i = map.find(key);
-	return (i == map.end() ? 0 : &(i->second));
 }
 
 #endif
