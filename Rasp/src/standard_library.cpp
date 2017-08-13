@@ -489,9 +489,9 @@ namespace
 
 
 
-Bindings bindStandardLibrary()
+Bindings::Mapping standardLibrary()
 {
-	Bindings result;
+	Bindings::Mapping result;
 	registerBindings(result, registry);
 	return result;
 }

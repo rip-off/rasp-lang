@@ -1,11 +1,11 @@
 #include "common.h"
 
 CallContext::CallContext(
-	Bindings *bindings, 
+	Globals *globals,
 	Arguments *arguments, 
 	Interpreter *interpreter)
 :
-	bindings_(bindings),
+	globals_(globals),
 	arguments_(arguments),
 	interpreter_(interpreter)
 {
@@ -16,9 +16,9 @@ const Arguments &CallContext::arguments() const
 	return *arguments_;
 }
 
-Bindings &CallContext::bindings()
+CallContext::Globals &CallContext::globals()
 {
-	return *bindings_;
+	return *globals_;
 }
 
 Interpreter &CallContext::interpreter()

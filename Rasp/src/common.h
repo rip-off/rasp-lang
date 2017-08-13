@@ -11,15 +11,16 @@ class Interpreter;
 
 class CallContext
 {
+	typedef Bindings::Mapping Globals;
 public:
-	CallContext(Bindings *bindings, Arguments *arguments, Interpreter *);
+	CallContext(Globals *globals, Arguments *arguments, Interpreter *);
 
 	const Arguments &arguments() const;
-	Bindings &bindings();
+	Globals &globals();
 	Interpreter &interpreter();
 
 private:
-	Bindings *bindings_;
+	Globals *globals_;
 	Arguments *arguments_;
 	Interpreter *interpreter_;
 };

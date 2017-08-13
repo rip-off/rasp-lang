@@ -9,28 +9,20 @@
 class Interpreter
 {
 public:
-	Interpreter(const Bindings &bindings, const Settings &settings);
+	typedef Bindings::Mapping Globals;
+
+	Interpreter(const Globals &globals, const Settings &settings);
 
 	Value exec(const InstructionList &instructions);
 
 	Value exec(const InstructionList &instructions, Bindings &bindings);
 
-	const Value *binding(const Identifier &name) const;
-
-	Bindings &bindings()
-	{
-		return bindings_;
-	}
-
-	const Bindings &bindings() const
-	{
-		return bindings_;
-	}
+	const Value *global(const Identifier &name) const;
 
 	Declarations declarations() const;
 
 private:
-	Bindings bindings_;
+	Globals globals_;
 	Settings settings_;
 };
 

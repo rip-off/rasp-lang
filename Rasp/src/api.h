@@ -63,13 +63,13 @@ private:
 };
 
 template<int N>
-void registerBindings(Bindings &bindings, const ApiReg (&registry)[N])
+void registerBindings(Bindings::Mapping &bindings, const ApiReg (&registry)[N])
 {
 	for(const ApiReg *current = registry ; current != registry + N ; ++current)
 	{
 		Identifier identifier = Identifier(current->name());
-		// TODO: call bindings.init(...)?
-		bindings[identifier] = Value::function(current->function());
+		Value function = Value::function(current->function());
+		bindings.insert(std::make_pair(identifier, function));
 	}
 }
 

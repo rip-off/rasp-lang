@@ -29,10 +29,10 @@ Value InternalFunction::call(CallContext &callContext) const
 	{
 		throw ExecutionError(sourceLocation_, "Function '" + name_ + "' passed " + str(arguments.size()) + " arguments but expected " + str(parameters_.size()));
 	}
-	Bindings localBindings = callContext.bindings();
+	Bindings localBindings(&callContext.globals());
 	for (unsigned i = 0 ; i < parameters_.size() ; ++i)
 	{
-		localBindings[parameters_[i]] = arguments[i];
+		localBindings.initLocal(parameters_[i], arguments[i]);
 		// TODO: adding debug / trace
 		// std::cout << "DEBUG: setting parameter '" <<  parameters_[i].name() << "' to " << arguments[i] << '\n';
 	}

@@ -2,28 +2,98 @@
 
 #include <algorithm>
 #include "bug.h"
+#include "utils.h"
 
-Bindings::const_iterator Bindings::begin() const
+Bindings::Bindings(Mapping *globalsByName)
+:
+	globalsByName_(globalsByName)
 {
-    return valuesByName.begin();
 }
 
-Bindings::const_iterator Bindings::end() const
+Value Bindings::get(RefType refType, const Identifier &identifier) const
 {
-    return valuesByName.end();
+	const Mapping &mapping = mappingFor(refType);
+	Bindings::const_iterator it = mapping.find(identifier);
+	if (it == mapping.end())
+	{
+		throw CompilerBug("Cannot get an unbound " + str(refType) + " identifier: '" + identifier.name() + "'");
+	}
+	return it->second;
 }
 
-Bindings::const_iterator Bindings::find(const Identifier &name) const
+void Bindings::set(RefType refType, const Identifier &identifier, const Value &value)
 {
-    return valuesByName.find(name);
+	Mapping &mapping = mappingFor(refType);
+	mapping[identifier] = value;
+	/*
+	auto result = mapping.insert(std::make_pair(identifier, value));
+	if (result.second)
+	{
+		// TODO: throw CompilerBug("Cannot set an unbound " + str(refType) + " identifier: '" + identifier.name() + "'");
+	}*/
 }
 
-Value &Bindings::operator[](const Identifier &name)
+void Bindings::initLocal(const Identifier &identifier, const Value &value)
 {
-    return valuesByName[name];
+	auto result = localsByName_.insert(std::make_pair(identifier, value));
+	if (!result.second)
+	{
+		throw CompilerBug("Cannot initialise an already bound local identifier: '" + identifier.name() + "'");
+	}
 }
 
+Bindings::Mapping &Bindings::globals()
+{
+    return *globalsByName_;
+}
+
+Bindings::Mapping &Bindings::mappingFor(RefType refType)
+{
+    switch(refType)
+    {
+    case Local:
+        return localsByName_;
+    case Global:
+        return *globalsByName_;
+    case Closure:
+        return localsByName_;
+    default:
+        int rawValue = refType;
+        throw CompilerBug("Unhandled refType " + str(rawValue));
+    }
+}
+
+const Bindings::Mapping &Bindings::mappingFor(RefType refType) const
+{
+    switch(refType)
+    {
+    case Local:
+        return localsByName_;
+    case Global:
+        return *globalsByName_;
+    case Closure:
+        return localsByName_;
+    default:
+        int rawValue = refType;
+        throw CompilerBug("Unhandled refType " + str(rawValue));
+    }
+}
     
+std::ostream &operator<<(std::ostream &out, Bindings::RefType refType)
+{
+    switch(refType)
+    {
+    case Bindings::Local:
+        return out << "refType(local)";
+    case Bindings::Global:
+        return out << "refType(global)";
+    case Bindings::Closure:
+        return out << "refType(closure)";
+    default:
+        int rawValue = refType;
+        throw CompilerBug("Unhandled refType " + str(rawValue));
+    }
+}
 
 void Scope::add(const Identifier &identifier)
 {
@@ -44,7 +114,7 @@ Declarations::Declarations()
 	innerToOuterScopes.push_back(Scope());
 }
 
-Declarations::Declarations(const Bindings &globalScope)
+Declarations::Declarations(const Bindings::Mapping &globalScope)
 {
 	innerToOuterScopes.push_back(Scope());
 

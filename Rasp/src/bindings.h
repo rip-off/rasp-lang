@@ -8,18 +8,42 @@
 
 class Bindings
 {
-    typedef std::map<Identifier, Value> Mapping;
 public:
+    typedef std::map<Identifier, Value> Mapping;
     typedef Mapping::const_iterator const_iterator;
+    enum RefType {
+        Local,
+        Global,
+        Closure // TODO
+    };
+
+    Bindings(Mapping *globalsByName);
+
+    // Value should be bound
+    // TODO: const Value &
+    Value get(RefType refType, const Identifier &identifier) const;
+
+    // Value should be bound
+    void set(RefType refType, const Identifier &identifier, const Value &value);
     
-    const_iterator begin() const;
-    const_iterator end() const;
-    const_iterator find(const Identifier &name) const;
+    // Value should not be bound
+    void initLocal(const Identifier &identifier, const Value &value);
+
+    Mapping &globals();
     
-    Value &operator[](const Identifier &name);
 private:
-    Mapping valuesByName;
+    // Deliberately private & unimplemented
+    Bindings(const Bindings &);
+    Bindings &operator=(const Bindings &);
+
+    Mapping localsByName_;
+    Mapping *globalsByName_;
+
+    Mapping &mappingFor(RefType refType);
+    const Mapping &mappingFor(RefType refType) const;
 };
+
+std::ostream &operator<<(std::ostream &out, Bindings::RefType refType);
 
 class Scope
 {
@@ -42,7 +66,7 @@ class Declarations
 {
 public:
 	Declarations();
-	Declarations(const Bindings &globalScope);
+	Declarations(const Bindings::Mapping &globalScope);
 
 	Declarations newScope();
 

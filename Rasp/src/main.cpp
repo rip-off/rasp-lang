@@ -53,8 +53,8 @@ ArgumentList gatherArguments(int argc, const char **argv, Settings &settings)
 void unitTests()
 {
 	Settings settings;
-	Bindings bindings = bindStandardLibrary();
-	Interpreter interpreter(bindings, settings);
+	Interpreter::Globals globals = standardLibrary();
+	Interpreter interpreter(globals, settings);
 	runUnitTests(interpreter);
 }
 
@@ -65,9 +65,8 @@ int main(int argc, const char **argv)
 	Settings settings;
 	ArgumentList args = gatherArguments(argc, argv, settings);	
 
-	// TODO: Probably don't want to share them between files
-	Bindings bindings = bindStandardLibrary();
-	Interpreter interpreter(bindings, settings);
+	Interpreter::Globals globals = standardLibrary();
+	Interpreter interpreter(globals, settings);
 
 	if (args.empty())
 	{

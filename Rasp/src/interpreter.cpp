@@ -19,15 +19,25 @@ namespace
 		return result;
 	}
 
-	void handleRef(const Value &value, Stack &stack, const Bindings &bindings)
+	void handleRef(Bindings::RefType refType, const Value &value, Stack &stack, const Bindings &bindings)
 	{
 		Identifier identifier = Identifier(value.string());
-		Bindings::const_iterator it = bindings.find(identifier);
-		if (it == bindings.end())
+		stack.push_back(bindings.get(refType, identifier));
+	}
+
+	Value handleAssign(Bindings::RefType refType, const Value &value, Stack &stack, Bindings &bindings)
+	{
+		if(stack.empty())
 		{
-			throw CompilerBug("Expected binding not found: " + identifier.name());
+			throw CompilerBug("empty stack during " + str(refType) + " assignment");
 		}
-		stack.push_back(it->second);
+		assert(value.isString());
+		// Don't pop, allows this to be nested in larger statements
+		// e.g. ((defun foo () ...))
+		Value top = stack.back();
+		Identifier identifier = Identifier(value.string());
+		bindings.set(refType, identifier, top);
+		return top;
 	}
 
 	Value handleFunction(Interpreter *interpreter, const Value &value, Stack &stack, Bindings &bindings)
@@ -59,7 +69,8 @@ namespace
 		const Function &function = top.function();
 		try
 		{
-			CallContext callContext(&bindings, &arguments, interpreter);
+			// TODO: where is nicer to get the globals from, bindings or interpreter?
+			CallContext callContext(&bindings.globals(), &arguments, interpreter);
 			return function.call(callContext);
 		}
 		catch (RaspError &error)
@@ -99,16 +110,17 @@ namespace
 	}
 }
 
-Interpreter::Interpreter(const Bindings &bindings, const Settings &settings)
+Interpreter::Interpreter(const Globals &globals, const Settings &settings)
 :
-	bindings_(bindings),
+	globals_(globals),
 	settings_(settings)
 {
 }
 
 Value Interpreter::exec(const InstructionList &instructions)
 {
-	return exec(instructions, bindings_);
+	Bindings bindings(&globals_);
+	return exec(instructions, bindings);
 }
 
 Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
@@ -202,78 +214,48 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 			}
 			break;
 		case Instruction::RefLocal:
-			handleRef(value, stack, bindings);
+			handleRef(Bindings::Local, value, stack, bindings);
 			if(settings_.trace)
 			{
-				std::cout << "DEBUG: " << it->sourceLocation() << " local ref " << value.string() << " = " << stack.back() << '\n';
+				std::cout << "DEBUG: " << it->sourceLocation() << " local ref '" << value.string() << "' is " << stack.back() << '\n';
 			}
 			break;
 		case Instruction::AssignLocal:
 			{
-				if(stack.empty())
-				{
-					throw CompilerBug("empty stack during assign_local");
-				}
-				assert(value.isString());
-				// Don't pop, allows this to be nested in larger statements
-				// e.g. ((defun foo () ...))
-				Value top = stack.back();
+				const Value &assignedValue = handleAssign(Bindings::Local, value, stack, bindings);
 				if(settings_.trace)
 				{
-					std::cout << "DEBUG: " << it->sourceLocation() << " assign_local " << value.string() << " to " << top << '\n';
+					std::cout << "DEBUG: " << it->sourceLocation() << " local assign '" << value.string() << "' to " << assignedValue << '\n';
 				}
-				Identifier identifier = Identifier(value.string());
-				bindings[identifier] = top;
 			}
 			break;
 		case Instruction::RefGlobal:
-			handleRef(value, stack, bindings);
+			handleRef(Bindings::Global, value, stack, bindings);
 			if(settings_.trace)
 			{
-				std::cout << "DEBUG: " << it->sourceLocation() << " global ref " << value.string() << " = " << stack.back() << '\n';
+				std::cout << "DEBUG: " << it->sourceLocation() << " global ref '" << value.string() << "' is " << stack.back() << '\n';
 			}
 			break;
 		case Instruction::AssignGlobal:
 			{
-				if(stack.empty())
-				{
-					throw CompilerBug("empty stack during assign_global");
-				}
-				assert(value.isString());
-				// Don't pop, allows this to be nested in larger statements
-				// e.g. ((defun foo () ...))
-				Value top = stack.back();
+				const Value &assignedValue = handleAssign(Bindings::Global, value, stack, bindings);
 				if(settings_.trace)
 				{
-					std::cout << "DEBUG: " << it->sourceLocation() << " assign_global " << value.string() << " to " << top << '\n';
+					std::cout << "DEBUG: " << it->sourceLocation() << " global assign '" << value.string() << "' to " << assignedValue << '\n';
 				}
-				Identifier identifier = Identifier(value.string());
-				bindings[identifier] = top; // TODO: this doesn't work
 			}
 			break;
 		case Instruction::RefClosure:
-			handleRef(value, stack, bindings);
+			handleRef(Bindings::Closure, value, stack, bindings);
 			if(settings_.trace)
 			{
-				std::cout << "DEBUG: " << it->sourceLocation() << " closure ref " << value.string() << " = " << stack.back() << '\n';
+				std::cout << "DEBUG: " << it->sourceLocation() << " closure ref '" << value.string() << "' is " << stack.back() << '\n';
 			}
 			break;
 		case Instruction::AssignClosure:
 			{
-				if(stack.empty())
-				{
-					throw CompilerBug("empty stack during assign_closure");
-				}
-				assert(value.isString());
-				// Don't pop, allows this to be nested in larger statements
-				// e.g. ((defun foo () ...))
-				Value top = stack.back();
-				if(settings_.trace)
-				{
-					std::cout << "DEBUG: " << it->sourceLocation() << " assign_closure " << value.string() << " to " << top << '\n';
-				}
-				Identifier identifier = Identifier(value.string());
-				throw CompilerBug("TODO: implement AssignClosure");
+				// TODO:
+				throw CompilerBug("unimplemented: AssignClosure");
 			}
 			break;
 		case Instruction::MemberAccess:
@@ -332,12 +314,12 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 
 Declarations Interpreter::declarations() const
 {
-	return Declarations(bindings_);
+	return Declarations(globals_);
 }
 
-const Value *Interpreter::binding(const Identifier &name) const
+const Value *Interpreter::global(const Identifier &name) const
 {
-	Bindings::const_iterator i = bindings_.find(name);
-	return (i == bindings_.end() ? 0 : &(i->second));
+	Bindings::const_iterator i = globals_.find(name);
+	return (i == globals_.end() ? nullptr : &(i->second));
 }
 

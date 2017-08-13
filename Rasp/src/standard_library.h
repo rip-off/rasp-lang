@@ -3,6 +3,6 @@
 
 #include "bindings.h"
 
-Bindings bindStandardLibrary();
+Bindings::Mapping standardLibrary();
 
 #endif

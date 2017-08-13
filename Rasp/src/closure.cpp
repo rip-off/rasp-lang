@@ -19,7 +19,7 @@ Value Closure::call(CallContext &callContext) const
 	allArguments.reserve(closedValues.size() + passedArguments.size());
 	allArguments.insert(allArguments.end(), closedValues.begin(), closedValues.end());
 	allArguments.insert(allArguments.end(), passedArguments.begin(), passedArguments.end());
-	CallContext nestedContext(&callContext.bindings(), &allArguments, &callContext.interpreter());
+	CallContext nestedContext(&callContext.globals(), &allArguments, &callContext.interpreter());
 	return innerFunction->call(nestedContext);
 }
 

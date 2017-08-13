@@ -211,8 +211,8 @@ namespace
 
 				TypeDefinition typeDefinition = { identifier.name(), memberNames };
 				instructions.push_back(Instruction::push(token.sourceLocation(), Value::typeDefinition(typeDefinition)));
-				// TODO: local?
-				instructions.push_back(Instruction::assignLocal(token.sourceLocation(), identifier.name()));
+				// TODO: local? global?
+				instructions.push_back(Instruction::assignGlobal(token.sourceLocation(), identifier.name()));
 
 				// For the moment, do not allow recursive types
 				declarations.add(identifier);
@@ -284,8 +284,8 @@ namespace
 					instructions.push_back(Instruction::push(token.sourceLocation(), Value::function(function)));
 					instructions.push_back(Instruction::capture(token.sourceLocation(), closedValues.size()));
 				}
-				// TODO: local?
-				instructions.push_back(Instruction::assignLocal(token.sourceLocation(), identifier.name()));
+				// TODO: local? global?
+				instructions.push_back(Instruction::assignGlobal(token.sourceLocation(), identifier.name()));
 
 				if (settings.printInstructions)
 				{
