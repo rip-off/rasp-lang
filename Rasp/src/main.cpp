@@ -18,7 +18,7 @@ void printUsage()
 	std::cout << "Options:\n";
 	std::cout << " --repl: Run REPL (read, eval, print, loop)\n";
 	std::cout << " --trace: Trace program execution\n";
-	std::cout << " --debug-unit-tests: Pass through options to unit test suite\n";
+	std::cout << " --unit-tests: Run unit test suite\n";
 	std::cout << " --print-ast: Print Abstract Syntax Tree\n";
 	std::cout << " --print-instructions: Print Generated Instructions\n";
 	std::cout << " --help: Print this help message\n";
@@ -43,9 +43,9 @@ ArgumentList gatherArguments(int argc, const char **argv, Settings &settings)
 		{
 			settings.trace = true;
 		}
-		else if (argument == "--debug-unit-tests")
+		else if (argument == "--unit-tests")
 		{
-			settings.debugUnitTests = true;
+			settings.unitTests = true;
 		}
 		else if (argument == "--print-ast")
 		{
@@ -63,24 +63,15 @@ ArgumentList gatherArguments(int argc, const char **argv, Settings &settings)
 	return args;
 }
 
-void unitTests(const Settings &userSettings)
-{
-	if(userSettings.debugUnitTests)
-	{
-		runUnitTests(userSettings);
-	}
-	else
-	{
-		Settings defaultSettings;
-		runUnitTests(defaultSettings);
-	}
-}
-
 int main(int argc, const char **argv)
 {
 	Settings settings;
 	ArgumentList args = gatherArguments(argc, argv, settings);
-	unitTests(settings);
+
+	if (settings.unitTests)
+	{
+		return runUnitTests(settings);
+	}
 
 	Interpreter::Globals globals = standardLibrary();
 	Interpreter interpreter(globals, settings);

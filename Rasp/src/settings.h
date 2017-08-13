@@ -6,7 +6,7 @@ class Settings
 public:
 	bool repl;
 	bool trace;
-	bool debugUnitTests;
+	bool unitTests;
 	bool printSyntaxTree;
 	bool printInstructions;
 
@@ -14,7 +14,7 @@ public:
 	:
 		repl(false),
 		trace(false),
-		debugUnitTests(false),
+		unitTests(false),
 		printSyntaxTree(false),
 		printInstructions(false)
 	{

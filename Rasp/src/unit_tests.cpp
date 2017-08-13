@@ -38,8 +38,18 @@ namespace
 		return ::lex("<unit-test>", source);
 	}
 
+	int assertions = 0;
+
+	int flushAssertions()
+	{
+		int previous = assertions;
+		assertions = 0;
+		return previous;
+	}
+
 	void assertTrue(const SourceLocation &sourceLocation, bool expression, const std::string &message)
 	{
+		++assertions;
 		if(!expression)
 		{
 			throw AssertionError(sourceLocation, message);
@@ -50,6 +60,7 @@ namespace
 	template <typename X, typename Y>
 	void assertEquals(const SourceLocation &sourceLocation, const X &x, const Y &y)
 	{
+		++assertions;
 		if (x != y)
 		{
 			throw AssertionError(sourceLocation, "'" + str(x) + "' should equal '" + str(y) + "'");
@@ -254,48 +265,58 @@ namespace
 
 typedef void BasicUnitTest();
 
-void runUnitTest(const std::string &name, BasicUnitTest *unitTest)
+int runUnitTest(const std::string &name, BasicUnitTest *unitTest)
 {
 	try
 	{
+		std::cout << "Running " << name << "..." << '\n';
 		unitTest();
+		std::cout << "PASSED " << flushAssertions() << " assertions\n";
+		return 0;
 	}
 	catch(const RaspError &e)
 	{
-		std::cerr << "Exception in unit test " << name << ": " << e.what() << '\n';
+		std::cerr << "ERROR: " << e.what() << '\n';
+		return 1;
 	}
 	catch(const AssertionError &e)
 	{
-		std::cerr << "Assertion error in unit test " << name << ": " << e.what() << '\n';
+		std::cerr << "FAILED: " << e.what() << '\n';
+		return 1;
 	}
 	catch(...)
 	{
-		std::cerr << "Fatal error in unit test " << name << std::endl;
+		std::cerr << "Unexpected FATAL error" << std::endl;
 		throw;
 	}
 }
 
 typedef void InterpreterTest(Interpreter &);
 
-void runUnitTest(const std::string &name, InterpreterTest *unitTest, const Settings &settings)
+int runUnitTest(const std::string &name, InterpreterTest *unitTest, const Settings &settings)
 {
 	try
 	{
+		std::cout << "Running " << name << "..." << '\n';
 		Interpreter::Globals globals = standardLibrary();
 		Interpreter interpreter(globals, settings);
 		unitTest(interpreter);
+		std::cout << "PASSED " << flushAssertions() << " assertions\n";
+		return 0;
 	}
 	catch(const RaspError &e)
 	{
-		std::cerr << "Exception in unit test " << name << ": " << e.what() << '\n';
+		std::cerr << "ERROR: " << e.what() << '\n';
+		return 1;
 	}
 	catch(const AssertionError &e)
 	{
-		std::cerr << "Assertion error in unit test " << name << ": " << e.what() << '\n';
+		std::cerr << "FAILED: " << e.what() << '\n';
+		return 1;
 	}
 	catch(...)
 	{
-		std::cerr << "Fatal error in unit test " << name << std::endl;
+		std::cerr << "Unexpected FATAL error" << std::endl;
 		throw;
 	}
 }
@@ -303,17 +324,22 @@ void runUnitTest(const std::string &name, InterpreterTest *unitTest, const Setti
 #define RUN_BASIC_TEST(testName) runUnitTest(#testName, &testName)
 #define RUN_INTERPRETER_TEST(testName, interpreter) runUnitTest(#testName, &testName, interpreter)
 
-void runUnitTests(const Settings &settings)
+int runUnitTests(const Settings &settings)
 {
-	RUN_BASIC_TEST(testLexer);
-	RUN_INTERPRETER_TEST(testParser, settings);
-	RUN_INTERPRETER_TEST(testInterpreter, settings);
-	RUN_INTERPRETER_TEST(testAll, settings);
-	RUN_INTERPRETER_TEST(testVariablesInGlobalScope, settings);
-	RUN_INTERPRETER_TEST(testGlobalsReferencesInFunction, settings);
-	RUN_INTERPRETER_TEST(testLocalsInFunction, settings);
-	// RUN_INTERPRETER_TEST(testClosureCanAccessVariableInOuterScope, settings);
-	// RUN_INTERPRETER_TEST(testClosureCanModifyVariableInOuterScope, settings);
-	// RUN_INTERPRETER_TEST(testReturnedClosureCanStillAccessVariableInOuterScope, settings);
-	RUN_INTERPRETER_TEST(testClosure, settings);
+	return 0
+	+ RUN_BASIC_TEST(testLexer)
+	+ RUN_INTERPRETER_TEST(testParser, settings)
+	+ RUN_INTERPRETER_TEST(testInterpreter, settings)
+	+ RUN_INTERPRETER_TEST(testAll, settings)
+	+ RUN_INTERPRETER_TEST(testVariablesInGlobalScope, settings)
+	+ RUN_INTERPRETER_TEST(testGlobalsReferencesInFunction, settings)
+	+ RUN_INTERPRETER_TEST(testLocalsInFunction, settings)
+	/*
+	+ RUN_INTERPRETER_TEST(testClosureCanAccessVariableInOuterScope, settings)
+	+ RUN_INTERPRETER_TEST(testClosureCanModifyVariableInOuterScope, settings)
+	+ RUN_INTERPRETER_TEST(testReturnedClosureCanStillAccessVariableInOuterScope, settings)
+	*/
+	+ RUN_INTERPRETER_TEST(testClosure, settings)
+	;
 }
+

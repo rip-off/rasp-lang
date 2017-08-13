@@ -6,6 +6,7 @@ SOURCES = $(wildcard src/*.cpp)
 OBJECTS = $(subst src/,obj/, $(subst .cpp,.o, $(SOURCES)))
 
 all: $(EXEC)
+	./$(EXEC) --unit-tests
 
 clean:
 	rm -f $(EXEC) $(OBJECTS)

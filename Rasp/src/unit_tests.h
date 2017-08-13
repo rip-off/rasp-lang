@@ -3,6 +3,6 @@
 
 class Settings;
 
-void runUnitTests(const Settings &);
+int runUnitTests(const Settings &);
 
 #endif
