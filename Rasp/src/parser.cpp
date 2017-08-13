@@ -141,7 +141,7 @@ namespace
 				Identifier identifier = tryMakeIdentifier(children[1]);
 				if (declarations.isDefined(identifier))
 				{
-					throw ParseError(token.sourceLocation(), "Keyword 'var' identity '" + identifier.name() + "' already defined");
+					throw ParseError(token.sourceLocation(), "Keyword 'var' identifier '" + identifier.name() + "' already defined");
 				}
 				parse(children[2], declarations, instructions, settings);
 				declarations.add(identifier);
