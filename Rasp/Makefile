@@ -5,11 +5,13 @@ EXEC = rasp
 SOURCES = $(wildcard src/*.cpp)
 OBJECTS = $(subst src/,obj/, $(subst .cpp,.o, $(SOURCES)))
 
-all: $(EXEC)
-	./$(EXEC) --unit-tests
+all: test
 
 clean:
 	rm -f $(EXEC) $(OBJECTS)
+
+test: $(EXEC)
+	./$(EXEC) --unit-tests
 
 $(EXEC): $(OBJECTS)
 	$(CC) $(OBJECTS) -o $(EXEC)
