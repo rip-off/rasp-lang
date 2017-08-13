@@ -317,6 +317,11 @@ Declarations Interpreter::declarations() const
 	return Declarations(globals_);
 }
 
+const Settings &Interpreter::settings() const
+{
+    return settings_;
+}
+
 const Value *Interpreter::global(const Identifier &name) const
 {
 	Bindings::const_iterator i = globals_.find(name);

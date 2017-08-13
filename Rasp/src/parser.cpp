@@ -145,8 +145,24 @@ namespace
 				}
 				parse(children[2], declarations, instructions, settings);
 				declarations.add(identifier);
-				// TODO: local? add an "init" instruction?
-				instructions.push_back(Instruction::assignLocal(token.sourceLocation(), identifier.name()));
+				// TODO: "init" variation?
+				switch(declarations.checkIdentifier(identifier))
+				{
+				case IDENTIFIER_DEFINITION_UNDEFINED:
+					throw ParseError(token.sourceLocation(), "Identifier '" + identifier.name() + "' not defined");
+					break;
+				case IDENTIFIER_DEFINITION_LOCAL:
+					instructions.push_back(Instruction::assignLocal(token.sourceLocation(), identifier.name()));
+					break;
+				case IDENTIFIER_DEFINITION_CLOSURE:
+					throw CompilerBug("Identifier '" + identifier.name() + "' unexpectedly classified as closure");
+					break;
+				case IDENTIFIER_DEFINITION_GLOBAL:
+					instructions.push_back(Instruction::assignGlobal(token.sourceLocation(), identifier.name()));
+					break;
+				default:
+					throw CompilerBug("Failed to classify identifier " + identifier.name() + " at " + str(token.sourceLocation()));
+				}
 			}
 			else if(keyword == "set")
 			{
@@ -159,18 +175,11 @@ namespace
 					throw ParseError(token.sourceLocation(), "Keyword 'set' missing assignment value");
 				}
 				Identifier identifier = tryMakeIdentifier(children[1]);
-                // TODO: cleanup
-                /*
-				if (!declarations.isDefined(identifier))
-				{
-					throw ParseError(token.sourceLocation(), "Keyword 'set' identifier '" + identifier.name() + "' not defined");
-				}
-				*/
 				parse(children[2], declarations, instructions, settings);
 				switch(declarations.checkIdentifier(identifier))
 				{
 				case IDENTIFIER_DEFINITION_UNDEFINED:
-					throw ParseError(token.sourceLocation(), "Variable '" + identifier.name() + "' not defined");
+					throw ParseError(token.sourceLocation(), "Identifier '" + identifier.name() + "' not defined");
 					break;
 				case IDENTIFIER_DEFINITION_LOCAL:
 					instructions.push_back(Instruction::assignLocal(token.sourceLocation(), identifier.name()));
@@ -184,7 +193,6 @@ namespace
 				default:
 					throw CompilerBug("Failed to classify identifier " + identifier.name() + " at " + str(token.sourceLocation()));
 				}
-				// TODO: instructions.push_back(Instruction::assign(token.sourceLocation(), identifier.name()));
 			}
 			else if(keyword == "type")
 			{
@@ -284,8 +292,24 @@ namespace
 					instructions.push_back(Instruction::push(token.sourceLocation(), Value::function(function)));
 					instructions.push_back(Instruction::capture(token.sourceLocation(), closedValues.size()));
 				}
-				// TODO: local? global?
-				instructions.push_back(Instruction::assignGlobal(token.sourceLocation(), identifier.name()));
+
+				switch(declarations.checkIdentifier(identifier))
+				{
+				case IDENTIFIER_DEFINITION_UNDEFINED:
+					throw ParseError(token.sourceLocation(), "Identifier '" + identifier.name() + "' not defined");
+					break;
+				case IDENTIFIER_DEFINITION_LOCAL:
+					instructions.push_back(Instruction::assignLocal(token.sourceLocation(), identifier.name()));
+					break;
+				case IDENTIFIER_DEFINITION_CLOSURE:
+					throw CompilerBug("Identifier '" + identifier.name() + "' unexpectedly classified as closure");
+					break;
+				case IDENTIFIER_DEFINITION_GLOBAL:
+					instructions.push_back(Instruction::assignGlobal(token.sourceLocation(), identifier.name()));
+					break;
+				default:
+					throw CompilerBug("Failed to classify identifier " + identifier.name() + " at " + str(token.sourceLocation()));
+				}
 
 				if (settings.printInstructions)
 				{

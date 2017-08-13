@@ -10,6 +10,7 @@
 #include "exceptions.h"
 #include "instruction.h"
 #include "interpreter.h"
+#include "standard_library.h"
 
 #define CURRENT_SOURCE_LOCATION SourceLocation(__FILE__, __LINE__)
 
@@ -55,12 +56,6 @@ namespace
 		}
 	}
 	#define assertEquals(X, Y) assertEquals(CURRENT_SOURCE_LOCATION, X, Y)
-
-	InstructionList parse(const Token &token, Declarations &declarations)
-	{
-		Settings settings;
-		return parse(token, declarations, settings);
-	}
 
 	void testInterpreter(Interpreter &interpreter)
 	{
@@ -114,7 +109,7 @@ namespace
 		Token root = Token::root(sourceLocation);
 		root.addChild(list);
 		Declarations declarations = interpreter.declarations();
-		InstructionList result = parse(root, declarations);
+		InstructionList result = parse(root, declarations, interpreter.settings());
 		assertEquals(result.size(), 4);
 
 		assertEquals(result[0].type(), Instruction::Push);
@@ -135,7 +130,7 @@ namespace
 		std::string source = "(+ (* 2 42) (/ 133 10) (- 1 6))";
 		Token token = lex(source);
 		Declarations declarations = interpreter.declarations();
-		InstructionList instructions = parse(token, declarations);
+		InstructionList instructions = parse(token, declarations, interpreter.settings());
 		Value result = interpreter.exec(instructions);
 		assertEquals(result.type(), Value::TNumber);
 		assertEquals(result.number(), 84 + 13 - 5);
@@ -143,23 +138,20 @@ namespace
 	
 	void testVariablesInGlobalScope(Interpreter &interpreter)
 	{
-		/* TODO:
 		std::stringstream source;
         source << "(var global 1)";
         source << "(set global (+ global 1))";
         source << "global";
 		Token token = lex(source.str());
 		Declarations declarations = interpreter.declarations();
-		InstructionList instructions = parse(token, declarations);
+		InstructionList instructions = parse(token, declarations, interpreter.settings());
 		Value result = interpreter.exec(instructions);
 		assertEquals(result.type(), Value::TNumber);
 		assertEquals(result.number(), 2);
-		*/
 	}
 
 	void testGlobalsReferencesInFunction(Interpreter &interpreter)
 	{
-	    /* TODO:
 		std::stringstream source;
         source << "(var global 1)";
         source << "(defun incrementGlobal () (set global (+ global 1)))";
@@ -167,11 +159,10 @@ namespace
         source << "global";
 		Token token = lex(source.str());
 		Declarations declarations = interpreter.declarations();
-		InstructionList instructions = parse(token, declarations);
+		InstructionList instructions = parse(token, declarations, interpreter.settings());
 		Value result = interpreter.exec(instructions);
 		assertEquals(result.type(), Value::TNumber);
 		assertEquals(result.number(), 2);
-		*/
 	}
 	
 	void testLocalsInFunction(Interpreter &interpreter)
@@ -184,7 +175,7 @@ namespace
         source << "(incrementLocal)";
 		Token token = lex(source.str());
 		Declarations declarations = interpreter.declarations();
-		InstructionList instructions = parse(token, declarations);
+		InstructionList instructions = parse(token, declarations, interpreter.settings());
 		Value result = interpreter.exec(instructions);
 		assertEquals(result.type(), Value::TNumber);
 		assertEquals(result.number(), 2);
@@ -234,10 +225,12 @@ void runUnitTest(const std::string &name, BasicUnitTest *unitTest)
 
 typedef void InterpreterTest(Interpreter &);
 
-void runUnitTest(const std::string &name, InterpreterTest *unitTest, Interpreter &interpreter)
+void runUnitTest(const std::string &name, InterpreterTest *unitTest, const Settings &settings)
 {
 	try
 	{
+		Interpreter::Globals globals = standardLibrary();
+		Interpreter interpreter(globals, settings);
 		unitTest(interpreter);
 	}
 	catch(const RaspError &e)
@@ -258,14 +251,14 @@ void runUnitTest(const std::string &name, InterpreterTest *unitTest, Interpreter
 #define RUN_BASIC_TEST(testName) runUnitTest(#testName, &testName)
 #define RUN_INTERPRETER_TEST(testName, interpreter) runUnitTest(#testName, &testName, interpreter)
 
-void runUnitTests(Interpreter &interpreter)
+void runUnitTests(const Settings &settings)
 {
 	RUN_BASIC_TEST(testLexer);
-	RUN_INTERPRETER_TEST(testParser, interpreter);
-	RUN_INTERPRETER_TEST(testInterpreter, interpreter);
-	RUN_INTERPRETER_TEST(testAll, interpreter);
-	RUN_INTERPRETER_TEST(testVariablesInGlobalScope, interpreter);
-	RUN_INTERPRETER_TEST(testGlobalsReferencesInFunction, interpreter);
-	RUN_INTERPRETER_TEST(testLocalsInFunction, interpreter);
-	RUN_INTERPRETER_TEST(testClosure, interpreter);
+	RUN_INTERPRETER_TEST(testParser, settings);
+	RUN_INTERPRETER_TEST(testInterpreter, settings);
+	RUN_INTERPRETER_TEST(testAll, settings);
+	RUN_INTERPRETER_TEST(testVariablesInGlobalScope, settings);
+	RUN_INTERPRETER_TEST(testGlobalsReferencesInFunction, settings);
+	RUN_INTERPRETER_TEST(testLocalsInFunction, settings);
+	RUN_INTERPRETER_TEST(testClosure, settings);
 }

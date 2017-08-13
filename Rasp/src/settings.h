@@ -5,12 +5,14 @@ class Settings
 {
 public:
 	bool trace;
+	bool debugUnitTests;
 	bool printSyntaxTree;
 	bool printInstructions;
 
 	Settings() 
 	:
 		trace(false),
+		debugUnitTests(false),
 		printSyntaxTree(false),
 		printInstructions(false)
 	{

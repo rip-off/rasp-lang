@@ -1,8 +1,8 @@
 #ifndef UNIT_TESTS
 #define UNIT_TESTS
 
-class Interpreter;
+class Settings;
 
-void runUnitTests(Interpreter &);
+void runUnitTests(const Settings &);
 
 #endif

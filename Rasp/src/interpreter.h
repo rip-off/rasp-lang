@@ -21,6 +21,8 @@ public:
 
 	Declarations declarations() const;
 
+	const Settings &settings() const;
+
 private:
 	Globals globals_;
 	Settings settings_;
