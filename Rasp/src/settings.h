@@ -4,6 +4,7 @@
 class Settings
 {
 public:
+	bool repl;
 	bool trace;
 	bool debugUnitTests;
 	bool printSyntaxTree;
@@ -11,6 +12,7 @@ public:
 
 	Settings() 
 	:
+		repl(false),
 		trace(false),
 		debugUnitTests(false),
 		printSyntaxTree(false),
