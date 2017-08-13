@@ -92,47 +92,32 @@ std::ostream &operator<<(std::ostream &out, const Instruction &instruction)
 	switch(instruction.type_)
 	{
 	case Instruction::NoOp:
-		out << "noop";
-		break;
+		return out << "noop";
 	case Instruction::Push:
-		out << "push(" << instruction.value_ << ")";
-		break;
+		return out << "push(" << instruction.value_ << ")";
 	case Instruction::Call:
-		out << "call(" << instruction.value_ << ")";
-		break;
+		return out << "call(" << instruction.value_ << ")";
 	case Instruction::Jump:
-		out << "jump(" << instruction.value_ << ")";
-		break;
+		return out << "jump(" << instruction.value_ << ")";
 	case Instruction::Loop:
-		out << "loop(" << instruction.value_ << ")";
-		break;
+		return out << "loop(" << instruction.value_ << ")";
 	case Instruction::Capture:
-		out << "capture(" << instruction.value_ << ")";
-		break;
+		return out << "capture(" << instruction.value_ << ")";
 	case Instruction::RefLocal:
-		out << "ref_local(" << instruction.value_.string() << ")";
-		break;
+		return out << "ref_local(" << instruction.value_.string() << ")";
 	case Instruction::AssignLocal:
-		out << "assign_local(" << instruction.value_.string() << ")";
-		break;
+		return out << "assign_local(" << instruction.value_.string() << ")";
 	case Instruction::RefGlobal:
-		out << "ref_global(" << instruction.value_.string() << ")";
-		break;
+		return out << "ref_global(" << instruction.value_.string() << ")";
 	case Instruction::AssignGlobal:
-		out << "assign_global(" << instruction.value_.string() << ")";
-		break;
+		return out << "assign_global(" << instruction.value_.string() << ")";
 	case Instruction::RefClosure:
-		out << "ref_closure(" << instruction.value_.string() << ")";
-		break;
+		return out << "ref_closure(" << instruction.value_.string() << ")";
 	case Instruction::AssignClosure:
-		out << "assign_closure(" << instruction.value_.string() << ")";
-		break;
+		return out << "assign_closure(" << instruction.value_.string() << ")";
 	case Instruction::MemberAccess:
-		out << "member(" << instruction.value_.string() << ")";
-		break;
+		return out << "member(" << instruction.value_.string() << ")";
 	default:
 		throw CompilerBug("unhandled instruction type: " + str(instruction.type_));
 	}
-	// TODO: replace break with return
-	return out;
 }
