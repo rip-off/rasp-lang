@@ -200,7 +200,6 @@ namespace
         source << "(defun outer ()";
         source << "  (var capture 42)";
         source << "  (defun inner () capture)";
-        // source << "  (set capture 13)"; // TODO: new test case?
         source << "  (inner))";
         source << "(outer)";
 		Token token = lex(source.str());
@@ -213,6 +212,23 @@ namespace
 
 // TODO: test closure variable access
 #if 0
+	void testClosureSeesUpdatedVariableInOuterScope(Interpreter &interpreter)
+	{
+		std::stringstream source;
+        source << "(defun outer ()";
+        source << "  (var capture 42)";
+        source << "  (defun inner () capture)";
+        source << "  (set capture 13)";
+        source << "  (inner))";
+        source << "(outer)";
+		Token token = lex(source.str());
+		Declarations declarations = interpreter.declarations();
+		InstructionList instructions = parse(token, declarations, interpreter.settings());
+		Value result = interpreter.exec(instructions);
+		assertEquals(result.type(), Value::TNumber);
+		assertEquals(result.number(), 13);
+	}
+
 	void testClosureCanModifyVariableInOuterScope(Interpreter &interpreter)
 	{
 		std::stringstream source;
@@ -338,6 +354,7 @@ int runUnitTests(const Settings &settings)
 	+ RUN_INTERPRETER_TEST(testLocalsInFunction, settings)
 	+ RUN_INTERPRETER_TEST(testClosureCanAccessVariableInOuterScope, settings)
 	/*
+	+ RUN_INTERPRETER_TEST(testClosureSeesUpdatedVariableInOuterScope, settings)
 	+ RUN_INTERPRETER_TEST(testClosureCanModifyVariableInOuterScope, settings)
 	*/
 	+ RUN_INTERPRETER_TEST(testReturnedClosureCanStillAccessVariableInOuterScope, settings)
