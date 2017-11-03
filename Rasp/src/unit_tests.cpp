@@ -229,12 +229,13 @@ namespace
 		assertEquals(result.type(), Value::TNumber);
 		assertEquals(result.number(), 2);
 	}
+#endif
 
 	void testReturnedClosureCanStillAccessVariableInOuterScope(Interpreter &interpreter)
 	{
 		std::stringstream source;
         source << "(defun outer ()";
-        source << "  (var capture 1)";
+        source << "  (var capture 13)";
         source << "  (defun inner () capture)";
         source << "  inner)";
         source << "(var closure (outer))";
@@ -244,9 +245,8 @@ namespace
 		InstructionList instructions = parse(token, declarations, interpreter.settings());
 		Value result = interpreter.exec(instructions);
 		assertEquals(result.type(), Value::TNumber);
-		assertEquals(result.number(), 2);
+		assertEquals(result.number(), 13);
 	}
-#endif
 
 	void testClosure(Interpreter &interpreter)
 	{
@@ -339,8 +339,8 @@ int runUnitTests(const Settings &settings)
 	+ RUN_INTERPRETER_TEST(testClosureCanAccessVariableInOuterScope, settings)
 	/*
 	+ RUN_INTERPRETER_TEST(testClosureCanModifyVariableInOuterScope, settings)
-	+ RUN_INTERPRETER_TEST(testReturnedClosureCanStillAccessVariableInOuterScope, settings)
 	*/
+	+ RUN_INTERPRETER_TEST(testReturnedClosureCanStillAccessVariableInOuterScope, settings)
 	+ RUN_INTERPRETER_TEST(testClosure, settings)
 	;
 }
