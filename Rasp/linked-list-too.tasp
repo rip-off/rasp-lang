@@ -1,0 +1,45 @@
+// array_new
+// array_set_element
+// array_element
+// array_length
+
+(defun foo_type (member_value)
+  (defun object_func (member_name)
+    (if (!= member_name "bar")
+      (assert false member_name))
+    member_value)
+  object_func)
+
+(var foo (foo_type 42))
+(println "Value is: " (foo "bar"))
+
+// TODO is "object_func" local or global?
+/*
+(defun array_list_type (size elements)
+  (defun object_func (member)
+      (if == (member "count") // TODO <-- bug?
+        size)
+      (if == (member "elements")
+        elements)
+      (assert false member))
+  object_func)
+
+(defun new_array_list ()
+  (array_list_type 0 (array_new 10)))
+
+(var x (new_array_list))
+(print (x "count"))
+(print (x "elements"))
+*
+//(print object_func)
+
+/*
+(defun array_list_new () 
+  (var size 0)
+  (var elements (array_new 10))
+  (new array_list size elements))
+
+(defun array_list_add (array_list element)
+  (if (== (array_list "size") (
+*/
+

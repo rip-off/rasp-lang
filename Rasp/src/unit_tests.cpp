@@ -33,10 +33,12 @@ namespace
 		std::string message_;
 	};
 
-	Token lex(const std::string &source)
+	Token lex(const char *filename, int line, const std::string &source)
 	{
-		return ::lex("<unit-test>", source);
+		std::string fragmentName = "<unit test @ " + str(filename) + ":" + str(line) + ">";
+		return ::lex(fragmentName, source);
 	}
+	#define lex(s) lex(__FILE__, __LINE__, s)
 
 	int assertions = 0;
 
