@@ -22,8 +22,10 @@ public:
 		Loop,
 		Capture,
 		RefLocal,
+		InitLocal,
 		AssignLocal,
 		RefGlobal,
+		InitGlobal,
 		AssignGlobal,
 		RefClosure,
 		AssignClosure,
@@ -43,11 +45,15 @@ public:
 	static Instruction capture(const SourceLocation &sourceLocation, int argc);
 	
 	static Instruction refLocal(const SourceLocation &sourceLocation, const Identifier &identifier);
-	
+
+	static Instruction initLocal(const SourceLocation &sourceLocation, const std::string &identifier);
+
 	static Instruction assignLocal(const SourceLocation &sourceLocation, const std::string &identifier);
 
 	static Instruction refGlobal(const SourceLocation &sourceLocation, const Identifier &identifier);
 	
+	static Instruction initGlobal(const SourceLocation &sourceLocation, const std::string &identifier);
+
 	static Instruction assignGlobal(const SourceLocation &sourceLocation, const std::string &identifier);
 
 	static Instruction refClosure(const SourceLocation &sourceLocation, const Identifier &identifier);

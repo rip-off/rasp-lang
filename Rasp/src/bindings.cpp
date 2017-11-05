@@ -24,13 +24,25 @@ Value Bindings::get(RefType refType, const Identifier &identifier) const
 void Bindings::set(RefType refType, const Identifier &identifier, const Value &value)
 {
 	Mapping &mapping = mappingFor(refType);
+	#if 1
 	mapping[identifier] = value;
-	/*
+	#else // TODO:
 	auto result = mapping.insert(std::make_pair(identifier, value));
 	if (result.second)
 	{
-		// TODO: throw CompilerBug("Cannot set an unbound " + str(refType) + " identifier: '" + identifier.name() + "'");
-	}*/
+		throw CompilerBug("Cannot set an unbound " + str(refType) + " identifier: '" + identifier.name() + "'");
+	}
+	#endif
+}
+
+void Bindings::init(RefType refType, const Identifier &identifier, const Value &value)
+{
+    Mapping &mapping = mappingFor(refType);
+	auto result = mapping.insert(std::make_pair(identifier, value));
+	if (!result.second)
+	{
+		throw CompilerBug("Cannot initialise an already bound " + str(refType) + " identifier: '" + identifier.name() + "'");
+	}
 }
 
 void Bindings::initLocal(const Identifier &identifier, const Value &value)

@@ -25,6 +25,21 @@ namespace
 		stack.push_back(bindings.get(refType, identifier));
 	}
 
+	Value handleInit(Bindings::RefType refType, const Value &value, Stack &stack, Bindings &bindings)
+	{
+		if(stack.empty())
+		{
+			throw CompilerBug("empty stack during " + str(refType) + " assignment");
+		}
+		assert(value.isString());
+		// Don't pop, allows this to be nested in larger statements
+		// e.g. ((defun foo () ...))
+		Value top = stack.back();
+		Identifier identifier = Identifier(value.string());
+		bindings.init(refType, identifier, top);
+		return top;
+	}
+
 	Value handleAssign(Bindings::RefType refType, const Value &value, Stack &stack, Bindings &bindings)
 	{
 		if(stack.empty())
@@ -220,6 +235,15 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 				std::cout << "DEBUG: " << it->sourceLocation() << " local ref '" << value.string() << "' is " << stack.back() << '\n';
 			}
 			break;
+		case Instruction::InitLocal:
+			{
+				const Value &intialisedValue = handleInit(Bindings::Local, value, stack, bindings);
+				if(settings_.trace)
+				{
+					std::cout << "DEBUG: " << it->sourceLocation() << " local init '" << value.string() << "' to " << intialisedValue << '\n';
+				}
+			}
+			break;
 		case Instruction::AssignLocal:
 			{
 				const Value &assignedValue = handleAssign(Bindings::Local, value, stack, bindings);
@@ -234,6 +258,15 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 			if(settings_.trace)
 			{
 				std::cout << "DEBUG: " << it->sourceLocation() << " global ref '" << value.string() << "' is " << stack.back() << '\n';
+			}
+			break;
+		case Instruction::InitGlobal:
+			{
+				const Value &intialisedValue = handleInit(Bindings::Global, value, stack, bindings);
+				if(settings_.trace)
+				{
+					std::cout << "DEBUG: " << it->sourceLocation() << " global init '" << value.string() << "' to " << intialisedValue << '\n';
+				}
 			}
 			break;
 		case Instruction::AssignGlobal:

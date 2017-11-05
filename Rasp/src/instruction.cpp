@@ -42,6 +42,11 @@ Instruction Instruction::refLocal(const SourceLocation &sourceLocation, const Id
 	return Instruction(sourceLocation, RefLocal, Value::string(identifier.name()));
 }
 
+Instruction Instruction::initLocal(const SourceLocation &sourceLocation, const std::string &identifier)
+{
+	return Instruction(sourceLocation, InitLocal, Value::string(identifier));
+}
+
 Instruction Instruction::assignLocal(const SourceLocation &sourceLocation, const std::string &identifier)
 {
 	return Instruction(sourceLocation, AssignLocal, Value::string(identifier));
@@ -50,6 +55,11 @@ Instruction Instruction::assignLocal(const SourceLocation &sourceLocation, const
 Instruction Instruction::refGlobal(const SourceLocation &sourceLocation, const Identifier &identifier)
 {
 	return Instruction(sourceLocation, RefGlobal, Value::string(identifier.name()));
+}
+
+Instruction Instruction::initGlobal(const SourceLocation &sourceLocation, const std::string &identifier)
+{
+	return Instruction(sourceLocation, InitGlobal, Value::string(identifier));
 }
 
 Instruction Instruction::assignGlobal(const SourceLocation &sourceLocation, const std::string &identifier)
@@ -105,10 +115,14 @@ std::ostream &operator<<(std::ostream &out, const Instruction &instruction)
 		return out << "capture(" << instruction.value_ << ")";
 	case Instruction::RefLocal:
 		return out << "ref_local(" << instruction.value_.string() << ")";
+	case Instruction::InitLocal:
+		return out << "init_local(" << instruction.value_.string() << ")";
 	case Instruction::AssignLocal:
 		return out << "assign_local(" << instruction.value_.string() << ")";
 	case Instruction::RefGlobal:
 		return out << "ref_global(" << instruction.value_.string() << ")";
+	case Instruction::InitGlobal:
+		return out << "init_global(" << instruction.value_.string() << ")";
 	case Instruction::AssignGlobal:
 		return out << "assign_global(" << instruction.value_.string() << ")";
 	case Instruction::RefClosure:
