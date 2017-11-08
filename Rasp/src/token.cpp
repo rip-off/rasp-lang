@@ -1,4 +1,5 @@
 #include "token.h"
+#include "bug.h"
 
 Token Token::nil(const SourceLocation &sourceLocation)
 {
@@ -81,5 +82,28 @@ Token::Token(const SourceLocation &sourceLocation, Type type, const std::string 
 bool Token::isValidChild() const
 {
 	return type_ != Root;
+}
+
+std::ostream &operator<<(std::ostream &out, Token::Type tokenType) {
+	switch(tokenType) {
+		case Token::Nil:
+			return out << "Nil";
+		case Token::Root:
+			return out << "Root";
+		case Token::List:
+			return out << "List";
+		case Token::String:
+			return out << "String";
+		case Token::Number:
+			return out << "Number";
+		case Token::Boolean:
+			return out << "Boolean";
+		case Token::Keyword:
+			return out << "Keyword";
+		case Token::Identifier:
+			return out << "Identifier";
+		default:
+			throw CompilerBug("unhandled token type: " + str(static_cast<int>(tokenType)));
+	}
 }
 

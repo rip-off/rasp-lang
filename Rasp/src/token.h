@@ -62,4 +62,6 @@ private:
 	SourceLocation sourceLocation_;
 };
 
+std::ostream &operator<<(std::ostream &out, Token::Type tokenType);
+
 #endif
