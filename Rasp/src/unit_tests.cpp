@@ -109,6 +109,49 @@ namespace
 		assertEquals(children[2].string(), "42");
 	}
 
+	void testLexerWithFunction()
+	{
+		std::string source = "(defun double (x) (* x 2))";
+		Token token = lex(source);
+		assertEquals(token.type(), Token::Root);
+		
+		const Token::Children &rootChildren = token.children();
+		assertEquals(rootChildren.size(), 1);
+		const Token &list = rootChildren.front();
+		assertEquals(list.type(), Token::List);
+
+		const Token::Children &children = list.children();
+		assertEquals(children.size(), 4);
+
+		assertEquals(children[0].type(), Token::Keyword);
+		assertEquals(children[0].string(), "defun");
+
+		assertEquals(children[1].type(), Token::Identifier);
+		assertEquals(children[1].string(), "double");
+
+		assertEquals(children[2].type(), Token::List);
+		assertEquals(children[2].string(), "__list");
+
+		const Token::Children &argumentList = children[2].children();
+		assertEquals(argumentList.size(), 1);
+		assertEquals(argumentList[0].type(), Token::Identifier);
+		assertEquals(argumentList[0].string(), "x");
+
+		assertEquals(children[3].type(), Token::List);
+		assertEquals(children[3].string(), "__list");
+
+		const Token::Children &functionBody = children[3].children();
+		assertEquals(functionBody.size(), 3);
+		assertEquals(functionBody[0].type(), Token::Identifier);
+		assertEquals(functionBody[0].string(), "*");
+
+		assertEquals(functionBody[1].type(), Token::Identifier);
+		assertEquals(functionBody[1].string(), "x");
+
+		assertEquals(functionBody[2].type(), Token::Number);
+		assertEquals(functionBody[2].string(), "2");
+	}
+
 	void testParser(Interpreter &interpreter)
 	{
 		SourceLocation sourceLocation = CURRENT_SOURCE_LOCATION;
@@ -346,6 +389,7 @@ int runUnitTests(const Settings &settings)
 {
 	return 0
 	+ RUN_BASIC_TEST(testLexer)
+	+ RUN_BASIC_TEST(testLexerWithFunction)
 	+ RUN_INTERPRETER_TEST(testParser, settings)
 	+ RUN_INTERPRETER_TEST(testInterpreter, settings)
 	+ RUN_INTERPRETER_TEST(testAll, settings)
