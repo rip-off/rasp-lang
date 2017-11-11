@@ -5,9 +5,12 @@
 #include "repl.h"
 #include "settings.h"
 #include "compiler.h"
-#include "unit_tests.h"
 #include "interpreter.h"
 #include "standard_library.h"
+
+int runLexerUnitTests();
+int runUnitTests(const Settings &);
+
 
 typedef std::vector<std::string> ArgumentList;
 
