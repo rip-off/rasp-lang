@@ -381,6 +381,21 @@ namespace
 		assertEquals(Value::TNumber, result.type());
 		assertEquals(result.number(), 55);
 	}
+
+	void testTypesAndMemberAccess(Interpreter &interpreter)
+	{
+		std::stringstream source;
+        source << "(type Person id name)";
+        source << "(var alice (new Person 13 \"Alice\"))";
+        source << "(var bob (new Person 42 \"Bob\"))";
+		source << "(+ \"People: \" alice.name \", \" bob.name)";
+		Token token = lex(source.str());
+		Declarations declarations = interpreter.declarations();
+		InstructionList instructions = parse(token, declarations, interpreter.settings());
+		Value result = interpreter.exec(instructions);
+		assertEquals(result.type(), Value::TString);
+		assertEquals(result.string(), "People: Alice, Bob");
+	}
 }
 
 typedef void BasicUnitTest();
@@ -463,6 +478,7 @@ int runUnitTests(const Settings &settings)
 	*/
 	+ RUN_INTERPRETER_TEST(testReturnedClosureCanStillAccessVariableInOuterScope, settings)
 	+ RUN_INTERPRETER_TEST(testClosure, settings)
+	+ RUN_INTERPRETER_TEST(testTypesAndMemberAccess, settings)
 	;
 }
 
