@@ -38,11 +38,15 @@ void Bindings::set(RefType refType, const Identifier &identifier, const Value &v
 void Bindings::init(RefType refType, const Identifier &identifier, const Value &value)
 {
     Mapping &mapping = mappingFor(refType);
+	#if 1
+	mapping[identifier] = value;
+	#else // TODO: fix testLoopWithInnerVariableDeclaration
 	auto result = mapping.insert(std::make_pair(identifier, value));
 	if (!result.second)
 	{
 		throw CompilerBug("Cannot initialise an already bound " + str(refType) + " identifier: '" + identifier.name() + "'");
 	}
+	#endif
 }
 
 void Bindings::initLocal(const Identifier &identifier, const Value &value)
