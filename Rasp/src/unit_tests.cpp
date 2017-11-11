@@ -12,63 +12,15 @@
 #include "interpreter.h"
 #include "standard_library.h"
 
-#define CURRENT_SOURCE_LOCATION SourceLocation(__FILE__, __LINE__)
 
 namespace
 {
-	class AssertionError
-	{
-	public:
-		AssertionError(const SourceLocation &sourceLocation, const std::string &message)
-		:
-			message_(message + " at " + str(sourceLocation))
-		{
-		}
-
-		virtual const char *what() const
-		{
-			return message_.c_str();
-		}
-	private:
-		std::string message_;
-	};
-
 	Token lex(const char *filename, int line, const std::string &source)
 	{
 		std::string fragmentName = "<unit test @ " + str(filename) + ":" + str(line) + ">";
 		return ::lex(fragmentName, source);
 	}
 	#define lex(s) lex(__FILE__, __LINE__, s)
-
-	int assertions = 0;
-
-	int flushAssertions()
-	{
-		int previous = assertions;
-		assertions = 0;
-		return previous;
-	}
-
-	void assertTrue(const SourceLocation &sourceLocation, bool expression, const std::string &message)
-	{
-		++assertions;
-		if(!expression)
-		{
-			throw AssertionError(sourceLocation, message);
-		}
-	}
-	#define assertTrue(EXPRESSION, MESSAGE) assertTrue(CURRENT_SOURCE_LOCATION, EXPRESSION, MESSAGE)
-
-	template <typename X, typename Y>
-	void assertEquals(const SourceLocation &sourceLocation, const X &x, const Y &y)
-	{
-		++assertions;
-		if (x != y)
-		{
-			throw AssertionError(sourceLocation, "'" + str(x) + "' should equal '" + str(y) + "'");
-		}
-	}
-	#define assertEquals(X, Y) assertEquals(CURRENT_SOURCE_LOCATION, X, Y)
 
 	void testInterpreter(Interpreter &interpreter)
 	{
