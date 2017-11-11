@@ -164,10 +164,20 @@ namespace
 		return begin;
 	}
 
-	Token identifierOrMemberAccess(const SourceLocation &sourceLocation, const std::string string)
+	Token declarationOrIdentifierOrMemberAccess(const SourceLocation &sourceLocation, const std::string string)
 	{
 		const std::string::const_iterator end = string.end();
 		std::string::const_iterator current = string.begin();
+
+		std::string::const_iterator colonDelimiter = std::find(current, end, ':');
+		if (colonDelimiter != end)
+		{
+			std::string name = std::string(current, colonDelimiter);
+			std::string type = std::string(colonDelimiter + 1, end);
+			Declaration declaration = Declaration(Identifier(name), type);
+			return Token::declaration(sourceLocation, declaration);
+		}
+
 		std::string::const_iterator dotDelimiter = std::find(current, end, '.');
 		Token identifier = Token::identifier(sourceLocation, std::string(current, dotDelimiter));
 
@@ -219,7 +229,7 @@ namespace
 		}
 		else
 		{
-			return identifierOrMemberAccess(current.sourceLocation(), string);
+			return declarationOrIdentifierOrMemberAccess(current.sourceLocation(), string);
 		}
 	}
 

@@ -42,6 +42,19 @@ Token Token::identifier(const SourceLocation &sourceLocation, const std::string 
 	return Token(sourceLocation, Identifier, identifier);
 }
 
+Token Token::declaration(const SourceLocation &sourceLocation, const ::Declaration &declaration)
+{
+	const std::string &type = declaration.type();
+	if (type.empty())
+	{
+		return identifier(sourceLocation, declaration.identifier().name());
+	}
+	Token result = Token(sourceLocation, Declaration, "__declaration");
+	result.addChild(identifier(sourceLocation, declaration.identifier().name()));
+	result.addChild(identifier(sourceLocation, type));
+	return result;
+}
+
 const SourceLocation &Token::sourceLocation() const
 {
 	return sourceLocation_;
@@ -102,8 +115,8 @@ std::ostream &operator<<(std::ostream &out, Token::Type tokenType) {
 			return out << "Keyword";
 		case Token::Identifier:
 			return out << "Identifier";
-		default:
-			throw CompilerBug("unhandled token type: " + str(static_cast<int>(tokenType)));
+		case Token::Declaration:
+			return out << "Declaration";
 	}
 }
 

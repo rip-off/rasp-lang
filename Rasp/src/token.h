@@ -6,6 +6,7 @@
 #include <cassert>
 
 #include "utils.h"
+#include "declaration.h"
 #include "source_location.h"
 
 class Token
@@ -23,6 +24,7 @@ public:
 		Boolean,
 		Keyword,
 		Identifier,
+		Declaration,
 	};
 
 	static Token nil(const SourceLocation &sourceLocation);
@@ -39,7 +41,10 @@ public:
 
 	static Token keyword(const SourceLocation &sourceLocation, const std::string &keyword);
 
+	// TODO: Identifier?
 	static Token identifier(const SourceLocation &sourceLocation, const std::string &identifier);
+
+	static Token declaration(const SourceLocation &sourceLocation, const ::Declaration &declaration);
 
 	const SourceLocation &sourceLocation() const;
 

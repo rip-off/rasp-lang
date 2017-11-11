@@ -417,6 +417,10 @@ namespace
 				}
 			}
 			break;
+		case Token::Declaration:
+			{
+				throw CompilerBug("TODO: implement Token::Declaration parsing"); // TODO:
+			}
 		}
 	}
 
@@ -486,6 +490,12 @@ namespace
 				std::cout << '.' << i->string();
 			}
 			std::cout << '\n';
+			break;
+		case Token::Declaration:
+			assert(children.size() == 2);
+			assert(children[0].type() == Token::Identifier);
+			assert(children[1].type() == Token::Identifier);
+			std::cout << "declaration: " << children[0].string() << ":" << children[1].string() << '\n';
 			break;
 		}
 	}
