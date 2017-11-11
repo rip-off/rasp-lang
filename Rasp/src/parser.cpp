@@ -28,6 +28,7 @@ namespace
 
 	Identifier tryMakeIdentifier(const Token &token)
 	{
+		assert(token.type() == Token::Identifier);
 		// TODO: differentiate between identifiers and member access?
 		//assert(token.children().empty());
 		const std::string &name = token.string();
