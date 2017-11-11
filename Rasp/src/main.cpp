@@ -70,7 +70,7 @@ int main(int argc, const char **argv)
 
 	if (settings.unitTests)
 	{
-		return runUnitTests(settings);
+		return runLexerUnitTests() + runUnitTests(settings);
 	}
 
 	Interpreter::Globals globals = standardLibrary();
