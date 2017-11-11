@@ -1,16 +1,11 @@
 #include "unit_tests.h"
 
-#include <cassert>
 #include <iostream>
 
-#include "token.h"
 #include "lexer.h"
-#include "parser.h"
-#include "settings.h"
-#include "exceptions.h"
-#include "instruction.h"
-#include "interpreter.h"
-#include "standard_library.h"
+
+#define RASP_ENABLE_ASSERTION_MACROS
+#include "assert.h"
 
 namespace
 {

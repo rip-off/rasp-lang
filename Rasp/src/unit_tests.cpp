@@ -12,13 +12,40 @@
 #include "interpreter.h"
 #include "standard_library.h"
 
+#define RASP_ENABLE_ASSERTION_MACROS
+#include "assert.h"
+
+struct Source
+{
+	Source()
+	{
+	}
+
+	Source(const char *content)
+	{
+		stream << content;
+	}
+
+	std::string str() const
+	{
+		return stream.str();
+	}
+
+	std::stringstream stream;
+};
+
+Source &operator<<(Source &source, const std::string line)
+{
+	source.stream << line << '\n';
+	return source;
+}
 
 namespace
 {
-	Token lex(const char *filename, int line, const std::string &source)
+	Token lex(const char *filename, int line, const Source &source)
 	{
 		std::string fragmentName = "<unit test @ " + str(filename) + ":" + str(line) + ">";
-		return ::lex(fragmentName, source);
+		return ::lex(fragmentName, source.str());
 	}
 	#define lex(s) lex(__FILE__, __LINE__, s)
 
@@ -68,7 +95,7 @@ namespace
 
 	void testAll(Interpreter &interpreter)
 	{
-		std::string source = "(+ (* 2 42) (/ 133 10) (- 1 6))";
+		Source source = "(+ (* 2 42) (/ 133 10) (- 1 6))";
 		Token token = lex(source);
 		Declarations declarations = interpreter.declarations();
 		InstructionList instructions = parse(token, declarations, interpreter.settings());
@@ -79,11 +106,11 @@ namespace
 	
 	void testVariablesInGlobalScope(Interpreter &interpreter)
 	{
-		std::stringstream source;
+		Source source;
         source << "(var global 1)";
         source << "(set global (+ global 1))";
         source << "global";
-		Token token = lex(source.str());
+		Token token = lex(source);
 		Declarations declarations = interpreter.declarations();
 		InstructionList instructions = parse(token, declarations, interpreter.settings());
 		Value result = interpreter.exec(instructions);
@@ -93,12 +120,12 @@ namespace
 
 	void testGlobalsReferencesInFunction(Interpreter &interpreter)
 	{
-		std::stringstream source;
+		Source source;
         source << "(var global 1)";
         source << "(defun incrementGlobal () (set global (+ global 1)))";
         source << "(incrementGlobal)";
         source << "global";
-		Token token = lex(source.str());
+		Token token = lex(source);
 		Declarations declarations = interpreter.declarations();
 		InstructionList instructions = parse(token, declarations, interpreter.settings());
 		Value result = interpreter.exec(instructions);
@@ -108,13 +135,13 @@ namespace
 	
 	void testLocalsInFunction(Interpreter &interpreter)
 	{
-		std::stringstream source;
+		Source source;
         source << "(defun incrementLocal ()";
         source << "  (var local 1)";
         source << "  (set local (+ local 1))";
         source << "  local)";
         source << "(incrementLocal)";
-		Token token = lex(source.str());
+		Token token = lex(source);
 		Declarations declarations = interpreter.declarations();
 		InstructionList instructions = parse(token, declarations, interpreter.settings());
 		Value result = interpreter.exec(instructions);
@@ -124,13 +151,13 @@ namespace
 	
 	void testClosureCanAccessVariableInOuterScope(Interpreter &interpreter)
 	{
-		std::stringstream source;
+		Source source;
         source << "(defun outer ()";
         source << "  (var capture 42)";
         source << "  (defun inner () capture)";
         source << "  (inner))";
         source << "(outer)";
-		Token token = lex(source.str());
+		Token token = lex(source);
 		Declarations declarations = interpreter.declarations();
 		InstructionList instructions = parse(token, declarations, interpreter.settings());
 		Value result = interpreter.exec(instructions);
@@ -142,14 +169,14 @@ namespace
 #if 0
 	void testClosureSeesUpdatedVariableInOuterScope(Interpreter &interpreter)
 	{
-		std::stringstream source;
+		Source source;
         source << "(defun outer ()";
         source << "  (var capture 42)";
         source << "  (defun inner () capture)";
         source << "  (set capture 13)";
         source << "  (inner))";
         source << "(outer)";
-		Token token = lex(source.str());
+		Token token = lex(source);
 		Declarations declarations = interpreter.declarations();
 		InstructionList instructions = parse(token, declarations, interpreter.settings());
 		Value result = interpreter.exec(instructions);
@@ -159,14 +186,14 @@ namespace
 
 	void testClosureCanModifyVariableInOuterScope(Interpreter &interpreter)
 	{
-		std::stringstream source;
+		Source source;
         source << "(defun outer ()";
         source << "  (var capture 1)";
         source << "  (defun inner () (set capture (+ capture 1)))";
         source << "  (inner)";
         source << "  capture)";
         source << "(outer)";
-		Token token = lex(source.str());
+		Token token = lex(source);
 		Declarations declarations = interpreter.declarations();
 		InstructionList instructions = parse(token, declarations, interpreter.settings());
 		Value result = interpreter.exec(instructions);
@@ -177,14 +204,14 @@ namespace
 
 	void testReturnedClosureCanStillAccessVariableInOuterScope(Interpreter &interpreter)
 	{
-		std::stringstream source;
+		Source source;
         source << "(defun outer ()";
         source << "  (var capture 13)";
         source << "  (defun inner () capture)";
         source << "  inner)";
         source << "(var closure (outer))";
         source << "(closure)";
-		Token token = lex(source.str());
+		Token token = lex(source);
 		Declarations declarations = interpreter.declarations();
 		InstructionList instructions = parse(token, declarations, interpreter.settings());
 		Value result = interpreter.exec(instructions);
@@ -210,12 +237,12 @@ namespace
 
 	void testTypesAndMemberAccess(Interpreter &interpreter)
 	{
-		std::stringstream source;
+		Source source;
         source << "(type Person id name)";
         source << "(var alice (new Person 13 \"Alice\"))";
         source << "(var bob (new Person 42 \"Bob\"))";
 		source << "(+ \"People: \" alice.name \", \" bob.name)";
-		Token token = lex(source.str());
+		Token token = lex(source);
 		Declarations declarations = interpreter.declarations();
 		InstructionList instructions = parse(token, declarations, interpreter.settings());
 		Value result = interpreter.exec(instructions);
@@ -225,13 +252,13 @@ namespace
 
 	void testSimpleLoop(Interpreter &interpreter)
 	{
-		std::stringstream source;
+		Source source;
         source << "(var result 2)";
         source << "(while (< result 100)";
         source << "  (set result (* result 2))";
 		source << ")";
 		source << "result";
-		Token token = lex(source.str());
+		Token token = lex(source);
 		Declarations declarations = interpreter.declarations();
 		InstructionList instructions = parse(token, declarations, interpreter.settings());
 		Value result = interpreter.exec(instructions);
@@ -241,7 +268,7 @@ namespace
 
 	void testComplexLoop(Interpreter &interpreter)
 	{
-		std::stringstream source;
+		Source source;
         source << "(var result 0)";
         source << "(var i 0)";
         source << "(while (< i 10)";
@@ -249,7 +276,7 @@ namespace
         source << "  (set i (+ i 1))";
 		source << ")";
 		source << "result";
-		Token token = lex(source.str());
+		Token token = lex(source);
 		Declarations declarations = interpreter.declarations();
 		InstructionList instructions = parse(token, declarations, interpreter.settings());
 		Value result = interpreter.exec(instructions);
@@ -259,7 +286,7 @@ namespace
 
 	void testLoopWithInnerVariableDeclaration(Interpreter &interpreter)
 	{
-		std::stringstream source;
+		Source source;
         source << "(var result 0)";
         source << "(var i 0)";
         source << "(while (< i 10)";
@@ -268,7 +295,7 @@ namespace
         source << "  (set i (+ i 1))";
 		source << ")";
 		source << "result";
-		Token token = lex(source.str());
+		Token token = lex(source);
 		Declarations declarations = interpreter.declarations();
 		InstructionList instructions = parse(token, declarations, interpreter.settings());
 		Value result = interpreter.exec(instructions);
