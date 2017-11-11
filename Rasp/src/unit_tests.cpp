@@ -412,6 +412,24 @@ namespace
 		assertEquals(result.type(), Value::TNumber);
 		assertEquals(result.number(), 128);
 	}
+
+	void testComplexLoop(Interpreter &interpreter)
+	{
+		std::stringstream source;
+        source << "(var result 0)";
+        source << "(var i 0)";
+        source << "(while (< i 10)";
+        source << "  (set result (+ result i))";
+        source << "  (set i (+ i 1))";
+		source << ")";
+		source << "result";
+		Token token = lex(source.str());
+		Declarations declarations = interpreter.declarations();
+		InstructionList instructions = parse(token, declarations, interpreter.settings());
+		Value result = interpreter.exec(instructions);
+		assertEquals(result.type(), Value::TNumber);
+		assertEquals(result.number(), 45);
+	}
 }
 
 typedef void BasicUnitTest();
@@ -496,6 +514,7 @@ int runUnitTests(const Settings &settings)
 	+ RUN_INTERPRETER_TEST(testClosure, settings)
 	+ RUN_INTERPRETER_TEST(testTypesAndMemberAccess, settings)
 	+ RUN_INTERPRETER_TEST(testSimpleLoop, settings)
+	+ RUN_INTERPRETER_TEST(testComplexLoop, settings)
 	;
 }
 
