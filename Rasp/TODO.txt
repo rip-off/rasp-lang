@@ -1,6 +1,10 @@
 Doing:
 * Decide!
 
+Research - Automated Build:
+ * https://github.com/gamedev-net/AdventuresInTexting/blob/master/.travis.yml
+ * https://docs.travis-ci.com/user/languages/cpp/
+
 Known bugs / issues:
 * (*) returns 1
 * Short circuiting for &&, ||
