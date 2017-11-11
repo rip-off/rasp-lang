@@ -396,6 +396,22 @@ namespace
 		assertEquals(result.type(), Value::TString);
 		assertEquals(result.string(), "People: Alice, Bob");
 	}
+
+	void testSimpleLoop(Interpreter &interpreter)
+	{
+		std::stringstream source;
+        source << "(var result 2)";
+        source << "(while (< result 100)";
+        source << "  (set result (* result 2))";
+		source << ")";
+		source << "result";
+		Token token = lex(source.str());
+		Declarations declarations = interpreter.declarations();
+		InstructionList instructions = parse(token, declarations, interpreter.settings());
+		Value result = interpreter.exec(instructions);
+		assertEquals(result.type(), Value::TNumber);
+		assertEquals(result.number(), 128);
+	}
 }
 
 typedef void BasicUnitTest();
@@ -479,6 +495,7 @@ int runUnitTests(const Settings &settings)
 	+ RUN_INTERPRETER_TEST(testReturnedClosureCanStillAccessVariableInOuterScope, settings)
 	+ RUN_INTERPRETER_TEST(testClosure, settings)
 	+ RUN_INTERPRETER_TEST(testTypesAndMemberAccess, settings)
+	+ RUN_INTERPRETER_TEST(testSimpleLoop, settings)
 	;
 }
 
