@@ -16,15 +16,15 @@ public:
 
 	enum Type
 	{
-		Nil,
-		Root,
-		List,
-		String,
-		Number,
-		Boolean,
-		Keyword,
-		Identifier,
-		Declaration,
+		NIL,
+		ROOT,
+		LIST,
+		STRING,
+		NUMBER,
+		BOOLEAN,
+		KEYWORD,
+		IDENTIFIER,
+		DECLARATION,
 	};
 
 	static Token nil(const SourceLocation &sourceLocation);
@@ -41,9 +41,9 @@ public:
 
 	static Token keyword(const SourceLocation &sourceLocation, const std::string &keyword);
 
-	static Token identifier(const SourceLocation &sourceLocation, const ::Identifier &identifier);
+	static Token identifier(const SourceLocation &sourceLocation, const Identifier &identifier);
 
-	static Token declaration(const SourceLocation &sourceLocation, const ::Declaration &declaration);
+	static Token declaration(const SourceLocation &sourceLocation, const Declaration &declaration);
 
 	const SourceLocation &sourceLocation() const;
 

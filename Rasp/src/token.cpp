@@ -3,55 +3,55 @@
 
 Token Token::nil(const SourceLocation &sourceLocation)
 {
-	return Token(sourceLocation, Nil, "__nil_literal");
+	return Token(sourceLocation, NIL, "__nil_literal");
 }
 
 Token Token::root(const SourceLocation &sourceLocation)
 {
-	return Token(sourceLocation, Root, "__root");
+	return Token(sourceLocation, ROOT, "__root");
 }
 
 Token Token::list(const SourceLocation &sourceLocation)
 {
-	return Token(sourceLocation, List, "__list");
+	return Token(sourceLocation, LIST, "__list");
 }
 
 Token Token::string(const SourceLocation &sourceLocation, const std::string &text)
 {
-	return Token(sourceLocation, String, text);
+	return Token(sourceLocation, STRING, text);
 }
 
 Token Token::number(const SourceLocation &sourceLocation, const std::string &number)
 {
 	assert(is<int>(number));
-	return Token(sourceLocation, Number, number); 
+	return Token(sourceLocation, NUMBER, number); 
 }
 
 Token Token::keyword(const SourceLocation &sourceLocation, const std::string &keyword)
 {
-	return Token(sourceLocation, Keyword, keyword);
+	return Token(sourceLocation, KEYWORD, keyword);
 }
 
 Token Token::boolean(const SourceLocation &sourceLocation, const std::string &boolean)
 {
-	return Token(sourceLocation, Boolean, boolean);
+	return Token(sourceLocation, BOOLEAN, boolean);
 }
 
-Token Token::identifier(const SourceLocation &sourceLocation, const ::Identifier &identifier)
+Token Token::identifier(const SourceLocation &sourceLocation, const Identifier &identifier)
 {
-	return Token(sourceLocation, Identifier, identifier.name());
+	return Token(sourceLocation, IDENTIFIER, identifier.name());
 }
 
-Token Token::declaration(const SourceLocation &sourceLocation, const ::Declaration &declaration)
+Token Token::declaration(const SourceLocation &sourceLocation, const Declaration &declaration)
 {
 	const std::string &declarationType = declaration.type();
 	if (declarationType.empty())
 	{
 		return identifier(sourceLocation, declaration.identifier());
 	}
-	Token result = Token(sourceLocation, Declaration, "__declaration");
+	Token result = Token(sourceLocation, DECLARATION, "__declaration");
 	result.addChild(identifier(sourceLocation, declaration.identifier()));
-	result.addChild(identifier(sourceLocation, ::Identifier(declarationType)));
+	result.addChild(identifier(sourceLocation, Identifier(declarationType)));
 	return result;
 }
 
@@ -94,28 +94,28 @@ Token::Token(const SourceLocation &sourceLocation, Type type, const std::string 
 
 bool Token::isValidChild() const
 {
-	return type_ != Root;
+	return type_ != ROOT;
 }
 
 std::ostream &operator<<(std::ostream &out, Token::Type tokenType) {
 	switch(tokenType) {
-		case Token::Nil:
+		case Token::NIL:
 			return out << "Nil";
-		case Token::Root:
+		case Token::ROOT:
 			return out << "Root";
-		case Token::List:
+		case Token::LIST:
 			return out << "List";
-		case Token::String:
+		case Token::STRING:
 			return out << "String";
-		case Token::Number:
+		case Token::NUMBER:
 			return out << "Number";
-		case Token::Boolean:
+		case Token::BOOLEAN:
 			return out << "Boolean";
-		case Token::Keyword:
+		case Token::KEYWORD:
 			return out << "Keyword";
-		case Token::Identifier:
+		case Token::IDENTIFIER:
 			return out << "Identifier";
-		case Token::Declaration:
+		case Token::DECLARATION:
 			return out << "Declaration";
 	}
 }

@@ -28,7 +28,7 @@ namespace
 
 	Identifier tryMakeIdentifier(const Token &token)
 	{
-		assert(token.type() == Token::Identifier);
+		assert(token.type() == Token::IDENTIFIER);
 		// TODO: differentiate between identifiers and member access?
 		//assert(token.children().empty());
 		const std::string &name = token.string();
@@ -41,13 +41,13 @@ namespace
 
 	Identifier tryMakeDeclaration(const Token &token)
 	{
-		if (token.type() == Token::Identifier)
+		if (token.type() == Token::IDENTIFIER)
 		{
 			return tryMakeIdentifier(token);
 		}
-		assert(token.type() == Token::Declaration);
+		assert(token.type() == Token::DECLARATION);
 		const Token::Children &children = token.children();
-		assert(children[1].type() == Token::Identifier);
+		assert(children[1].type() == Token::IDENTIFIER);
 		return tryMakeIdentifier(children[0]);
 	}
 
@@ -79,7 +79,7 @@ namespace
 		}
 
 		const Token &firstChild = children.front();		
-		if(firstChild.type() == Token::Keyword)
+		if(firstChild.type() == Token::KEYWORD)
 		{
 			const std::string &keyword = firstChild.string();
 			if(keyword == "while")
@@ -262,7 +262,7 @@ namespace
 				// Allow recursion
 				declarations.add(identifier);
 				
-				if (children[2].type() != Token::List)
+				if (children[2].type() != Token::LIST)
 				{
 					throw ParseError(token.sourceLocation(), "Keyword 'defun' function parameter list is incorrect");
 				}
@@ -353,28 +353,28 @@ namespace
 		const Token::Children &children = token.children();
 		switch(token.type())
 		{
-		case Token::Nil:
+		case Token::NIL:
 			assert(children.empty());
 			instructions.push_back(Instruction::push(token.sourceLocation(), Value::nil()));
 			break;
-		case Token::Root:
+		case Token::ROOT:
 			assert(children.empty());
 			// do nothing;
 			break;
-		case Token::List:
+		case Token::LIST:
 			{
 				handleList(token, declarations, instructions, settings);
 			}
 			break;
-		case Token::String:
+		case Token::STRING:
 			assert(children.empty());
 			instructions.push_back(Instruction::push(token.sourceLocation(), Value::string(token.string())));
 			break;
-		case Token::Number:
+		case Token::NUMBER:
 			assert(children.empty());
 			instructions.push_back(Instruction::push(token.sourceLocation(), Value::number(to<int>(token.string()))));
 			break;
-		case Token::Boolean:
+		case Token::BOOLEAN:
 			assert(children.empty());
 			if (token.string() == "true")
 			{
@@ -389,12 +389,12 @@ namespace
 				throw CompilerBug("illegal boolean literal '" + token.string() + "' " + str(token.sourceLocation()));
 			}
 			break;
-		case Token::Keyword:
+		case Token::KEYWORD:
 			{
 				throw ParseError(token.sourceLocation(), "Keyword '" + token.string() + "' must be first element of a list");
 			}
 			break;
-		case Token::Identifier:
+		case Token::IDENTIFIER:
 			{
 				Identifier identifier = tryMakeIdentifier(token);
 				switch(declarations.checkIdentifier(identifier))
@@ -418,7 +418,7 @@ namespace
 				for(Token::Children::const_iterator i = children.begin() ; i != children.end() ; ++i)
 				{
 					const Token &child = *i;
-					if (child.type() != Token::Identifier)
+					if (child.type() != Token::IDENTIFIER)
 					{
 						throw CompilerBug("Expected identifier but got " + str(child.type()));
 					}
@@ -426,11 +426,11 @@ namespace
 				}
 			}
 			break;
-		case Token::Declaration:
+		case Token::DECLARATION:
 			{
 				assert(children.size() == 2);
-				assert(children[0].type() == Token::Identifier);
-				assert(children[1].type() == Token::Identifier);
+				assert(children[0].type() == Token::IDENTIFIER);
+				assert(children[1].type() == Token::IDENTIFIER);
 				return parse(children[0], declarations, instructions, settings);
 			}
 		}
@@ -450,11 +450,11 @@ namespace
 		const Token::Children &children = token.children();
 		switch(token.type())
 		{
-		case Token::Nil:
+		case Token::NIL:
 			assert(children.empty());
 			std::cout << "nil\n";
 			break;
-		case Token::Root:
+		case Token::ROOT:
 			std::cout << "root {\n";
 			for(Token::Children::const_iterator i = children.begin() ; i != children.end() ; ++i)
 			{
@@ -463,7 +463,7 @@ namespace
 			indent(level);
 			std::cout << "}\n";
 			break;
-		case Token::List:
+		case Token::LIST:
 			if (children.empty())
 			{
 				std::cout << "list <empty>\n";
@@ -479,23 +479,23 @@ namespace
 				std::cout << "}\n";
 			}
 			break;
-		case Token::String:
+		case Token::STRING:
 			assert(children.empty());
 			std::cout << "string: \"" << addEscapes(token.string()) << "\"\n";
 			break;
-		case Token::Number:
+		case Token::NUMBER:
 			assert(children.empty());
 			std::cout << "number: " << token.string() << '\n';
 			break;
-		case Token::Boolean:
+		case Token::BOOLEAN:
 			assert(children.empty());
 			std::cout << "boolean: " << token.string() << '\n';
 			break;
-		case Token::Keyword:
+		case Token::KEYWORD:
 			assert(children.empty());
 			std::cout << "keyword: " << token.string() << '\n';
 			break;
-		case Token::Identifier:
+		case Token::IDENTIFIER:
 			std::cout << "identifier: " << token.string();
 			for(Token::Children::const_iterator i = children.begin() ; i != children.end() ; ++i)
 			{
@@ -503,10 +503,10 @@ namespace
 			}
 			std::cout << '\n';
 			break;
-		case Token::Declaration:
+		case Token::DECLARATION:
 			assert(children.size() == 2);
-			assert(children[0].type() == Token::Identifier);
-			assert(children[1].type() == Token::Identifier);
+			assert(children[0].type() == Token::IDENTIFIER);
+			assert(children[1].type() == Token::IDENTIFIER);
 			std::cout << "declaration: " << children[0].string() << ":" << children[1].string() << '\n';
 			break;
 		}
@@ -521,7 +521,7 @@ InstructionList parse(const Token &tree, Declarations &declarations, const Setti
 	}
 
 	InstructionList result;
-	assert(tree.type() == Token::Root);
+	assert(tree.type() == Token::ROOT);
 	const Token::Children &children = tree.children();
 	for(Token::Children::const_iterator it = children.begin() ; it != children.end() ; ++it)
 	{
