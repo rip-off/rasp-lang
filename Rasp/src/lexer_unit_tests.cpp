@@ -16,12 +16,65 @@ namespace
 	}
 	#define lex(s) lex(__FILE__, __LINE__, s)
 
-	void testLexer()
+	void testLexerWithNumericLiteral()
+	{
+		std::string source = "42";
+		Token token = lex(source);
+		assertEquals(token.type(), Token::Root);
+
+		const Token::Children &rootChildren = token.children();
+		assertEquals(rootChildren.size(), 1);
+		const Token &literal = rootChildren.front();
+		assertEquals(literal.type(), Token::Number);
+		assertEquals(literal.string(), "42");
+	}
+
+	void testLexerWithTrueLiteral()
+	{
+		std::string source = "true";
+		Token token = lex(source);
+		assertEquals(token.type(), Token::Root);
+
+		const Token::Children &rootChildren = token.children();
+		assertEquals(rootChildren.size(), 1);
+		const Token &literal = rootChildren.front();
+		assertEquals(literal.type(), Token::Boolean);
+		assertEquals(literal.string(), "true");
+	}
+
+	void testLexerWithFalseLiteral()
+	{
+		std::string source = "false";
+		Token token = lex(source);
+		assertEquals(token.type(), Token::Root);
+
+		const Token::Children &rootChildren = token.children();
+		assertEquals(rootChildren.size(), 1);
+		const Token &literal = rootChildren.front();
+		assertEquals(literal.type(), Token::Boolean);
+		assertEquals(literal.string(), "false");
+	}
+
+	void testLexerWithStringLiteral()
+	{
+		std::string source = "\"Hello, World\"";
+		Token token = lex(source);
+		assertEquals(token.type(), Token::Root);
+
+		const Token::Children &rootChildren = token.children();
+		assertEquals(rootChildren.size(), 1);
+		const Token &literal = rootChildren.front();
+		assertEquals(literal.type(), Token::String);
+		assertEquals(literal.string(), "Hello, World");
+	}
+
+
+	void testLexerBasicExpression()
 	{
 		std::string source = "(+ 13 42)";
 		Token token = lex(source);
 		assertEquals(token.type(), Token::Root);
-		
+
 		const Token::Children &rootChildren = token.children();
 		assertEquals(rootChildren.size(), 1);
 		const Token &list = rootChildren.front();
@@ -179,7 +232,11 @@ namespace
 int runLexerUnitTests()
 {
 	return 0
-	+ RUN_BASIC_TEST(testLexer)
+	+ RUN_BASIC_TEST(testLexerWithNumericLiteral)
+	+ RUN_BASIC_TEST(testLexerWithTrueLiteral)
+	+ RUN_BASIC_TEST(testLexerWithFalseLiteral)
+	+ RUN_BASIC_TEST(testLexerWithStringLiteral)
+	+ RUN_BASIC_TEST(testLexerBasicExpression)
 	+ RUN_BASIC_TEST(testLexerWithFunction)
 	+ RUN_BASIC_TEST(testLexerWithExplicitlyTypedFunction)
 	;
