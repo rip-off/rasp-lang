@@ -58,8 +58,6 @@ public:
 private:
 	Token(const SourceLocation &sourceLocation, Type type, const std::string &string);
 
-	bool isValidChild() const;
-
 	Type type_;
 	std::string string_;
 	Children children_;

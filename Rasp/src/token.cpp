@@ -77,7 +77,8 @@ const Token::Children &Token::children() const
 
 void Token::addChild(const Token &token)
 {
-	if(token.isValidChild())
+	// TODO: assert(token.type_ != ROOT);
+	if(token.type_ != ROOT)
 	{
 		children_.push_back(token);
 	}
@@ -90,11 +91,6 @@ Token::Token(const SourceLocation &sourceLocation, Type type, const std::string 
 	string_(string),
 	sourceLocation_(sourceLocation)
 {
-}
-
-bool Token::isValidChild() const
-{
-	return type_ != ROOT;
 }
 
 std::ostream &operator<<(std::ostream &out, Token::Type tokenType) {
