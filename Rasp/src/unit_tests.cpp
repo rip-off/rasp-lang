@@ -302,6 +302,47 @@ namespace
 		assertEquals(result.type(), Value::TNumber);
 		assertEquals(result.number(), 45);
 	}
+
+	void testVariableDeclarartionWithType(Interpreter &interpreter)
+	{
+		Source source;
+		source << "(var result:number 13)";
+		source << "result";
+		Token token = lex(source);
+		Declarations declarations = interpreter.declarations();
+		InstructionList instructions = parse(token, declarations, interpreter.settings());
+		Value result = interpreter.exec(instructions);
+		assertEquals(result.type(), Value::TNumber);
+		assertEquals(result.number(), 13);
+	}
+
+	void testFunctionDeclarationsWithTypes(Interpreter &interpreter)
+	{
+		Source source;
+		source << "(defun double:number (x:number) (* x 2))";
+		source << "(var result (double 42))";
+		source << "result";
+		Token token = lex(source);
+		Declarations declarations = interpreter.declarations();
+		InstructionList instructions = parse(token, declarations, interpreter.settings());
+		Value result = interpreter.exec(instructions);
+		assertEquals(result.type(), Value::TNumber);
+		assertEquals(result.number(), 84);
+	}
+
+	void testTypeDeclarationWithMemberTypes(Interpreter &interpreter)
+	{
+		Source source;
+		source << "(type Person id:number name:string)";
+		source << "(var alice (new Person 42 \"Alice\"))";
+		source << "alice.name";
+		Token token = lex(source);
+		Declarations declarations = interpreter.declarations();
+		InstructionList instructions = parse(token, declarations, interpreter.settings());
+		Value result = interpreter.exec(instructions);
+		assertEquals(result.type(), Value::TString);
+		assertEquals(result.string(), "Alice");
+	}
 }
 
 namespace
@@ -359,6 +400,9 @@ int runUnitTests(const Settings &settings)
 	+ RUN_INTERPRETER_TEST(testSimpleLoop, settings)
 	+ RUN_INTERPRETER_TEST(testComplexLoop, settings)
 	+ RUN_INTERPRETER_TEST(testLoopWithInnerVariableDeclaration, settings)
+	+ RUN_INTERPRETER_TEST(testVariableDeclarartionWithType, settings)
+	+ RUN_INTERPRETER_TEST(testFunctionDeclarationsWithTypes, settings)
+	+ RUN_INTERPRETER_TEST(testTypeDeclarationWithMemberTypes, settings)
 	;
 }
 

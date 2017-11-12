@@ -28,6 +28,10 @@ namespace
 
 	Identifier tryMakeIdentifier(const Token &token)
 	{
+		if (token.type() != Token::Identifier)
+		{
+			std::cout << "tryMakeIdentifier(" << token.type() << ", " << token.string() << ")\n";
+		}
 		assert(token.type() == Token::Identifier);
 		// TODO: differentiate between identifiers and member access?
 		//assert(token.children().empty());
@@ -37,6 +41,18 @@ namespace
 			throw ParseError(token.sourceLocation(), "Illegal identifier '" + name + "'");
 		}
 		return Identifier(name);
+	}
+
+	Identifier tryMakeDeclaration(const Token &token)
+	{
+		if (token.type() == Token::Identifier)
+		{
+			return tryMakeIdentifier(token);
+		}
+		assert(token.type() == Token::Declaration);
+		const Token::Children &children = token.children();
+		assert(children[1].type() == Token::Identifier);
+		return tryMakeIdentifier(children[0]);
 	}
 
 	std::vector<Identifier> getClosedValues(const InstructionList &instructions)
@@ -139,7 +155,7 @@ namespace
 					throw ParseError(token.sourceLocation(), "Keyword 'var' too many arguments");
 				}
 
-				Identifier identifier = tryMakeIdentifier(children[1]);
+				Identifier identifier = tryMakeDeclaration(children[1]);
 				if (declarations.isDefined(identifier))
 				{
 					throw ParseError(token.sourceLocation(), "Keyword 'var' identifier '" + identifier.name() + "' already defined");
@@ -213,7 +229,7 @@ namespace
 				std::vector<Identifier> memberNames;
 				for (int i = 2 ; i < children.size() ; ++i)
 				{
-					Identifier identifier = tryMakeIdentifier(children[i]);
+					Identifier identifier = tryMakeDeclaration(children[i]);
 					memberNames.push_back(identifier);
 				}
 
@@ -242,7 +258,7 @@ namespace
 					throw ParseError(token.sourceLocation(), "Keyword 'defun' function lacks a body");
 				}
 
-				Identifier identifier = tryMakeIdentifier(children[1]);
+				Identifier identifier = tryMakeDeclaration(children[1]);
 				if (declarations.isDefined(identifier))
 				{
 					throw ParseError(token.sourceLocation(), "Keyword 'defun' identifier " + identifier.name() + " already defined");
@@ -261,11 +277,7 @@ namespace
 				const Token::Children &rawParameters = children[2].children();
 				for (unsigned i = 0 ; i < rawParameters.size() ; ++i)
 				{
-					if (rawParameters[i].type() != Token::Identifier)
-					{
-						throw ParseError(token.sourceLocation(), "Keyword 'defun' function parameter " + str(i) + " is incorrect");
-					}
-					Identifier parameter = tryMakeIdentifier(rawParameters[i]);
+					Identifier parameter = tryMakeDeclaration(rawParameters[i]);
 					parameters.push_back(parameter);
 					localDeclarations.add(parameter);
 				}
@@ -420,7 +432,10 @@ namespace
 			break;
 		case Token::Declaration:
 			{
-				throw CompilerBug("TODO: implement Token::Declaration parsing"); // TODO:
+				assert(children.size() == 2);
+				assert(children[0].type() == Token::Identifier);
+				assert(children[1].type() == Token::Identifier);
+				return parse(children[0], declarations, instructions, settings);
 			}
 		}
 	}
