@@ -105,6 +105,62 @@ namespace
 		assertEquals(children[2].string(), "42");
 	}
 
+	void testLexerVariableDeclaration()
+	{
+		std::string source = "(var x 42)";
+		Token token = lex(source);
+		assertEquals(token.type(), Token::Root);
+		
+		const Token::Children &rootChildren = token.children();
+		assertEquals(rootChildren.size(), 1);
+		const Token &list = rootChildren.front();
+		assertEquals(list.type(), Token::List);
+
+		const Token::Children &children = list.children();
+		assertEquals(children.size(), 3);
+
+		assertEquals(children[0].type(), Token::Keyword);
+		assertEquals(children[0].string(), "var");
+
+		assertEquals(children[1].type(), Token::Identifier);
+		assertEquals(children[1].string(), "x");
+
+		assertEquals(children[2].type(), Token::Number);
+		assertEquals(children[2].string(), "42");
+	}
+
+	void testLexerVariableDeclarationWithTypes()
+	{
+		std::string source = "(var x:number 42)";
+		Token token = lex(source);
+		assertEquals(token.type(), Token::Root);
+		
+		const Token::Children &rootChildren = token.children();
+		assertEquals(rootChildren.size(), 1);
+		const Token &list = rootChildren.front();
+		assertEquals(list.type(), Token::List);
+
+		const Token::Children &children = list.children();
+		assertEquals(children.size(), 3);
+
+		assertEquals(children[0].type(), Token::Keyword);
+		assertEquals(children[0].string(), "var");
+
+		assertEquals(children[1].type(), Token::Declaration);
+		assertEquals(children[1].string(), "__declaration");
+
+		const Token::Children &declaration = children[1].children();
+		assertEquals(declaration.size(), 2);
+		assertEquals(declaration[0].type(), Token::Identifier);
+		assertEquals(declaration[0].string(), "x");
+
+		assertEquals(declaration[1].type(), Token::Identifier);
+		assertEquals(declaration[1].string(), "number");
+
+		assertEquals(children[2].type(), Token::Number);
+		assertEquals(children[2].string(), "42");
+	}
+
 	void testLexerWithFunction()
 	{
 		std::string source = "(defun double (x) (* x 2))";
@@ -250,6 +306,8 @@ int runLexerUnitTests()
 	+ RUN_BASIC_TEST(testLexerWithFalseLiteral)
 	+ RUN_BASIC_TEST(testLexerWithStringLiteral)
 	+ RUN_BASIC_TEST(testLexerBasicExpression)
+	+ RUN_BASIC_TEST(testLexerVariableDeclaration)
+	+ RUN_BASIC_TEST(testLexerVariableDeclarationWithTypes)
 	+ RUN_BASIC_TEST(testLexerWithFunction)
 	+ RUN_BASIC_TEST(testLexerWithExplicitlyTypedFunction)
 	;
