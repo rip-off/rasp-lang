@@ -361,6 +361,22 @@ namespace
 		assertEquals(result.type(), Value::TNumber);
 		assertEquals(result.number(), 55);
 	}
+
+	void testReferenceToUndefinedVariable(Interpreter &interpreter)
+	{
+		Source source = "undefinedVariable";
+		Token token = lex(source);
+		Declarations declarations = interpreter.declarations();
+		try
+		{
+			parse(token, declarations, interpreter.settings());
+		}
+		catch (const ParseError &e)
+		{
+			assertEquals(e.what(), "Identifier \"undefinedVariable\" is not defined");
+		}
+	}
+
 }
 
 namespace
@@ -422,6 +438,7 @@ int runUnitTests(const Settings &settings)
 	+ RUN_INTERPRETER_TEST(testFunctionDeclarationsWithTypes, settings)
 	+ RUN_INTERPRETER_TEST(testTypeDeclarationWithMemberTypes, settings)
 	+ RUN_INTERPRETER_TEST(testFunctionRecursion, settings)
+	+ RUN_INTERPRETER_TEST(testReferenceToUndefinedVariable, settings)
 	;
 }
 

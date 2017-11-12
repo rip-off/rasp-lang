@@ -19,6 +19,7 @@ void incrementAssertions();
 int flushAssertions();
 
 void assertTrue(const SourceLocation &sourceLocation, bool expression, const std::string &message);
+void assertEquals(const SourceLocation &sourceLocation, const char *x, const char *y);
 
 template <typename X, typename Y>
 void assertEquals(const SourceLocation &sourceLocation, const X &x, const Y &y)

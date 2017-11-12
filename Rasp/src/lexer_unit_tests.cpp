@@ -80,6 +80,44 @@ namespace
 		assertEquals(literal.string(), "Hello, World");
 	}
 
+	void testLexerWithSimpleIdentifier()
+	{
+		std::string source = "identifier";
+		Token token = lex(source);
+		assertEquals(token.type(), Token::Root);
+
+		const Token::Children &rootChildren = token.children();
+		assertEquals(rootChildren.size(), 1);
+		const Token &literal = rootChildren.front();
+		assertEquals(literal.type(), Token::Identifier);
+		assertEquals(literal.string(), "identifier");
+	}
+
+	void testLexerWithCamelCaseIdentifier()
+	{
+		std::string source = "camelCase";
+		Token token = lex(source);
+		assertEquals(token.type(), Token::Root);
+
+		const Token::Children &rootChildren = token.children();
+		assertEquals(rootChildren.size(), 1);
+		const Token &literal = rootChildren.front();
+		assertEquals(literal.type(), Token::Identifier);
+		assertEquals(literal.string(), "camelCase");
+	}
+
+	void testLexerWithSnakeCaseIdentifier()
+	{
+		std::string source = "snake_case";
+		Token token = lex(source);
+		assertEquals(token.type(), Token::Root);
+
+		const Token::Children &rootChildren = token.children();
+		assertEquals(rootChildren.size(), 1);
+		const Token &literal = rootChildren.front();
+		assertEquals(literal.type(), Token::Identifier);
+		assertEquals(literal.string(), "snake_case");
+	}
 
 	void testLexerBasicExpression()
 	{
@@ -305,6 +343,9 @@ int runLexerUnitTests()
 	+ RUN_BASIC_TEST(testLexerWithTrueLiteral)
 	+ RUN_BASIC_TEST(testLexerWithFalseLiteral)
 	+ RUN_BASIC_TEST(testLexerWithStringLiteral)
+	+ RUN_BASIC_TEST(testLexerWithSimpleIdentifier)
+	+ RUN_BASIC_TEST(testLexerWithCamelCaseIdentifier)
+	+ RUN_BASIC_TEST(testLexerWithSnakeCaseIdentifier)
 	+ RUN_BASIC_TEST(testLexerBasicExpression)
 	+ RUN_BASIC_TEST(testLexerVariableDeclaration)
 	+ RUN_BASIC_TEST(testLexerVariableDeclarationWithTypes)

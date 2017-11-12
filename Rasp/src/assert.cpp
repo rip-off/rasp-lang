@@ -1,5 +1,6 @@
 #include "assert.h"
 
+#include <cstring>
 #include "utils.h"
 
 AssertionError::AssertionError(const SourceLocation &sourceLocation, const std::string &message)
@@ -19,6 +20,15 @@ void assertTrue(const SourceLocation &sourceLocation, bool expression, const std
 	if(!expression)
 	{
 		throw AssertionError(sourceLocation, message);
+	}
+}
+
+void assertEquals(const SourceLocation &sourceLocation, const char *x, const char *y)
+{
+	incrementAssertions();
+	if (std::strcmp(x, y) == 0)
+	{
+		throw AssertionError(sourceLocation, "'" + str(x) + "' should equal '" + str(y) + "'");
 	}
 }
 
