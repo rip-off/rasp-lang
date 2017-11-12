@@ -41,8 +41,7 @@ public:
 
 	static Token keyword(const SourceLocation &sourceLocation, const std::string &keyword);
 
-	// TODO: Identifier?
-	static Token identifier(const SourceLocation &sourceLocation, const std::string &identifier);
+	static Token identifier(const SourceLocation &sourceLocation, const ::Identifier &identifier);
 
 	static Token declaration(const SourceLocation &sourceLocation, const ::Declaration &declaration);
 

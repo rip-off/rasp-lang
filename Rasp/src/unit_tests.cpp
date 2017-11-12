@@ -67,7 +67,7 @@ namespace
 	void testParser(Interpreter &interpreter)
 	{
 		SourceLocation sourceLocation = CURRENT_SOURCE_LOCATION;
-		Token function = Token::identifier(sourceLocation, "+");
+		Token function = Token::identifier(sourceLocation, Identifier("+"));
 		Token left = Token::number(sourceLocation, "42");
 		Token right = Token::number(sourceLocation, "13");
 		Token list = Token::list(sourceLocation);

@@ -37,21 +37,21 @@ Token Token::boolean(const SourceLocation &sourceLocation, const std::string &bo
 	return Token(sourceLocation, Boolean, boolean);
 }
 
-Token Token::identifier(const SourceLocation &sourceLocation, const std::string &identifier)
+Token Token::identifier(const SourceLocation &sourceLocation, const ::Identifier &identifier)
 {
-	return Token(sourceLocation, Identifier, identifier);
+	return Token(sourceLocation, Identifier, identifier.name());
 }
 
 Token Token::declaration(const SourceLocation &sourceLocation, const ::Declaration &declaration)
 {
-	const std::string &type = declaration.type();
-	if (type.empty())
+	const std::string &declarationType = declaration.type();
+	if (declarationType.empty())
 	{
-		return identifier(sourceLocation, declaration.identifier().name());
+		return identifier(sourceLocation, declaration.identifier());
 	}
 	Token result = Token(sourceLocation, Declaration, "__declaration");
-	result.addChild(identifier(sourceLocation, declaration.identifier().name()));
-	result.addChild(identifier(sourceLocation, type));
+	result.addChild(identifier(sourceLocation, declaration.identifier()));
+	result.addChild(identifier(sourceLocation, ::Identifier(declarationType)));
 	return result;
 }
 

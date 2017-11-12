@@ -179,14 +179,16 @@ namespace
 		}
 
 		std::string::const_iterator dotDelimiter = std::find(current, end, '.');
-		Token identifier = Token::identifier(sourceLocation, std::string(current, dotDelimiter));
+		std::string name = std::string(current, dotDelimiter);
+		Token identifier = Token::identifier(sourceLocation, Identifier(name));
 
 		while(dotDelimiter != end)
 		{
 			current = dotDelimiter + 1;
 			dotDelimiter = std::find(current, end, '.');
 
-			Token memberAccess = Token::identifier(sourceLocation, std::string(current, dotDelimiter));
+			std::string memberName = std::string(current, dotDelimiter);
+			Token memberAccess = Token::identifier(sourceLocation, Identifier(memberName));
 			identifier.addChild(memberAccess);
 		}
 
