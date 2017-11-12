@@ -16,6 +16,18 @@ namespace
 	}
 	#define lex(s) lex(__FILE__, __LINE__, s)
 
+	void testLexerWithNilLiteral()
+	{
+		std::string source = "nil";
+		Token token = lex(source);
+		assertEquals(token.type(), Token::Root);
+
+		const Token::Children &rootChildren = token.children();
+		assertEquals(rootChildren.size(), 1);
+		const Token &literal = rootChildren.front();
+		assertEquals(literal.type(), Token::Nil);
+	}
+
 	void testLexerWithNumericLiteral()
 	{
 		std::string source = "42";
@@ -232,6 +244,7 @@ namespace
 int runLexerUnitTests()
 {
 	return 0
+	+ RUN_BASIC_TEST(testLexerWithNilLiteral)
 	+ RUN_BASIC_TEST(testLexerWithNumericLiteral)
 	+ RUN_BASIC_TEST(testLexerWithTrueLiteral)
 	+ RUN_BASIC_TEST(testLexerWithFalseLiteral)
