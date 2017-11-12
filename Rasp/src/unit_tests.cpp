@@ -343,6 +343,24 @@ namespace
 		assertEquals(result.type(), Value::TString);
 		assertEquals(result.string(), "Alice");
 	}
+
+	void testFunctionRecursion(Interpreter &interpreter)
+	{
+		Source source;
+		source << "(defun recurse (n)";
+		source << "  (if (<= n 0) 0)";
+		source << "  (if (> n 0)";
+		source << "    (+ n (recurse (- n 1)))";
+		source << "  )";
+		source << ")";
+		source << "(recurse 10)";
+		Token token = lex(source);
+		Declarations declarations = interpreter.declarations();
+		InstructionList instructions = parse(token, declarations, interpreter.settings());
+		Value result = interpreter.exec(instructions);
+		assertEquals(result.type(), Value::TNumber);
+		assertEquals(result.number(), 55);
+	}
 }
 
 namespace
@@ -403,6 +421,7 @@ int runUnitTests(const Settings &settings)
 	+ RUN_INTERPRETER_TEST(testVariableDeclarartionWithType, settings)
 	+ RUN_INTERPRETER_TEST(testFunctionDeclarationsWithTypes, settings)
 	+ RUN_INTERPRETER_TEST(testTypeDeclarationWithMemberTypes, settings)
+	+ RUN_INTERPRETER_TEST(testFunctionRecursion, settings)
 	;
 }
 
