@@ -303,7 +303,7 @@ namespace
 		assertEquals(result.number(), 45);
 	}
 
-	void testVariableDeclarartionWithType(Interpreter &interpreter)
+	void testVariableDeclarationWithNumberType(Interpreter &interpreter)
 	{
 		Source source;
 		source << "(var result:number 13)";
@@ -314,6 +314,32 @@ namespace
 		Value result = interpreter.exec(instructions);
 		assertEquals(result.type(), Value::TNumber);
 		assertEquals(result.number(), 13);
+	}
+
+	void testVariableDeclarationWithStringType(Interpreter &interpreter)
+	{
+		Source source;
+		source << "(var result:string \"Hello, World\")";
+		source << "result";
+		Token token = lex(source);
+		Declarations declarations = interpreter.declarations();
+		InstructionList instructions = parse(token, declarations, interpreter.settings());
+		Value result = interpreter.exec(instructions);
+		assertEquals(result.type(), Value::TString);
+		assertEquals(result.string(), "Hello, World");
+	}
+
+	void testVariableDeclarationWithBooleanType(Interpreter &interpreter)
+	{
+		Source source;
+		source << "(var result:boolean true)";
+		source << "result";
+		Token token = lex(source);
+		Declarations declarations = interpreter.declarations();
+		InstructionList instructions = parse(token, declarations, interpreter.settings());
+		Value result = interpreter.exec(instructions);
+		assertEquals(result.type(), Value::TBoolean);
+		assertEquals(result.boolean(), true);
 	}
 
 	void testFunctionDeclarationsWithTypes(Interpreter &interpreter)
@@ -373,10 +399,24 @@ namespace
 		}
 		catch (const ParseError &e)
 		{
-			assertEquals(e.what(), "Identifier \"undefinedVariable\" is not defined");
+			assertEquals(e.what(), "Variable 'undefinedVariable' not defined");
 		}
 	}
 
+	void testVariableDeclarationWithUndefinedType(Interpreter &interpreter)
+	{
+		Source source = "(var x:UndefinedType 42)";
+		Token token = lex(source);
+		Declarations declarations = interpreter.declarations();
+		try
+		{
+			parse(token, declarations, interpreter.settings());
+		}
+		catch (const ParseError &e)
+		{
+			assertEquals(e.what(), "Unknown type 'UndefinedType'");
+		}
+	}
 }
 
 namespace
@@ -434,11 +474,14 @@ int runUnitTests(const Settings &settings)
 	+ RUN_INTERPRETER_TEST(testSimpleLoop, settings)
 	+ RUN_INTERPRETER_TEST(testComplexLoop, settings)
 	+ RUN_INTERPRETER_TEST(testLoopWithInnerVariableDeclaration, settings)
-	+ RUN_INTERPRETER_TEST(testVariableDeclarartionWithType, settings)
+	+ RUN_INTERPRETER_TEST(testVariableDeclarationWithNumberType, settings)
+	+ RUN_INTERPRETER_TEST(testVariableDeclarationWithStringType, settings)
+	+ RUN_INTERPRETER_TEST(testVariableDeclarationWithBooleanType, settings)
 	+ RUN_INTERPRETER_TEST(testFunctionDeclarationsWithTypes, settings)
 	+ RUN_INTERPRETER_TEST(testTypeDeclarationWithMemberTypes, settings)
 	+ RUN_INTERPRETER_TEST(testFunctionRecursion, settings)
 	+ RUN_INTERPRETER_TEST(testReferenceToUndefinedVariable, settings)
+	+ RUN_INTERPRETER_TEST(testVariableDeclarationWithUndefinedType, settings)
 	;
 }
 

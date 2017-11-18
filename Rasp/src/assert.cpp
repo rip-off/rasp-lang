@@ -26,7 +26,7 @@ void assertTrue(const SourceLocation &sourceLocation, bool expression, const std
 void assertEquals(const SourceLocation &sourceLocation, const char *x, const char *y)
 {
 	incrementAssertions();
-	if (std::strcmp(x, y) == 0)
+	if (std::strcmp(x, y) != 0)
 	{
 		throw AssertionError(sourceLocation, "'" + str(x) + "' should equal '" + str(y) + "'");
 	}

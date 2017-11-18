@@ -39,6 +39,20 @@ namespace
 		return Identifier(name);
 	}
 
+	bool isBuiltInType(const std::string &typeName)
+	{
+		return typeName == "number" || typeName == "string" || typeName == "boolean";
+	}
+
+	void checkValidType(const Token &token)
+	{
+		assert(token.type() == Token::IDENTIFIER);
+		if (!isBuiltInType(token.string()))
+		{
+			throw ParseError(token.sourceLocation(), "Unknown type '" + token.string() + "'");
+		}
+	}
+
 	Identifier tryMakeDeclaration(const Token &token)
 	{
 		if (token.type() == Token::IDENTIFIER)
@@ -47,7 +61,7 @@ namespace
 		}
 		assert(token.type() == Token::DECLARATION);
 		const Token::Children &children = token.children();
-		assert(children[1].type() == Token::IDENTIFIER);
+		checkValidType(children[1]);
 		return tryMakeIdentifier(children[0]);
 	}
 
