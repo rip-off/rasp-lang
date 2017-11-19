@@ -104,7 +104,7 @@ namespace
 		bool operator()(char c)
 		{
 			bool space = std::isspace(c);
-			return negate != space; // negate ? !space : space;
+			return negate != space;
 		}
 	private:
 		bool negate;
@@ -270,7 +270,6 @@ namespace
 			consumeCommentsAndWhitespace(current, endOfList);
 		}
 
-		// This should be 
 		if(current != end)
 		{
 			++current;
