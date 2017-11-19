@@ -4,35 +4,5 @@
 (print "Newline #1\nNewline #2\nNewline #3\n")
 (println "\nAnd now...\nWith variables!\n\n")
 
-(var i 0)
-(while (< i 5) (println "loop: " (+ i 1)) (set i (+ i 1)))
-
-(while (< i 5) (println "don't loop: " (+ i 1)) (set i (+ i 1)))
-
-
-(defun testFunction () (println "Inside test function"))
-(testFunction)
-
-(defun testReturn () "Return value from 'testReturn'")
-(println "The result of (testReturn) -> " (testReturn))
-
-(defun testLoop ()
-	(var loopy 0)
-	(while (< loopy 5)
-		(set loopy (+ loopy 1))
-		(println "Test loop in function: " loopy)))
-(testLoop)
-
-(defun testLocalFunction ()
-	(defun  localFunction () "success")
-	(println "Testing local functions: " (localFunction)))
-(testLocalFunction)
-
-(defun testRecursion (x)
-	(println "Recursion test: " x)
-	(if (> x 0)
-		(testRecursion (- x 1))))
-(testRecursion 5)
-
 "Done..."
 
