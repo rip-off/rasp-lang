@@ -562,6 +562,22 @@ namespace
 		}
 	}
 
+	void testDuplicateIfIsNotAllowed(Interpreter &interpreter)
+	{
+		Source source = "(if true 1 else 2 if 3)";
+		Token token = lex(source);
+		Declarations declarations = interpreter.declarations();
+		try
+		{
+			parse(token, declarations, interpreter.settings());
+			fail("Expected ParseError");
+		}
+		catch (const ParseError &e)
+		{
+			assertEquals(e.what(), "Keyword 'if' must be first element of a list");
+		}
+	}
+
 	void testComments(Interpreter &interpreter)
 	{
 		Source source;
@@ -707,6 +723,7 @@ static UnitTest tests[] = {
 	TEST_CASE(testElseNotAllowedStartOfList),
 	TEST_CASE(testElseNotAllowedEndOfList),
 	TEST_CASE(testDuplicateElseIsNotAllowed),
+	TEST_CASE(testDuplicateIfIsNotAllowed),
 	TEST_CASE(testComments),
 	TEST_CASE(testStringConcatenation),
 	TEST_CASE(testReferenceToUndefinedVariable),
