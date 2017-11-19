@@ -417,6 +417,18 @@ namespace
 		assertEquals(result.number(), 42);
 	}
 
+	void testFunctionArguments(Interpreter &interpreter)
+	{
+		Source source = "(defun f (x y z) (concat \"x: \" x \", y: \" y \", z: \" z))";
+		source << "(f 1 2 3)";
+		Token token = lex(source);
+		Declarations declarations = interpreter.declarations();
+		InstructionList instructions = parse(token, declarations, interpreter.settings());
+		Value result = interpreter.exec(instructions);
+		assertEquals(result.type(), Value::TString);
+		assertEquals(result.string(), "x: 1, y: 2, z: 3");
+	}
+
 	void testStringConcatenation(Interpreter &interpreter)
 	{
 		Source source = "(concat \"number: \" 42 \", boolean: \" true)";
@@ -524,6 +536,7 @@ int runUnitTests(const Settings &settings)
 	+ RUN_INTERPRETER_TEST(testFunctionRecursion, settings)
 	+ RUN_INTERPRETER_TEST(testCallingDeeplyNestedFunctions, settings)
 	+ RUN_INTERPRETER_TEST(testImmediateFunctionCall, settings)
+	+ RUN_INTERPRETER_TEST(testFunctionArguments, settings)
 	+ RUN_INTERPRETER_TEST(testStringConcatenation, settings)
 	+ RUN_INTERPRETER_TEST(testReferenceToUndefinedVariable, settings)
 	+ RUN_INTERPRETER_TEST(testVariableDeclarationWithUndefinedType, settings)

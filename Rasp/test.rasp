@@ -78,9 +78,6 @@
 	(println "Testing local functions: " (localFunction)))
 (testLocalFunction)
 
-(defun testParameters (x y) (println "Parameters: X is " x " and Y is " y))
-(testParameters 1 2)
-
 (defun testRecursion (x)
 	(println "Recursion test: " x)
 	(if (> x 0)
