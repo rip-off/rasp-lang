@@ -6,6 +6,8 @@
 #include "settings.h"
 #include "compiler.h"
 #include "interpreter.h"
+
+#include "standard_math.h"
 #include "standard_library.h"
 
 int runLexerUnitTests();
@@ -76,7 +78,9 @@ int main(int argc, const char **argv)
 		return runLexerUnitTests() + runUnitTests(settings);
 	}
 
-	Interpreter::Globals globals = standardLibrary();
+	Interpreter::Globals globals;
+	standardMath(globals);
+	standardLibrary(globals);
 	Interpreter interpreter(globals, settings);
 
 	for (ArgumentList::const_iterator it = args.begin() ; it != args.end() ; ++it)

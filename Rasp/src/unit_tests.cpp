@@ -10,6 +10,7 @@
 #include "exceptions.h"
 #include "instruction.h"
 #include "interpreter.h"
+#include "standard_math.h"
 #include "standard_library.h"
 
 #define RASP_ENABLE_ASSERTION_MACROS
@@ -428,7 +429,9 @@ namespace
 		try
 		{
 			std::cout << "Running " << name << "..." << '\n';
-			Interpreter::Globals globals = standardLibrary();
+			Interpreter::Globals globals;
+			standardMath(globals);
+			standardLibrary(globals);
 			Interpreter interpreter(globals, settings);
 			unitTest(interpreter);
 			std::cout << "PASSED " << flushAssertions() << " assertions\n";
