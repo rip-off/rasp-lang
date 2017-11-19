@@ -20,7 +20,7 @@ namespace
 	{
 		std::string source = "nil";
 		Token token = lex(source);
-		assertEquals(token.type(), Token::ROOT);
+		assertEquals(token.type(), Token::LIST);
 
 		const Token::Children &rootChildren = token.children();
 		assertEquals(rootChildren.size(), 1);
@@ -32,7 +32,7 @@ namespace
 	{
 		std::string source = "42";
 		Token token = lex(source);
-		assertEquals(token.type(), Token::ROOT);
+		assertEquals(token.type(), Token::LIST);
 
 		const Token::Children &rootChildren = token.children();
 		assertEquals(rootChildren.size(), 1);
@@ -45,7 +45,7 @@ namespace
 	{
 		std::string source = "true";
 		Token token = lex(source);
-		assertEquals(token.type(), Token::ROOT);
+		assertEquals(token.type(), Token::LIST);
 
 		const Token::Children &rootChildren = token.children();
 		assertEquals(rootChildren.size(), 1);
@@ -58,7 +58,7 @@ namespace
 	{
 		std::string source = "false";
 		Token token = lex(source);
-		assertEquals(token.type(), Token::ROOT);
+		assertEquals(token.type(), Token::LIST);
 
 		const Token::Children &rootChildren = token.children();
 		assertEquals(rootChildren.size(), 1);
@@ -71,7 +71,7 @@ namespace
 	{
 		std::string source = "\"Hello, World\"";
 		Token token = lex(source);
-		assertEquals(token.type(), Token::ROOT);
+		assertEquals(token.type(), Token::LIST);
 
 		const Token::Children &rootChildren = token.children();
 		assertEquals(rootChildren.size(), 1);
@@ -84,7 +84,7 @@ namespace
 	{
 		std::string source = "identifier";
 		Token token = lex(source);
-		assertEquals(token.type(), Token::ROOT);
+		assertEquals(token.type(), Token::LIST);
 
 		const Token::Children &rootChildren = token.children();
 		assertEquals(rootChildren.size(), 1);
@@ -97,7 +97,7 @@ namespace
 	{
 		std::string source = "camelCase";
 		Token token = lex(source);
-		assertEquals(token.type(), Token::ROOT);
+		assertEquals(token.type(), Token::LIST);
 
 		const Token::Children &rootChildren = token.children();
 		assertEquals(rootChildren.size(), 1);
@@ -110,7 +110,7 @@ namespace
 	{
 		std::string source = "snake_case";
 		Token token = lex(source);
-		assertEquals(token.type(), Token::ROOT);
+		assertEquals(token.type(), Token::LIST);
 
 		const Token::Children &rootChildren = token.children();
 		assertEquals(rootChildren.size(), 1);
@@ -123,7 +123,7 @@ namespace
 	{
 		std::string source = "(+ 13 42)";
 		Token token = lex(source);
-		assertEquals(token.type(), Token::ROOT);
+		assertEquals(token.type(), Token::LIST);
 
 		const Token::Children &rootChildren = token.children();
 		assertEquals(rootChildren.size(), 1);
@@ -147,7 +147,7 @@ namespace
 	{
 		std::string source = "(var x 42)";
 		Token token = lex(source);
-		assertEquals(token.type(), Token::ROOT);
+		assertEquals(token.type(), Token::LIST);
 		
 		const Token::Children &rootChildren = token.children();
 		assertEquals(rootChildren.size(), 1);
@@ -171,7 +171,7 @@ namespace
 	{
 		std::string source = "(var x:number 42)";
 		Token token = lex(source);
-		assertEquals(token.type(), Token::ROOT);
+		assertEquals(token.type(), Token::LIST);
 		
 		const Token::Children &rootChildren = token.children();
 		assertEquals(rootChildren.size(), 1);
@@ -203,7 +203,7 @@ namespace
 	{
 		std::string source = "(defun double (x) (* x 2))";
 		Token token = lex(source);
-		assertEquals(token.type(), Token::ROOT);
+		assertEquals(token.type(), Token::LIST);
 		
 		const Token::Children &rootChildren = token.children();
 		assertEquals(rootChildren.size(), 1);
@@ -246,7 +246,7 @@ namespace
 	{
 		std::string source = "(defun double:number (x:number) (* x 2))";
 		Token token = lex(source);
-		assertEquals(token.type(), Token::ROOT);
+		assertEquals(token.type(), Token::LIST);
 
 		const Token::Children &rootChildren = token.children();
 		assertEquals(rootChildren.size(), 1);

@@ -6,11 +6,6 @@ Token Token::nil(const SourceLocation &sourceLocation)
 	return Token(sourceLocation, NIL, "__nil_literal");
 }
 
-Token Token::root(const SourceLocation &sourceLocation)
-{
-	return Token(sourceLocation, ROOT, "__root");
-}
-
 Token Token::list(const SourceLocation &sourceLocation)
 {
 	return Token(sourceLocation, LIST, "__list");
@@ -77,11 +72,8 @@ const Token::Children &Token::children() const
 
 void Token::addChild(const Token &token)
 {
-	// TODO: assert(token.type_ != ROOT);
-	if(token.type_ != ROOT)
-	{
-		children_.push_back(token);
-	}
+	assert(!(type_ == NIL || type_ == STRING || type_ == NUMBER || type_ == BOOLEAN || type_ == KEYWORD));
+	children_.push_back(token);
 }
 
 
@@ -97,8 +89,6 @@ std::ostream &operator<<(std::ostream &out, Token::Type tokenType) {
 	switch(tokenType) {
 		case Token::NIL:
 			return out << "Nil";
-		case Token::ROOT:
-			return out << "Root";
 		case Token::LIST:
 			return out << "List";
 		case Token::STRING:

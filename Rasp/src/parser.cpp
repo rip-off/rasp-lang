@@ -371,10 +371,6 @@ namespace
 			assert(children.empty());
 			instructions.push_back(Instruction::push(token.sourceLocation(), Value::nil()));
 			break;
-		case Token::ROOT:
-			assert(children.empty());
-			// do nothing;
-			break;
 		case Token::LIST:
 			{
 				handleList(token, declarations, instructions, settings);
@@ -468,15 +464,6 @@ namespace
 			assert(children.empty());
 			std::cout << "nil\n";
 			break;
-		case Token::ROOT:
-			std::cout << "root {\n";
-			for(Token::Children::const_iterator i = children.begin() ; i != children.end() ; ++i)
-			{
-				printTree(*i, level + 1);
-			}
-			indent(level);
-			std::cout << "}\n";
-			break;
 		case Token::LIST:
 			if (children.empty())
 			{
@@ -535,7 +522,7 @@ InstructionList parse(const Token &tree, Declarations &declarations, const Setti
 	}
 
 	InstructionList result;
-	assert(tree.type() == Token::ROOT);
+	assert(tree.type() == Token::LIST);
 	const Token::Children &children = tree.children();
 	for(Token::Children::const_iterator it = children.begin() ; it != children.end() ; ++it)
 	{

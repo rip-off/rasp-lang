@@ -354,7 +354,7 @@ namespace
 
 Token lex(const std::string &filename, const std::string &source)
 {
-	Token root = Token::root(SourceLocation(filename, 0));
+	Token root = Token::list(SourceLocation(filename, 0));
 	
 	Iterator it = Iterator(filename, source.begin());
 	const Iterator end = Iterator(filename, source.end());

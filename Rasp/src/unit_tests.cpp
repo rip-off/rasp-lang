@@ -75,7 +75,7 @@ namespace
 		list.addChild(function);
 		list.addChild(left);
 		list.addChild(right);
-		Token root = Token::root(sourceLocation);
+		Token root = Token::list(sourceLocation);
 		root.addChild(list);
 		Declarations declarations = interpreter.declarations();
 		InstructionList result = parse(root, declarations, interpreter.settings());
