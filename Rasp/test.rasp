@@ -4,19 +4,6 @@
 (print "Newline #1\nNewline #2\nNewline #3\n")
 (println "\nAnd now...\nWith variables!\n\n")
 
-// Single line comment
-// (println "this is commented and should not be printed")
-/* block comments */ (println "This is not commented" /* but this is */ " and should be printed")
-/* (println "this should not be printed") */
-/*
-	Multi-line
-	Block comment
-*/
-
-
-/* Interesting */ /**/ /* comment */
-
-
 (var i 0)
 (while (< i 5) (println "loop: " (+ i 1)) (set i (+ i 1)))
 

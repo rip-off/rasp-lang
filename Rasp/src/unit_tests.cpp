@@ -492,6 +492,27 @@ namespace
 		assertEquals(result.type(), Value::TNil);
 	}
 
+	void testComments(Interpreter &interpreter)
+	{
+		Source source;
+		source << "// Single line comment";
+		source << "// (println \"this is commented and should not be printed\")";
+		source << "/* block comments */ (+ 13 /* but this is */ 42)";
+		source << "/* (println \"this should not be printed\") */";
+		source << "/*";
+		source << "    Multi-line";
+		source << "    Block comment";
+		source << "*/";
+		source << "/* Interesting */ /**/ /* comment */";
+		Token token = lex(source);
+		Declarations declarations = interpreter.declarations();
+		InstructionList instructions = parse(token, declarations, interpreter.settings());
+		Value result = interpreter.exec(instructions);
+		assertEquals(result.type(), Value::TNumber);
+		assertEquals(result.number(), 55);
+	}
+
+
 	void testStringConcatenation(Interpreter &interpreter)
 	{
 		Source source = "(concat \"number: \" 42 \", boolean: \" true)";
@@ -606,6 +627,7 @@ int runUnitTests(const Settings &settings)
 	+ RUN_INTERPRETER_TEST(testConditionalFalse, settings)
 	+ RUN_INTERPRETER_TEST(testConditionalZero, settings)
 	+ RUN_INTERPRETER_TEST(testConditionalEmptyString, settings)
+	+ RUN_INTERPRETER_TEST(testComments, settings)
 	+ RUN_INTERPRETER_TEST(testStringConcatenation, settings)
 	+ RUN_INTERPRETER_TEST(testReferenceToUndefinedVariable, settings)
 	+ RUN_INTERPRETER_TEST(testVariableDeclarationWithUndefinedType, settings)
