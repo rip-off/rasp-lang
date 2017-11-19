@@ -389,6 +389,23 @@ namespace
 		assertEquals(result.number(), 55);
 	}
 
+	void testCallingDeeplyNestedFunctions(Interpreter &interpreter)
+	{
+		Source source;
+		source << "(defun test1 () 1)";
+		source << "(defun test2 () (+ 2 (test1)))";
+		source << "(defun test3 () (+ 3 (test2)))";
+		source << "(defun test4 () (+ 4 (test3)))";
+		source << "(defun test5 () (+ 5 (test4)))";
+		source << "(test5)";
+		Token token = lex(source);
+		Declarations declarations = interpreter.declarations();
+		InstructionList instructions = parse(token, declarations, interpreter.settings());
+		Value result = interpreter.exec(instructions);
+		assertEquals(result.type(), Value::TNumber);
+		assertEquals(result.number(), 15);
+	}
+
 	void testStringConcatenation(Interpreter &interpreter)
 	{
 		Source source = "(concat \"number: \" 42 \", boolean: \" true)";
@@ -495,6 +512,7 @@ int runUnitTests(const Settings &settings)
 	+ RUN_INTERPRETER_TEST(testTypeDeclarationWithMemberTypes, settings)
 	+ RUN_INTERPRETER_TEST(testFunctionRecursion, settings)
 	+ RUN_INTERPRETER_TEST(testStringConcatenation, settings)
+	+ RUN_INTERPRETER_TEST(testCallingDeeplyNestedFunctions, settings)
 	+ RUN_INTERPRETER_TEST(testReferenceToUndefinedVariable, settings)
 	+ RUN_INTERPRETER_TEST(testVariableDeclarationWithUndefinedType, settings)
 	;

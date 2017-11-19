@@ -88,13 +88,6 @@
 (testRecursion 5)
 
 
-(defun test1 () (+ "Hello" "," "World"))
-(defun test2 () (test1))
-(defun test3 () (test2))
-(defun test4 () (test3))
-(defun test5 () (test4))
-(println "Deep nesting: " (test5))
-
 ((defun immediate_function_call () (println "Calling function immediately")))
 
 "Done..."
