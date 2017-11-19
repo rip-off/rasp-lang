@@ -185,9 +185,13 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 				}
 				int instructionsToSkip = value.number();
 				int remaining = instructions.end() - it;
-				if(remaining < instructionsToSkip)
+				if(instructionsToSkip < 0)
 				{
-					throw CompilerBug("insufficient instructions available to skip!");
+					throw CompilerBug("Cannot jump backwards!");
+				}
+				else if(remaining < instructionsToSkip)
+				{
+					throw CompilerBug("insufficient instructions available to skip! (remaining: " + str(remaining) + " < instructionsToSkip: " + str(instructionsToSkip) + ")");
 				}
 
 				Value top = pop(stack);
@@ -204,10 +208,21 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 			break;
 		case Instruction::Loop:
 			{
+				int instructionsAvailable = instructions.size(); // Note: signed type is important!
 				int instructionCount = value.number();
-				if(instructionCount > instructions.size())
+				if(instructionCount > 0)
 				{
-					throw CompilerBug("insufficient instructions available to loop!");
+					if(instructionCount > instructionsAvailable)
+					{
+						throw CompilerBug("insufficient instructions available to loop! (instructionCount: " + str(instructionCount) + " > instructions.size(): " + str(instructions.size()) + ")");
+					}
+				}
+				else
+				{
+					if(instructionsAvailable < instructionCount)
+					{
+						throw CompilerBug("insufficient instructions available to loop! (instructionCount: " + str(instructionCount) + " > instructions.size(): " + str(instructions.size()) + ")");
+					}
 				}
 
 				if(settings_.trace)

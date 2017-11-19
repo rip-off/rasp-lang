@@ -224,6 +224,7 @@ namespace
 			"if",
 			"var",
 			"set",
+			"else",
 			"type",
 			"defun",
 			"while",

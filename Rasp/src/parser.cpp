@@ -139,16 +139,52 @@ namespace
 				}
 				// Evaluate the conditional expression first
 				parse(children[1], declarations, instructions, settings);
-				// Generate the list of instructions to be executed if branch is taken
-				InstructionList tempInstructions;
-				for(unsigned i = 2 ; i < children.size() ; ++i)
+				unsigned i = 2;
+
+				InstructionList ifInstructions;
+				while(i < children.size())
 				{
-					parse(children[i], declarations, tempInstructions, settings);
+					if(children[i].type() == Token::KEYWORD && children[i].string() == "else")
+					{
+						++i;
+						if (i == children.size())
+						{
+							throw ParseError(token.sourceLocation(), "Keyword 'else' cannot be used at the end of a list");
+						}
+						break;
+					}
+					parse(children[i], declarations, ifInstructions, settings);
+					++i;
 				}
-				// Actual branch instruction
-				instructions.push_back(Instruction::jump(token.sourceLocation(), tempInstructions.size()));
-				// Insert the remaining instructions into the stream
-				instructions.insert(instructions.end(), tempInstructions.begin(), tempInstructions.end());
+
+				InstructionList elseInstructions;
+				while(i < children.size())
+				{
+					parse(children[i], declarations, elseInstructions, settings);
+					++i;
+				}
+
+				int instructionsToSkip = ifInstructions.size();
+				if(!elseInstructions.empty())
+				{
+					++instructionsToSkip;
+				}
+
+				// Skip over the "if" block when conditional expression is false
+				instructions.push_back(Instruction::jump(token.sourceLocation(), instructionsToSkip));
+				// "if" block
+				instructions.insert(instructions.end(), ifInstructions.begin(), ifInstructions.end());
+				if(!elseInstructions.empty())
+				{
+					// When the condition is true, we need to unconditionally skip over the "else" block
+					// TODO: hack for unconditional jump via negative loop
+					instructions.push_back(Instruction::loop(token.sourceLocation(), -elseInstructions.size()));
+					instructions.insert(instructions.end(), elseInstructions.begin(), elseInstructions.end());
+				}
+			}
+			else if(keyword == "else")
+			{
+				throw ParseError(token.sourceLocation(), "Keyword 'else' cannot be used at the start of a list");
 			}
 			else if(keyword == "var")
 			{

@@ -492,6 +492,61 @@ namespace
 		assertEquals(result.type(), Value::TNil);
 	}
 
+	void testConditionalWithElseWhenTrue(Interpreter &interpreter)
+	{
+		Source source = "(if true 13 else 42)";
+		Token token = lex(source);
+		Declarations declarations = interpreter.declarations();
+		InstructionList instructions = parse(token, declarations, interpreter.settings());
+		Value result = interpreter.exec(instructions);
+		assertEquals(result.type(), Value::TNumber);
+		assertEquals(result.number(), 13);
+	}
+
+	void testConditionalWithElseWhenFalse(Interpreter &interpreter)
+	{
+		Source source = "(if false 13 else 42)";
+		Token token = lex(source);
+		Declarations declarations = interpreter.declarations();
+		InstructionList instructions = parse(token, declarations, interpreter.settings());
+		Value result = interpreter.exec(instructions);
+		assertEquals(result.type(), Value::TNumber);
+		assertEquals(result.number(), 42);
+	}
+
+	void testElseNotAllowedStartOfList(Interpreter &interpreter)
+	{
+		Source source = "(else true 42)";
+		Token token = lex(source);
+		Declarations declarations = interpreter.declarations();
+		try
+		{
+			parse(token, declarations, interpreter.settings());
+			fail("Expected ParseError");
+		}
+		catch (const ParseError &e)
+		{
+			assertEquals(e.what(), "Keyword 'else' cannot be used at the start of a list");
+		}
+	}
+
+	void testElseNotAllowedEndOfList(Interpreter &interpreter)
+	{
+		Source source = "(if true else)";
+		Token token = lex(source);
+		Declarations declarations = interpreter.declarations();
+		try
+		{
+			parse(token, declarations, interpreter.settings());
+			fail("Expected ParseError");
+		}
+		catch (const ParseError &e)
+		{
+			assertEquals(e.what(), "Keyword 'else' cannot be used at the end of a list");
+		}
+	}
+
+
 	void testComments(Interpreter &interpreter)
 	{
 		Source source;
@@ -532,6 +587,7 @@ namespace
 		try
 		{
 			parse(token, declarations, interpreter.settings());
+			fail("Expected ParseError");
 		}
 		catch (const ParseError &e)
 		{
@@ -547,6 +603,7 @@ namespace
 		try
 		{
 			parse(token, declarations, interpreter.settings());
+			fail("Expected ParseError");
 		}
 		catch (const ParseError &e)
 		{
@@ -627,6 +684,10 @@ int runUnitTests(const Settings &settings)
 	+ RUN_INTERPRETER_TEST(testConditionalFalse, settings)
 	+ RUN_INTERPRETER_TEST(testConditionalZero, settings)
 	+ RUN_INTERPRETER_TEST(testConditionalEmptyString, settings)
+	+ RUN_INTERPRETER_TEST(testConditionalWithElseWhenTrue, settings)
+	+ RUN_INTERPRETER_TEST(testConditionalWithElseWhenFalse, settings)
+	+ RUN_INTERPRETER_TEST(testElseNotAllowedStartOfList, settings)
+	+ RUN_INTERPRETER_TEST(testElseNotAllowedEndOfList, settings)
 	+ RUN_INTERPRETER_TEST(testComments, settings)
 	+ RUN_INTERPRETER_TEST(testStringConcatenation, settings)
 	+ RUN_INTERPRETER_TEST(testReferenceToUndefinedVariable, settings)

@@ -3,8 +3,6 @@
 
 #include "source_location.h"
 
-
-
 class AssertionError
 {
 public:
@@ -32,9 +30,12 @@ void assertEquals(const SourceLocation &sourceLocation, const X &x, const Y &y)
 }
 
 #ifdef RASP_ENABLE_ASSERTION_MACROS
+
 #define assertTrue(EXPRESSION, MESSAGE) assertTrue(CURRENT_SOURCE_LOCATION, EXPRESSION, MESSAGE)
+#define fail(MESSAGE) assertTrue(false, MESSAGE)
 #define CURRENT_SOURCE_LOCATION SourceLocation(__FILE__, __LINE__)
 #define assertEquals(X, Y) assertEquals(CURRENT_SOURCE_LOCATION, X, Y)
+
 #endif
 
 #endif
