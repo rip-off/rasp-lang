@@ -242,7 +242,7 @@ namespace
         source << "(type Person id name)";
         source << "(var alice (new Person 13 \"Alice\"))";
         source << "(var bob (new Person 42 \"Bob\"))";
-		source << "(+ \"People: \" alice.name \", \" bob.name)";
+		source << "(concat \"People: \" alice.name \", \" bob.name)";
 		Token token = lex(source);
 		Declarations declarations = interpreter.declarations();
 		InstructionList instructions = parse(token, declarations, interpreter.settings());
@@ -389,6 +389,17 @@ namespace
 		assertEquals(result.number(), 55);
 	}
 
+	void testStringConcatenation(Interpreter &interpreter)
+	{
+		Source source = "(concat \"number: \" 42 \", boolean: \" true)";
+		Token token = lex(source);
+		Declarations declarations = interpreter.declarations();
+		InstructionList instructions = parse(token, declarations, interpreter.settings());
+		Value result = interpreter.exec(instructions);
+		assertEquals(result.type(), Value::TString);
+		assertEquals(result.string(), "number: 42, boolean: true");
+	}
+
 	void testReferenceToUndefinedVariable(Interpreter &interpreter)
 	{
 		Source source = "undefinedVariable";
@@ -483,6 +494,7 @@ int runUnitTests(const Settings &settings)
 	+ RUN_INTERPRETER_TEST(testFunctionDeclarationsWithTypes, settings)
 	+ RUN_INTERPRETER_TEST(testTypeDeclarationWithMemberTypes, settings)
 	+ RUN_INTERPRETER_TEST(testFunctionRecursion, settings)
+	+ RUN_INTERPRETER_TEST(testStringConcatenation, settings)
 	+ RUN_INTERPRETER_TEST(testReferenceToUndefinedVariable, settings)
 	+ RUN_INTERPRETER_TEST(testVariableDeclarationWithUndefinedType, settings)
 	;

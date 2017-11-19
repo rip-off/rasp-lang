@@ -8,58 +8,15 @@ namespace
 	#define CURRENT_SOURCE_LOCATION SourceLocation(__FILE__, __LINE__)
 	#define ExternalFunctionError(message) ExternalFunctionError(__FUNCTION__, CURRENT_SOURCE_LOCATION, message)
 
-	Value plus(const Arguments &arguments)
+	// TODO: string concat function?
+	int plus(int x, int y)
 	{
-		if(arguments.size() < 2)
-		{
-			throw ExternalFunctionError("Expected at least two arguments");
-		}
-
-		Arguments::const_iterator i = arguments.begin();
-		if(i->isNumber())
-		{
-			int result = 0;
-			for( /* i */ ; i != arguments.end() ; ++i)
-			{
-				if(!i->isNumber())
-				{
-					throw ExternalFunctionError("Expected numeric argument");
-				}
-				result += i->number();
-			}
-			return Value::number(result);
-		}
- 		else if(i->isString())
-		{
-			std::string result;
-			for( /* i */ ; i != arguments.end() ; ++i)
-			{
-				if(!i->isString())
-				{
-					throw ExternalFunctionError("Expected string argument");
-				}
-				result += i->string();
-			}
-			return Value::string(result);
-		}
-		else
-		{
-			throw ExternalFunctionError("Expected string or integer arguments");
-		}
+		return x + y;
 	}
 
-	Value mul(const Arguments &arguments)
+	int mul(int x, int y)
 	{
-		int result = 1;
-		for(Arguments::const_iterator i = arguments.begin() ; i != arguments.end() ; ++i)
-		{
-			if(!i->isNumber())
-			{
-				throw ExternalFunctionError("Expected numeric argument");
-			}
-			result *= i->number();
-		}
-		return Value::number(result);
+		return x * y;
 	}
 
 	int sub(int x, int y)
@@ -175,8 +132,28 @@ namespace
 		}
 	}
 
+	// TODO: ExternalFunctionError error messages mention 'numericFold'
+	template<int init, int (*aggregate)(int, int)>
+	Value numericFold(const Arguments &arguments)
+	{
+		if(arguments.size() < 2)
+		{
+			throw ExternalFunctionError("Expected at least 2 arguments");
+		}
+		int result = init;
+		for(Arguments::const_iterator i = arguments.begin() ; i != arguments.end() ; ++i)
+		{
+			if(!i->isNumber())
+			{
+				throw ExternalFunctionError("Expected numeric argument");
+			}
+			result = aggregate(result, i->number());
+		}
+		return Value::number(result);
+	}
+
 	template<int (*function)(int, int)>
-	Value numericOperation(const Arguments &arguments)
+	Value binaryOperation(const Arguments &arguments)
 	{
 		expectTwoNumbers(arguments);
 		int result = function(arguments[0].number(), arguments[1].number());
@@ -193,11 +170,11 @@ namespace
 
 	const ApiReg registry[] = 
 	{
-		ApiReg("+", CURRENT_SOURCE_LOCATION, &plus),
-		ApiReg("-", CURRENT_SOURCE_LOCATION, numericOperation<&sub>),
-		ApiReg("/", CURRENT_SOURCE_LOCATION, numericOperation<&div>),
-		ApiReg("*", CURRENT_SOURCE_LOCATION, &mul),
-		ApiReg("%", CURRENT_SOURCE_LOCATION, numericOperation<&mod>),
+		ApiReg("+", CURRENT_SOURCE_LOCATION, numericFold<0, &plus>),
+		ApiReg("*", CURRENT_SOURCE_LOCATION, numericFold<1, &mul>),
+		ApiReg("-", CURRENT_SOURCE_LOCATION, binaryOperation<&sub>),
+		ApiReg("/", CURRENT_SOURCE_LOCATION, binaryOperation<&div>),
+		ApiReg("%", CURRENT_SOURCE_LOCATION, binaryOperation<&mod>),
 		ApiReg("<", CURRENT_SOURCE_LOCATION, numericPredicate<&less>),
 		ApiReg(">", CURRENT_SOURCE_LOCATION, numericPredicate<&greater>),
 		ApiReg("<=", CURRENT_SOURCE_LOCATION, numericPredicate<&lessEqual>),

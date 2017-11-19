@@ -55,6 +55,17 @@ namespace
 		return result;
 	}
 
+	Value concat(const Arguments &arguments)
+	{
+		if(arguments.size() < 2)
+		{
+			throw ExternalFunctionError("Expect at least 2 arguments");
+		}
+		std::stringstream result;
+		print_to_stream(result, arguments);
+		return Value::string(result.str());
+	}
+
 	Value time(const Arguments &arguments)
 	{
 		if(!arguments.empty())
@@ -263,6 +274,7 @@ namespace
 		ApiReg("assert", CURRENT_SOURCE_LOCATION, &rasp_assert),
 		ENTRY(time),
 		ENTRY(print),
+		ENTRY(concat),
 		ENTRY(is_nil),
 		ENTRY(format),
 		ENTRY(println),
