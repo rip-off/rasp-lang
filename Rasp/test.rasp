@@ -87,8 +87,5 @@
 		(testRecursion (- x 1))))
 (testRecursion 5)
 
-
-((defun immediate_function_call () (println "Calling function immediately")))
-
 "Done..."
 

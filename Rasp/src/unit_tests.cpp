@@ -406,6 +406,17 @@ namespace
 		assertEquals(result.number(), 15);
 	}
 
+	void testImmediateFunctionCall(Interpreter &interpreter)
+	{
+		Source source = "((defun immediate_function_call () 42))";
+		Token token = lex(source);
+		Declarations declarations = interpreter.declarations();
+		InstructionList instructions = parse(token, declarations, interpreter.settings());
+		Value result = interpreter.exec(instructions);
+		assertEquals(result.type(), Value::TNumber);
+		assertEquals(result.number(), 42);
+	}
+
 	void testStringConcatenation(Interpreter &interpreter)
 	{
 		Source source = "(concat \"number: \" 42 \", boolean: \" true)";
@@ -511,8 +522,9 @@ int runUnitTests(const Settings &settings)
 	+ RUN_INTERPRETER_TEST(testFunctionDeclarationsWithTypes, settings)
 	+ RUN_INTERPRETER_TEST(testTypeDeclarationWithMemberTypes, settings)
 	+ RUN_INTERPRETER_TEST(testFunctionRecursion, settings)
-	+ RUN_INTERPRETER_TEST(testStringConcatenation, settings)
 	+ RUN_INTERPRETER_TEST(testCallingDeeplyNestedFunctions, settings)
+	+ RUN_INTERPRETER_TEST(testImmediateFunctionCall, settings)
+	+ RUN_INTERPRETER_TEST(testStringConcatenation, settings)
 	+ RUN_INTERPRETER_TEST(testReferenceToUndefinedVariable, settings)
 	+ RUN_INTERPRETER_TEST(testVariableDeclarationWithUndefinedType, settings)
 	;
