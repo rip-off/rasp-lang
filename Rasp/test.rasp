@@ -2,19 +2,6 @@
 (println "hello, \"Alice\", how are you?")
 (println "does" "print" "add" "spaces")
 (print "Newline #1\nNewline #2\nNewline #3\n")
-
-(println "try: 1 and 1")
-(if 1 (if 1 (println "out: both")) (println "out: first"))
-
-(println "try: 1 and nil")
-(if 1 (if nil (println "out: both")) (println "out: first"))
-
-(println "try: nil and nil")
-(if nil (if nil (println "out: both")) (println "out: first"))
-
-(println "try: nil and 1")
-(if nil (if 1 (println "out: both")) (println "out: first"))
-
 (println "\nAnd now...\nWith variables!\n\n")
 
 // Single line comment
@@ -29,30 +16,6 @@
 
 /* Interesting */ /**/ /* comment */
 
-
-(var x nil)
-(var y nil)
-
-(println "try: " x " and " y)
-(if x (if y (println "out: both")) (println "out: first"))
-
-(set x 1)
-(set y nil)
-
-(println "try: " x " and " y)
-(if x (if y (println "out: both")) (println "out: first"))
-
-(set x 1)
-(set y 1)
-
-(println "try: " x " and " y)
-(if x (if y (println "out: both")) (println "out: first"))
-
-(set x nil)
-(set y 1)
-
-(println "try: " x " and " y)
-(if x (if y (println "out: both")) (println "out: first"))
 
 (var i 0)
 (while (< i 5) (println "loop: " (+ i 1)) (set i (+ i 1)))

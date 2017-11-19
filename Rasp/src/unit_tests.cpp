@@ -429,6 +429,69 @@ namespace
 		assertEquals(result.string(), "x: 1, y: 2, z: 3");
 	}
 
+	void testConditionalTrue(Interpreter &interpreter)
+	{
+		Source source = "(if true 42)";
+		Token token = lex(source);
+		Declarations declarations = interpreter.declarations();
+		InstructionList instructions = parse(token, declarations, interpreter.settings());
+		Value result = interpreter.exec(instructions);
+		assertEquals(result.type(), Value::TNumber);
+		assertEquals(result.number(), 42);
+	}
+
+	void testConditionalNonZeroNumber(Interpreter &interpreter)
+	{
+		Source source = "(if 1 42)";
+		Token token = lex(source);
+		Declarations declarations = interpreter.declarations();
+		InstructionList instructions = parse(token, declarations, interpreter.settings());
+		Value result = interpreter.exec(instructions);
+		assertEquals(result.type(), Value::TNumber);
+		assertEquals(result.number(), 42);
+	}
+
+	void testConditionalNonEmptyString(Interpreter &interpreter)
+	{
+		Source source = "(if \"Yep\" 42)";
+		Token token = lex(source);
+		Declarations declarations = interpreter.declarations();
+		InstructionList instructions = parse(token, declarations, interpreter.settings());
+		Value result = interpreter.exec(instructions);
+		assertEquals(result.type(), Value::TNumber);
+		assertEquals(result.number(), 42);
+	}
+
+	void testConditionalFalse(Interpreter &interpreter)
+	{
+		Source source = "(if false 42)";
+		Token token = lex(source);
+		Declarations declarations = interpreter.declarations();
+		InstructionList instructions = parse(token, declarations, interpreter.settings());
+		Value result = interpreter.exec(instructions);
+		assertEquals(result.type(), Value::TNil);
+	}
+
+	void testConditionalZero(Interpreter &interpreter)
+	{
+		Source source = "(if 0 42)";
+		Token token = lex(source);
+		Declarations declarations = interpreter.declarations();
+		InstructionList instructions = parse(token, declarations, interpreter.settings());
+		Value result = interpreter.exec(instructions);
+		assertEquals(result.type(), Value::TNil);
+	}
+
+	void testConditionalEmptyString(Interpreter &interpreter)
+	{
+		Source source = "(if \"\" 42)";
+		Token token = lex(source);
+		Declarations declarations = interpreter.declarations();
+		InstructionList instructions = parse(token, declarations, interpreter.settings());
+		Value result = interpreter.exec(instructions);
+		assertEquals(result.type(), Value::TNil);
+	}
+
 	void testStringConcatenation(Interpreter &interpreter)
 	{
 		Source source = "(concat \"number: \" 42 \", boolean: \" true)";
@@ -537,6 +600,12 @@ int runUnitTests(const Settings &settings)
 	+ RUN_INTERPRETER_TEST(testCallingDeeplyNestedFunctions, settings)
 	+ RUN_INTERPRETER_TEST(testImmediateFunctionCall, settings)
 	+ RUN_INTERPRETER_TEST(testFunctionArguments, settings)
+	+ RUN_INTERPRETER_TEST(testConditionalTrue, settings)
+	+ RUN_INTERPRETER_TEST(testConditionalNonZeroNumber, settings)
+	+ RUN_INTERPRETER_TEST(testConditionalNonEmptyString, settings)
+	+ RUN_INTERPRETER_TEST(testConditionalFalse, settings)
+	+ RUN_INTERPRETER_TEST(testConditionalZero, settings)
+	+ RUN_INTERPRETER_TEST(testConditionalEmptyString, settings)
 	+ RUN_INTERPRETER_TEST(testStringConcatenation, settings)
 	+ RUN_INTERPRETER_TEST(testReferenceToUndefinedVariable, settings)
 	+ RUN_INTERPRETER_TEST(testVariableDeclarationWithUndefinedType, settings)
