@@ -4,6 +4,7 @@
 #include <iterator>
 #include <algorithm>
 
+#include "bug.h"
 #include "utils.h"
 #include "escape.h"
 #include "exceptions.h"
@@ -164,6 +165,21 @@ namespace
 		return begin;
 	}
 
+	void consumeCommentsAndWhitespace(Iterator &current, const Iterator end)
+	{
+		// Keep looping to handle cases like
+		// /* */ /* */ ...
+		bool loop;
+		do
+		{
+			Iterator begin = current;
+			current = consumeWhitespace(current, end);
+			current = consumeComment(current, end);
+			loop = (begin != current);
+		}
+		while(loop);
+	}
+
 	Token declarationOrIdentifierOrMemberAccess(const SourceLocation &sourceLocation, const std::string string)
 	{
 		const std::string::const_iterator end = string.end();
@@ -249,7 +265,9 @@ namespace
 		Token result = Token::list(current.sourceLocation());
 		while(current != endOfList)
 		{
-			result.addChild(next(current, endOfList));
+			Token token = next(current, endOfList);
+			result.addChild(token);
+			consumeCommentsAndWhitespace(current, endOfList);
 		}
 
 		// This should be 
@@ -304,22 +322,10 @@ namespace
 
 	Token next(Iterator &current, const Iterator end)
 	{
-		// Keep looping to handle cases like
-		// /* */ /* */ ...
-		bool loop;
-		do
-		{
-			Iterator begin = current;
-			current = consumeWhitespace(current, end);
-			current = consumeComment(current, end);
-			loop = (begin != current);
-		}
-		while(loop);
-
+		consumeCommentsAndWhitespace(current, end);
 		if(current == end)
 		{
-			// TODO: ugly phantom tokens :[
-			return Token::root(current.sourceLocation());
+			throw CompilerBug("Cannot extract a token from the end of the source: " + str(current.sourceLocation()));
 		}
 		else
 		{
@@ -356,7 +362,9 @@ Token lex(const std::string &filename, const std::string &source)
 	{
 		Token token = next(it, end);
 		root.addChild(token);
+		consumeCommentsAndWhitespace(it, end);
 	}
 
 	return root;
 }
+
