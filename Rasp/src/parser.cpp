@@ -160,6 +160,10 @@ namespace
 				InstructionList elseInstructions;
 				while(i < children.size())
 				{
+					if(children[i].type() == Token::KEYWORD && children[i].string() == "else")
+					{
+						throw ParseError(token.sourceLocation(), "Keyword 'else' cannot be used inside an existing 'else' block");
+					}
 					parse(children[i], declarations, elseInstructions, settings);
 					++i;
 				}

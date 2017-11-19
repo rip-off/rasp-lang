@@ -546,6 +546,21 @@ namespace
 		}
 	}
 
+	void testDuplicateElseIsNotAllowed(Interpreter &interpreter)
+	{
+		Source source = "(if true 1 else 2 else 3)";
+		Token token = lex(source);
+		Declarations declarations = interpreter.declarations();
+		try
+		{
+			parse(token, declarations, interpreter.settings());
+			fail("Expected ParseError");
+		}
+		catch (const ParseError &e)
+		{
+			assertEquals(e.what(), "Keyword 'else' cannot be used inside an existing 'else' block");
+		}
+	}
 
 	void testComments(Interpreter &interpreter)
 	{
@@ -688,6 +703,7 @@ int runUnitTests(const Settings &settings)
 	+ RUN_INTERPRETER_TEST(testConditionalWithElseWhenFalse, settings)
 	+ RUN_INTERPRETER_TEST(testElseNotAllowedStartOfList, settings)
 	+ RUN_INTERPRETER_TEST(testElseNotAllowedEndOfList, settings)
+	+ RUN_INTERPRETER_TEST(testDuplicateElseIsNotAllowed, settings)
 	+ RUN_INTERPRETER_TEST(testComments, settings)
 	+ RUN_INTERPRETER_TEST(testStringConcatenation, settings)
 	+ RUN_INTERPRETER_TEST(testReferenceToUndefinedVariable, settings)
