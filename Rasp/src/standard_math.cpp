@@ -62,49 +62,40 @@ namespace
 		return Value::number(result);
 	}
 
-	Value sub(const Arguments &arguments)
+	int sub(int x, int y)
 	{
-		if(arguments.size() != 2 || !(arguments[0].isNumber() && arguments[1].isNumber()))
-		{
-			throw ExternalFunctionError("Expected 2 numeric arguments");
-		}
-		return Value::number(arguments[0].number() - arguments[1].number());
+		return x - y;
 	}
 
-	Value div(const Arguments &arguments)
+	int div(int x, int y)
 	{
-		if(arguments.size() != 2 || !(arguments[0].isNumber() && arguments[1].isNumber()))
-		{
-			throw ExternalFunctionError("Expected 2 numeric arguments");
-		}
-		return Value::number(arguments[0].number() / arguments[1].number());
+		// TODO: check for division by zero?
+		return x / y;
 	}
 
-	Value mod(const Arguments &arguments)
+	int mod(int x, int y)
 	{
-		if(arguments.size() != 2 || !(arguments[0].isNumber() && arguments[1].isNumber()))
-		{
-			throw ExternalFunctionError("Expected 2 numeric arguments");
-		}
-		return Value::number(arguments[0].number() % arguments[1].number());
+		return x % y;
 	}
 
-	Value less(const Arguments &arguments)
+	bool less(int x, int y)
 	{
-		if(arguments.size() != 2 || !(arguments[0].isNumber() && arguments[1].isNumber()))
-		{
-			throw ExternalFunctionError("Expected 2 numeric arguments");
-		}
-		return Value::boolean(arguments[0].number() < arguments[1].number());
+		return x < y;
 	}
 
-	Value greater(const Arguments &arguments)
+	bool greater(int x, int y)
 	{
-		if(arguments.size() != 2 || !(arguments[0].isNumber() && arguments[1].isNumber()))
-		{
-			throw ExternalFunctionError("Expected 2 numeric arguments");
-		}
-		return Value::boolean(arguments[0].number() > arguments[1].number());
+		return x > y;
+	}
+
+	bool lessEqual(int x, int y)
+	{
+		return x <= y;
+	}
+
+	bool greaterEqual(int x, int y)
+	{
+		return x >= y;
 	}
 
 	Value operatorNot(const Arguments &arguments)
@@ -176,38 +167,45 @@ namespace
 		return Value::boolean(arguments[0] != arguments[1]);
 	}
 
-	Value lessEqual(const Arguments &arguments)
+	void expectTwoNumbers(const Arguments &arguments)
 	{
 		if(arguments.size() != 2 || !(arguments[0].isNumber() && arguments[1].isNumber()))
 		{
 			throw ExternalFunctionError("Expected 2 numeric arguments");
 		}
-		return Value::boolean(arguments[0].number() <= arguments[1].number());
 	}
 
-	Value greaterEqual(const Arguments &arguments)
+	template<int (*function)(int, int)>
+	Value numericOperation(const Arguments &arguments)
 	{
-		if(arguments.size() != 2 || !(arguments[0].isNumber() && arguments[1].isNumber()))
-		{
-			throw ExternalFunctionError("Expected 2 numeric arguments");
-		}
-		return Value::boolean(arguments[0].number() >= arguments[1].number());
+		expectTwoNumbers(arguments);
+		int result = function(arguments[0].number(), arguments[1].number());
+		return Value::number(result);
+	}
+
+	template<bool (*predicate)(int, int)>
+	Value numericPredicate(const Arguments &arguments)
+	{
+		expectTwoNumbers(arguments);
+		bool result = predicate(arguments[0].number(), arguments[1].number());
+		return Value::boolean(result);
 	}
 
 	const ApiReg registry[] = 
 	{
 		ApiReg("+", CURRENT_SOURCE_LOCATION, &plus),
-		ApiReg("-", CURRENT_SOURCE_LOCATION, &sub),
-		ApiReg("/", CURRENT_SOURCE_LOCATION, &div),
+		ApiReg("-", CURRENT_SOURCE_LOCATION, numericOperation<&sub>),
+		ApiReg("/", CURRENT_SOURCE_LOCATION, numericOperation<&div>),
 		ApiReg("*", CURRENT_SOURCE_LOCATION, &mul),
-		ApiReg("%", CURRENT_SOURCE_LOCATION, &mod),
-		ApiReg("<", CURRENT_SOURCE_LOCATION, &less),
-		ApiReg(">", CURRENT_SOURCE_LOCATION, &greater),
+		ApiReg("%", CURRENT_SOURCE_LOCATION, numericOperation<&mod>),
+		ApiReg("<", CURRENT_SOURCE_LOCATION, numericPredicate<&less>),
+		ApiReg(">", CURRENT_SOURCE_LOCATION, numericPredicate<&greater>),
+		ApiReg("<=", CURRENT_SOURCE_LOCATION, numericPredicate<&lessEqual>),
+		ApiReg(">=", CURRENT_SOURCE_LOCATION, numericPredicate<&greaterEqual>),
+		// TODO: move out of math?
 		ApiReg("!", CURRENT_SOURCE_LOCATION, &operatorNot),
 		ApiReg("==", CURRENT_SOURCE_LOCATION, &equal),
 		ApiReg("!=", CURRENT_SOURCE_LOCATION, &notEqual),
-		ApiReg("<=", CURRENT_SOURCE_LOCATION, &lessEqual),
-		ApiReg(">=", CURRENT_SOURCE_LOCATION, &greaterEqual),
 		ApiReg("||", CURRENT_SOURCE_LOCATION, &operatorOr),
 		ApiReg("&&", CURRENT_SOURCE_LOCATION, &operatorAnd),
 	};
