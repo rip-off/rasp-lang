@@ -631,16 +631,21 @@ namespace
 {
 	typedef void InterpreterTest(Interpreter &);
 
-	int runUnitTest(const std::string &name, InterpreterTest *unitTest, const Settings &settings)
+	struct UnitTest {
+		const char *name;
+		InterpreterTest *function;
+	};
+
+	int runUnitTest(UnitTest unitTest, const Settings &settings)
 	{
 		try
 		{
-			std::cout << "Running " << name << "..." << '\n';
+			std::cout << "Running " << unitTest.name << "..." << '\n';
 			Interpreter::Globals globals;
 			standardMath(globals);
 			standardLibrary(globals);
 			Interpreter interpreter(globals, settings);
-			unitTest(interpreter);
+			unitTest.function(interpreter);
 			std::cout << "PASSED " << flushAssertions() << " assertions\n";
 			return 0;
 		}
@@ -662,52 +667,59 @@ namespace
 	}
 }
 
-#define RUN_INTERPRETER_TEST(testName, interpreter) runUnitTest(#testName, &testName, interpreter)
+#define TEST_CASE(testName) UnitTest { #testName, &testName }
+
+static UnitTest tests[] = {
+	TEST_CASE(testParser),
+	TEST_CASE(testInterpreter),
+	TEST_CASE(testAll),
+	TEST_CASE(testVariablesInGlobalScope),
+	TEST_CASE(testGlobalsReferencesInFunction),
+	TEST_CASE(testLocalsInFunction),
+	TEST_CASE(testClosureCanAccessVariableInOuterScope),
+	/*
+	TEST_CASE(testClosureSeesUpdatedVariableInOuterScope),
+	TEST_CASE(testClosureCanModifyVariableInOuterScope),
+	*/
+	TEST_CASE(testReturnedClosureCanStillAccessVariableInOuterScope),
+	TEST_CASE(testClosure),
+	TEST_CASE(testTypesAndMemberAccess),
+	TEST_CASE(testSimpleLoop),
+	TEST_CASE(testComplexLoop),
+	TEST_CASE(testLoopWithInnerVariableDeclaration),
+	TEST_CASE(testVariableDeclarationWithNumberType),
+	TEST_CASE(testVariableDeclarationWithStringType),
+	TEST_CASE(testVariableDeclarationWithBooleanType),
+	TEST_CASE(testFunctionDeclarationsWithTypes),
+	TEST_CASE(testTypeDeclarationWithMemberTypes),
+	TEST_CASE(testFunctionRecursion),
+	TEST_CASE(testCallingDeeplyNestedFunctions),
+	TEST_CASE(testImmediateFunctionCall),
+	TEST_CASE(testFunctionArguments),
+	TEST_CASE(testConditionalTrue),
+	TEST_CASE(testConditionalNonZeroNumber),
+	TEST_CASE(testConditionalNonEmptyString),
+	TEST_CASE(testConditionalFalse),
+	TEST_CASE(testConditionalZero),
+	TEST_CASE(testConditionalEmptyString),
+	TEST_CASE(testConditionalWithElseWhenTrue),
+	TEST_CASE(testConditionalWithElseWhenFalse),
+	TEST_CASE(testElseNotAllowedStartOfList),
+	TEST_CASE(testElseNotAllowedEndOfList),
+	TEST_CASE(testDuplicateElseIsNotAllowed),
+	TEST_CASE(testComments),
+	TEST_CASE(testStringConcatenation),
+	TEST_CASE(testReferenceToUndefinedVariable),
+	TEST_CASE(testVariableDeclarationWithUndefinedType),
+};
 
 int runUnitTests(const Settings &settings)
 {
-	return 0
-	+ RUN_INTERPRETER_TEST(testParser, settings)
-	+ RUN_INTERPRETER_TEST(testInterpreter, settings)
-	+ RUN_INTERPRETER_TEST(testAll, settings)
-	+ RUN_INTERPRETER_TEST(testVariablesInGlobalScope, settings)
-	+ RUN_INTERPRETER_TEST(testGlobalsReferencesInFunction, settings)
-	+ RUN_INTERPRETER_TEST(testLocalsInFunction, settings)
-	+ RUN_INTERPRETER_TEST(testClosureCanAccessVariableInOuterScope, settings)
-	/*
-	+ RUN_INTERPRETER_TEST(testClosureSeesUpdatedVariableInOuterScope, settings)
-	+ RUN_INTERPRETER_TEST(testClosureCanModifyVariableInOuterScope, settings)
-	*/
-	+ RUN_INTERPRETER_TEST(testReturnedClosureCanStillAccessVariableInOuterScope, settings)
-	+ RUN_INTERPRETER_TEST(testClosure, settings)
-	+ RUN_INTERPRETER_TEST(testTypesAndMemberAccess, settings)
-	+ RUN_INTERPRETER_TEST(testSimpleLoop, settings)
-	+ RUN_INTERPRETER_TEST(testComplexLoop, settings)
-	+ RUN_INTERPRETER_TEST(testLoopWithInnerVariableDeclaration, settings)
-	+ RUN_INTERPRETER_TEST(testVariableDeclarationWithNumberType, settings)
-	+ RUN_INTERPRETER_TEST(testVariableDeclarationWithStringType, settings)
-	+ RUN_INTERPRETER_TEST(testVariableDeclarationWithBooleanType, settings)
-	+ RUN_INTERPRETER_TEST(testFunctionDeclarationsWithTypes, settings)
-	+ RUN_INTERPRETER_TEST(testTypeDeclarationWithMemberTypes, settings)
-	+ RUN_INTERPRETER_TEST(testFunctionRecursion, settings)
-	+ RUN_INTERPRETER_TEST(testCallingDeeplyNestedFunctions, settings)
-	+ RUN_INTERPRETER_TEST(testImmediateFunctionCall, settings)
-	+ RUN_INTERPRETER_TEST(testFunctionArguments, settings)
-	+ RUN_INTERPRETER_TEST(testConditionalTrue, settings)
-	+ RUN_INTERPRETER_TEST(testConditionalNonZeroNumber, settings)
-	+ RUN_INTERPRETER_TEST(testConditionalNonEmptyString, settings)
-	+ RUN_INTERPRETER_TEST(testConditionalFalse, settings)
-	+ RUN_INTERPRETER_TEST(testConditionalZero, settings)
-	+ RUN_INTERPRETER_TEST(testConditionalEmptyString, settings)
-	+ RUN_INTERPRETER_TEST(testConditionalWithElseWhenTrue, settings)
-	+ RUN_INTERPRETER_TEST(testConditionalWithElseWhenFalse, settings)
-	+ RUN_INTERPRETER_TEST(testElseNotAllowedStartOfList, settings)
-	+ RUN_INTERPRETER_TEST(testElseNotAllowedEndOfList, settings)
-	+ RUN_INTERPRETER_TEST(testDuplicateElseIsNotAllowed, settings)
-	+ RUN_INTERPRETER_TEST(testComments, settings)
-	+ RUN_INTERPRETER_TEST(testStringConcatenation, settings)
-	+ RUN_INTERPRETER_TEST(testReferenceToUndefinedVariable, settings)
-	+ RUN_INTERPRETER_TEST(testVariableDeclarationWithUndefinedType, settings)
-	;
+	int result = 0;
+	for (UnitTest test: tests)
+	{
+		result += runUnitTest(test, settings);
+	}
+	return result;
 }
 
