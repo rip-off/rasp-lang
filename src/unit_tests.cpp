@@ -27,6 +27,11 @@ struct Source
 		stream << content;
 	}
 
+	Source(const Source &source)
+	{
+		stream << source.str();
+	}
+
 	std::string str() const
 	{
 		return stream.str();
