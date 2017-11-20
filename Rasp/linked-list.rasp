@@ -20,8 +20,8 @@
 // Helper function (TODO: why can't this be nested?)
 (defun get_linked_list_node (node index)
 	(if (== 0 index) 
-		node.element)
-	(if (!= 0 index)
+		node.element
+	else
 		(get_linked_list_node node.next (- index 1))))
 
 (defun get_linked_list (list index)
