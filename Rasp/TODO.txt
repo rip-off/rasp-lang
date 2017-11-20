@@ -6,16 +6,14 @@ Research - Automated Build:
  * https://docs.travis-ci.com/user/languages/cpp/
 
 Known bugs / issues:
-* (*) returns 1
 * Short circuiting for &&, ||
 * Investigate stuff being left over in the stack
 * Clean checkout, need to mkdir /obj
 
 Questions:
-* Allow overloading? Currently "+" supports strings and numbers
+* Allow overloading? For example "+" supports strings and numbers
 
 Feels missing:
-* "else"
 * "return"
 
 Next:
@@ -52,6 +50,7 @@ Wild ideas:
 * Invoke with multiple mains, each its own thread / process
 
 Done:
+* "else"
 * User defined types
 * Arrays
 * Assertion mechanism
