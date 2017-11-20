@@ -1,10 +1,6 @@
 Doing:
 * Decide!
 
-Research - Automated Build:
- * https://github.com/gamedev-net/AdventuresInTexting/blob/master/.travis.yml
- * https://docs.travis-ci.com/user/languages/cpp/
-
 Known bugs / issues:
 * Short circuiting for &&, ||
 * Investigate stuff being left over in the stack
@@ -50,6 +46,7 @@ Wild ideas:
 * Invoke with multiple mains, each its own thread / process
 
 Done:
+* Continuous integration build
 * "else"
 * User defined types
 * Arrays
@@ -69,7 +66,4 @@ Done:
 * Some basic stuff
 * Conditions
 * Variable declarations
-
-
-
 
