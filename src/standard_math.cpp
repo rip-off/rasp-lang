@@ -8,7 +8,6 @@ namespace
 	#define CURRENT_SOURCE_LOCATION SourceLocation(__FILE__, __LINE__)
 	#define ExternalFunctionError(message) ExternalFunctionError(__FUNCTION__, CURRENT_SOURCE_LOCATION, message)
 
-	// TODO: string concat function?
 	int plus(int x, int y)
 	{
 		return x + y;
