@@ -22,6 +22,11 @@ Instruction Instruction::call(const SourceLocation &sourceLocation, int argc)
 	return Instruction(sourceLocation, Call, Value::number(argc));
 }
 
+Instruction Instruction::jump(const SourceLocation &sourceLocation, int instructions)
+{
+	return Instruction(sourceLocation, Jump, Value::number(instructions));
+}
+
 Instruction Instruction::loop(const SourceLocation &sourceLocation, int instructions)
 {
 	return Instruction(sourceLocation, Loop, Value::number(instructions));
@@ -107,6 +112,8 @@ std::ostream &operator<<(std::ostream &out, const Instruction &instruction)
 		return out << "push(" << instruction.value_ << ")";
 	case Instruction::Call:
 		return out << "call(" << instruction.value_ << ")";
+	case Instruction::Jump:
+		return out << "jump(" << instruction.value_ << ")";
 	case Instruction::Loop:
 		return out << "loop(" << instruction.value_ << ")";
 	case Instruction::Capture:

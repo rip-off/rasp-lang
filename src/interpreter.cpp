@@ -177,6 +177,26 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 				}
 			}
 			break;
+		case Instruction::Jump:
+			{
+				int instructionsToSkip = value.number();
+				int remaining = instructions.end() - it;
+				if(instructionsToSkip < 0)
+				{
+					throw CompilerBug("Cannot jump backwards!");
+				}
+				else if(remaining < instructionsToSkip)
+				{
+					throw CompilerBug("insufficient instructions available to skip! (remaining: " + str(remaining) + " < instructionsToSkip: " + str(instructionsToSkip) + ")");
+				}
+
+				if(settings_.trace)
+				{
+					std::cout << "DEBUG: " << it->sourceLocation() << " jumping back " << instructionsToSkip << '\n';
+				}
+				it += instructionsToSkip;
+			}
+			break;
 		case Instruction::Loop:
 			{
 				int instructionsAvailable = instructions.size(); // Note: signed type is important!

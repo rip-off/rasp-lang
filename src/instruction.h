@@ -18,6 +18,7 @@ public:
 		Call,
 		Push,
 		NoOp,
+		Jump,
 		Loop,
 		Capture,
 		CondJump,
@@ -39,6 +40,8 @@ public:
 	static Instruction call(const SourceLocation &sourceLocation, int argc);
 
 	static Instruction loop(const SourceLocation &sourceLocation, int instructions);
+
+	static Instruction jump(const SourceLocation &sourceLocation, int instructions);
 
 	static Instruction capture(const SourceLocation &sourceLocation, int argc);
 

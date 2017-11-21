@@ -181,8 +181,7 @@ namespace
 				if(!elseInstructions.empty())
 				{
 					// When the condition is true, we need to unconditionally skip over the "else" block
-					// TODO: hack for unconditional jump via negative loop
-					instructions.push_back(Instruction::loop(token.sourceLocation(), -elseInstructions.size()));
+					instructions.push_back(Instruction::jump(token.sourceLocation(), elseInstructions.size()));
 					instructions.insert(instructions.end(), elseInstructions.begin(), elseInstructions.end());
 				}
 			}
