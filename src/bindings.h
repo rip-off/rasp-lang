@@ -20,8 +20,7 @@ public:
     Bindings(Mapping *globalsByName);
 
     // Value should be bound
-    // TODO: const Value &
-    Value get(RefType refType, const Identifier &identifier) const;
+    const Value &get(RefType refType, const Identifier &identifier) const;
 
     // Value should be bound
     void set(RefType refType, const Identifier &identifier, const Value &value);

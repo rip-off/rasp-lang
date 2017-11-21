@@ -10,7 +10,7 @@ Bindings::Bindings(Mapping *globalsByName)
 {
 }
 
-Value Bindings::get(RefType refType, const Identifier &identifier) const
+const Value &Bindings::get(RefType refType, const Identifier &identifier) const
 {
 	const Mapping &mapping = mappingFor(refType);
 	Bindings::const_iterator it = mapping.find(identifier);
