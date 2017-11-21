@@ -33,8 +33,6 @@ Value InternalFunction::call(CallContext &callContext) const
 	for (unsigned i = 0 ; i < parameters_.size() ; ++i)
 	{
 		localBindings.initLocal(parameters_[i], arguments[i]);
-		// TODO: adding debug / trace
-		// std::cout << "DEBUG: setting parameter '" <<  parameters_[i].name() << "' to " << arguments[i] << '\n';
 	}
 	return callContext.interpreter().exec(instructionList_, localBindings);
 }
