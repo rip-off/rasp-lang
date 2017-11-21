@@ -112,7 +112,7 @@ std::ostream &operator<<(std::ostream &out, const Instruction &instruction)
 	case Instruction::Capture:
 		return out << "capture(" << instruction.value_ << ")";
 	case Instruction::CondJump:
-		return out << "condJump(" << instruction.value_ << ")";
+		return out << "cond_jump(" << instruction.value_ << ")";
 	case Instruction::RefLocal:
 		return out << "ref_local(" << instruction.value_.string() << ")";
 	case Instruction::InitLocal:
