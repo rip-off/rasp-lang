@@ -181,9 +181,9 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 			{
 				int instructionsToSkip = value.number();
 				int remaining = instructions.end() - it;
-				if(instructionsToSkip < 0)
+				if(instructionsToSkip <= 0)
 				{
-					throw CompilerBug("Cannot jump backwards!");
+					throw CompilerBug("Jump requires a positive number of instructions to skip");
 				}
 				else if(remaining < instructionsToSkip)
 				{
@@ -201,19 +201,14 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 			{
 				int instructionsAvailable = instructions.size(); // Note: signed type is important!
 				int instructionCount = value.number();
-				if(instructionCount > 0)
+				if(instructionCount <= 0)
 				{
-					if(instructionCount > instructionsAvailable)
-					{
-						throw CompilerBug("insufficient instructions available to loop! (instructionCount: " + str(instructionCount) + " > instructions.size(): " + str(instructions.size()) + ")");
-					}
+					throw CompilerBug("Loop requires a positive number of instructions to skip");
 				}
-				else
+
+				if(instructionsAvailable < instructionCount)
 				{
-					if(instructionsAvailable < instructionCount)
-					{
-						throw CompilerBug("insufficient instructions available to loop! (instructionCount: " + str(instructionCount) + " > instructions.size(): " + str(instructions.size()) + ")");
-					}
+					throw CompilerBug("insufficient instructions available to loop! (instructionCount: " + str(instructionCount) + " > instructions.size(): " + str(instructions.size()) + ")");
 				}
 
 				if(settings_.trace)
@@ -242,9 +237,9 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 				}
 				int instructionsToSkip = value.number();
 				int remaining = instructions.end() - it;
-				if(instructionsToSkip < 0)
+				if(instructionsToSkip <= 0)
 				{
-					throw CompilerBug("Cannot jump backwards!");
+					throw CompilerBug("CondJump requires a positive number of instructions to skip");
 				}
 				else if(remaining < instructionsToSkip)
 				{
