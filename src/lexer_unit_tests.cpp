@@ -1,4 +1,4 @@
-#include "unit_tests.h"
+#include "lexer_unit_tests.h"
 
 #include <iostream>
 

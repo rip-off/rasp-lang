@@ -1,7 +1,7 @@
 #ifndef UNIT_TESTS
 #define UNIT_TESTS
 
-// TODO:
+int runUnitTests(const Settings &);
 
 #endif
 

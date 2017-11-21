@@ -10,9 +10,8 @@
 #include "standard_math.h"
 #include "standard_library.h"
 
-int runLexerUnitTests();
-int runUnitTests(const Settings &);
-
+#include "unit_tests.h"
+#include "lexer_unit_tests.h"
 
 typedef std::vector<std::string> ArgumentList;
 
