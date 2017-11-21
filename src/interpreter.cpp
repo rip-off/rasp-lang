@@ -158,13 +158,6 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 		const Value &value = it->value();
 		switch(type)
 		{
-		case Instruction::NoOp:
-			if(settings_.trace)
-			{				
-				std::cout << "DEBUG: " << it->sourceLocation() << " noop!\n";
-			}
-			// Do nothing
-			break;
 		case Instruction::Push:
 			if(settings_.trace)
 			{				

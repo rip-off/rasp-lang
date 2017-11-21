@@ -17,7 +17,6 @@ public:
 	{
 		Call,
 		Push,
-		NoOp,
 		Jump,
 		Loop,
 		Capture,
@@ -32,8 +31,6 @@ public:
 		AssignClosure,
 		MemberAccess,
 	};
-
-	static Instruction noop(const SourceLocation &sourceLocation);
 
 	static Instruction push(const SourceLocation &sourceLocation, const Value &value);
 

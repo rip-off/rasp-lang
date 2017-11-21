@@ -7,11 +7,6 @@ Instruction::Instruction(const SourceLocation &sourceLocation, Type type, const 
 {
 }
 
-Instruction Instruction::noop(const SourceLocation &sourceLocation)
-{
-	return Instruction(sourceLocation, NoOp, Value::nil());
-}
-
 Instruction Instruction::push(const SourceLocation &sourceLocation, const Value &value)
 {
 	return Instruction(sourceLocation, Push, value);
@@ -106,8 +101,6 @@ std::ostream &operator<<(std::ostream &out, const Instruction &instruction)
 {
 	switch(instruction.type_)
 	{
-	case Instruction::NoOp:
-		return out << "noop";
 	case Instruction::Push:
 		return out << "push(" << instruction.value_ << ")";
 	case Instruction::Call:
