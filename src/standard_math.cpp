@@ -25,7 +25,9 @@ namespace
 
 	int div(int x, int y)
 	{
-		// TODO: check for division by zero?
+		if (y == 0) {
+			throw ExternalFunctionError("cannot divide by zero");
+		}
 		return x / y;
 	}
 

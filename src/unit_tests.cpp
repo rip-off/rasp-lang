@@ -12,6 +12,7 @@
 #include "interpreter.h"
 #include "standard_math.h"
 #include "standard_library.h"
+#include "standard_library_error.h"
 
 #define RASP_ENABLE_ASSERTION_MACROS
 #include "assert.h"
@@ -110,6 +111,22 @@ namespace
 		assertEquals(result.number(), 84 + 13 - 5);
 	}
 	
+	void testDivisionByZero(Interpreter &interpreter)
+	{
+		Source source = "(/ 42 0)";
+		Token token = lex(source);
+		Declarations declarations = interpreter.declarations();
+		InstructionList instructions = parse(token, declarations, interpreter.settings());
+		try
+		{
+			interpreter.exec(instructions);
+		}
+		catch (ExternalFunctionError e)
+		{
+			assertEquals("cannot divide by zero in external function 'div'", e.what());
+		}
+	}
+
 	void testVariablesInGlobalScope(Interpreter &interpreter)
 	{
 		Source source;
@@ -694,6 +711,7 @@ static UnitTest tests[] = {
 	TEST_CASE(testParser),
 	TEST_CASE(testInterpreter),
 	TEST_CASE(testAll),
+	TEST_CASE(testDivisionByZero),
 	TEST_CASE(testVariablesInGlobalScope),
 	TEST_CASE(testGlobalsReferencesInFunction),
 	TEST_CASE(testLocalsInFunction),
