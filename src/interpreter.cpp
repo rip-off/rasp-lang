@@ -317,7 +317,6 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 				{
 					std::cout << "DEBUG: " << it->sourceLocation() << " member access " << value << '\n';
 				}
-				// TODO: RASP_ASSERT (throws CompilerBug(__FILE__, __LINE__, ...)?
 				assert(value.isString());
 				const std::string &memberName = value.string();
 
