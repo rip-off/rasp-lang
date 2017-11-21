@@ -123,6 +123,16 @@ namespace
 		Closure closure(top.function(), closedValues);
 		return Value::function(closure);
 	}
+
+	int getInstructionsToSkip(Instruction::Type type, const Value &value)
+	{
+		int instructionCount = value.number();
+		if(instructionCount <= 0)
+		{
+			throw CompilerBug(str(type) + " requires a positive number of instructions to skip");
+		}
+		return instructionCount;
+	}
 }
 
 Interpreter::Interpreter(const Globals &globals, const Settings &settings)
@@ -179,13 +189,9 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 			break;
 		case Instruction::Jump:
 			{
-				int instructionsToSkip = value.number();
+				int instructionsToSkip = getInstructionsToSkip(type, value);
 				int remaining = instructions.end() - it;
-				if(instructionsToSkip <= 0)
-				{
-					throw CompilerBug("Jump requires a positive number of instructions to skip");
-				}
-				else if(remaining < instructionsToSkip)
+				if(remaining < instructionsToSkip)
 				{
 					throw CompilerBug("insufficient instructions available to skip! (remaining: " + str(remaining) + " < instructionsToSkip: " + str(instructionsToSkip) + ")");
 				}
@@ -199,23 +205,18 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 			break;
 		case Instruction::Loop:
 			{
+				int instructionsToSkip = getInstructionsToSkip(type, value);
 				int instructionsAvailable = instructions.size(); // Note: signed type is important!
-				int instructionCount = value.number();
-				if(instructionCount <= 0)
+				if(instructionsAvailable < instructionsToSkip)
 				{
-					throw CompilerBug("Loop requires a positive number of instructions to skip");
-				}
-
-				if(instructionsAvailable < instructionCount)
-				{
-					throw CompilerBug("insufficient instructions available to loop! (instructionCount: " + str(instructionCount) + " > instructions.size(): " + str(instructions.size()) + ")");
+					throw CompilerBug("insufficient instructions available to loop! (instructionsToSkip: " + str(instructionsToSkip) + " > instructions.size(): " + str(instructions.size()) + ")");
 				}
 
 				if(settings_.trace)
 				{				
-					std::cout << "DEBUG: " << it->sourceLocation() << " looping back " << instructionCount << " instructions\n";
+					std::cout << "DEBUG: " << it->sourceLocation() << " looping back " << instructionsToSkip << " instructions\n";
 				}
-				it -= instructionCount;
+				it -= instructionsToSkip;
 			}
 			break;
 		case Instruction::Capture:
@@ -235,13 +236,9 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 				{
 					throw CompilerBug("empty stack when testing conditional jump");
 				}
-				int instructionsToSkip = value.number();
+				int instructionsToSkip = getInstructionsToSkip(type, value);
 				int remaining = instructions.end() - it;
-				if(instructionsToSkip <= 0)
-				{
-					throw CompilerBug("CondJump requires a positive number of instructions to skip");
-				}
-				else if(remaining < instructionsToSkip)
+				if(remaining < instructionsToSkip)
 				{
 					throw CompilerBug("insufficient instructions available to skip! (remaining: " + str(remaining) + " < instructionsToSkip: " + str(instructionsToSkip) + ")");
 				}
