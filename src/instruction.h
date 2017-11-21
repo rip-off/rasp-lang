@@ -18,9 +18,9 @@ public:
 		Call,
 		Push,
 		NoOp,
-		Jump,
 		Loop,
 		Capture,
+		CondJump,
 		RefLocal,
 		InitLocal,
 		AssignLocal,
@@ -38,11 +38,11 @@ public:
 
 	static Instruction call(const SourceLocation &sourceLocation, int argc);
 
-	static Instruction jump(const SourceLocation &sourceLocation, int instructions);
-
 	static Instruction loop(const SourceLocation &sourceLocation, int instructions);
 
 	static Instruction capture(const SourceLocation &sourceLocation, int argc);
+
+	static Instruction condJump(const SourceLocation &sourceLocation, int instructions);
 	
 	static Instruction refLocal(const SourceLocation &sourceLocation, const Identifier &identifier);
 

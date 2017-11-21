@@ -177,35 +177,6 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 				}
 			}
 			break;
-		case Instruction::Jump:
-			{
-				if(stack.empty())
-				{
-					throw CompilerBug("empty stack when testing condition");
-				}
-				int instructionsToSkip = value.number();
-				int remaining = instructions.end() - it;
-				if(instructionsToSkip < 0)
-				{
-					throw CompilerBug("Cannot jump backwards!");
-				}
-				else if(remaining < instructionsToSkip)
-				{
-					throw CompilerBug("insufficient instructions available to skip! (remaining: " + str(remaining) + " < instructionsToSkip: " + str(instructionsToSkip) + ")");
-				}
-
-				Value top = pop(stack);
-				if(settings_.trace)
-				{				
-					std::cout << "DEBUG: " << it->sourceLocation() << " jumping back " << instructionsToSkip << " if " << top << '\n';
-				}
-
-				if(top.isFalsey())
-				{
-					it += instructionsToSkip;
-				}
-			}
-			break;
 		case Instruction::Loop:
 			{
 				int instructionsAvailable = instructions.size(); // Note: signed type is important!
@@ -241,6 +212,35 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 				// TODO: member function?
 				Value result = handleCapture(this, value, stack, bindings);
 				stack.push_back(result);
+			}
+			break;
+		case Instruction::CondJump:
+			{
+				if(stack.empty())
+				{
+					throw CompilerBug("empty stack when testing conditional jump");
+				}
+				int instructionsToSkip = value.number();
+				int remaining = instructions.end() - it;
+				if(instructionsToSkip < 0)
+				{
+					throw CompilerBug("Cannot jump backwards!");
+				}
+				else if(remaining < instructionsToSkip)
+				{
+					throw CompilerBug("insufficient instructions available to skip! (remaining: " + str(remaining) + " < instructionsToSkip: " + str(instructionsToSkip) + ")");
+				}
+
+				Value top = pop(stack);
+				if(settings_.trace)
+				{				
+					std::cout << "DEBUG: " << it->sourceLocation() << " jumping back " << instructionsToSkip << " if " << top << '\n';
+				}
+
+				if(top.isFalsey())
+				{
+					it += instructionsToSkip;
+				}
 			}
 			break;
 		case Instruction::RefLocal:

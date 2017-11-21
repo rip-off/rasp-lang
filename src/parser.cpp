@@ -119,7 +119,7 @@ namespace
 				unsigned bodyInstructions = tempInstructions.size();
 				// Actual branch instruction
 				// +1 for the loop instruction itself!
-				instructions.push_back(Instruction::jump(token.sourceLocation(), bodyInstructions + 1));
+				instructions.push_back(Instruction::condJump(token.sourceLocation(), bodyInstructions + 1));
 				// Insert the remaining instructions into the stream
 				instructions.insert(instructions.end(), tempInstructions.begin(), tempInstructions.end());
 				// Return to loop start
@@ -175,7 +175,7 @@ namespace
 				}
 
 				// Skip over the "if" block when conditional expression is false
-				instructions.push_back(Instruction::jump(token.sourceLocation(), instructionsToSkip));
+				instructions.push_back(Instruction::condJump(token.sourceLocation(), instructionsToSkip));
 				// "if" block
 				instructions.insert(instructions.end(), ifInstructions.begin(), ifInstructions.end());
 				if(!elseInstructions.empty())
