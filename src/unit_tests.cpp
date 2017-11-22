@@ -663,6 +663,86 @@ namespace
 			assertEquals(e.what(), "Unknown type 'UndefinedType'");
 		}
 	}
+
+	void testDefunOnItsOwn(Interpreter &interpreter)
+	{
+		Source source = "(defun)";
+		Token token = lex(source);
+		Declarations declarations = interpreter.declarations();
+		try
+		{
+			parse(token, declarations, interpreter.settings());
+			fail("Expected ParseError");
+		}
+		catch (const ParseError &e)
+		{
+			assertEquals(e.what(), "Keyword 'defun' function requires a name");
+		}
+	}
+
+	void testDefunWithInvalidFunctionName(Interpreter &interpreter)
+	{
+		Source source = "(defun 42 (x) x)";
+		Token token = lex(source);
+		Declarations declarations = interpreter.declarations();
+		try
+		{
+			parse(token, declarations, interpreter.settings());
+			fail("Expected ParseError");
+		}
+		catch (const ParseError &e)
+		{
+			assertEquals(e.what(), "Declaration expected, but got Number");
+		}
+	}
+
+	void testDefunWithFunctionNameButNoArgumentsOrBody(Interpreter &interpreter)
+	{
+		Source source = "(defun foo)";
+		Token token = lex(source);
+		Declarations declarations = interpreter.declarations();
+		try
+		{
+			parse(token, declarations, interpreter.settings());
+			fail("Expected ParseError");
+		}
+		catch (const ParseError &e)
+		{
+			assertEquals(e.what(), "Keyword 'defun' function requires parameter list");
+		}
+	}
+
+	void testDefunWithFunctionNameAndArgumentsButWithoutBody(Interpreter &interpreter)
+	{
+		Source source = "(defun foo (x y))";
+		Token token = lex(source);
+		Declarations declarations = interpreter.declarations();
+		try
+		{
+			parse(token, declarations, interpreter.settings());
+			fail("Expected ParseError");
+		}
+		catch (const ParseError &e)
+		{
+			assertEquals(e.what(), "Keyword 'defun' function lacks a body");
+		}
+	}
+
+	void testDefunWithNonListArguments(Interpreter &interpreter)
+	{
+		Source source = "(defun foo x 42)";
+		Token token = lex(source);
+		Declarations declarations = interpreter.declarations();
+		try
+		{
+			parse(token, declarations, interpreter.settings());
+			fail("Expected ParseError");
+		}
+		catch (const ParseError &e)
+		{
+			assertEquals(e.what(), "Keyword 'defun' function parameter list is incorrect");
+		}
+	}
 }
 
 namespace
@@ -751,6 +831,11 @@ static UnitTest tests[] = {
 	TEST_CASE(testStringConcatenation),
 	TEST_CASE(testReferenceToUndefinedVariable),
 	TEST_CASE(testVariableDeclarationWithUndefinedType),
+	TEST_CASE(testDefunOnItsOwn),
+	TEST_CASE(testDefunWithInvalidFunctionName),
+	TEST_CASE(testDefunWithFunctionNameButNoArgumentsOrBody),
+	TEST_CASE(testDefunWithFunctionNameAndArgumentsButWithoutBody),
+	TEST_CASE(testDefunWithNonListArguments),
 };
 
 int runUnitTests(const Settings &settings)

@@ -59,7 +59,10 @@ namespace
 		{
 			return tryMakeIdentifier(token);
 		}
-		assert(token.type() == Token::DECLARATION);
+		if (token.type() != Token::DECLARATION)
+		{
+			throw ParseError(token.sourceLocation(), "Declaration expected, but got " + str(token.type()));
+		}
 		const Token::Children &children = token.children();
 		checkValidType(children[1]);
 		return tryMakeIdentifier(children[0]);
@@ -293,14 +296,13 @@ namespace
 			}
 			else if(keyword == "defun")
 			{
-				// TODO: error messages are incorrect
-				if(children.size() == 2)
+				if(children.size() == 1)
 				{
 					throw ParseError(token.sourceLocation(), "Keyword 'defun' function requires a name");
 				}
-				else if(children.size() == 3)
+				else if(children.size() == 2)
 				{
-					throw ParseError(token.sourceLocation(), "Keyword 'defun' function requires parameter lists");
+					throw ParseError(token.sourceLocation(), "Keyword 'defun' function requires parameter list");
 				}
 				else if(children.size() < 4)
 				{
