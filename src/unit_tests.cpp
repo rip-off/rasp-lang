@@ -113,7 +113,7 @@ namespace
 		assertEquals(result[3].value().number(), 2);
 	}
 
-	void testAll(Interpreter &interpreter)
+	void testMathExpression(Interpreter &interpreter)
 	{
 		Source source = "(+ (* 2 42) (/ 133 10) (- 1 6))";
 		Value result = execute(interpreter, source);
@@ -765,7 +765,7 @@ namespace
 static UnitTest tests[] = {
 	TEST_CASE(testParser),
 	TEST_CASE(testInterpreter),
-	TEST_CASE(testAll),
+	TEST_CASE(testMathExpression),
 	TEST_CASE(testNot),
 	TEST_CASE(testOr),
 	TEST_CASE(testAnd),
