@@ -743,6 +743,23 @@ namespace
 			assertEquals(e.what(), "Keyword 'defun' function parameter list is incorrect");
 		}
 	}
+
+	void testCallingNonFunctionalValue(Interpreter &interpreter)
+	{
+		Source source = "(42)";
+		Token token = lex(source);
+		Declarations declarations = interpreter.declarations();
+		try
+		{
+			InstructionList instructions = parse(token, declarations, interpreter.settings());
+			interpreter.exec(instructions);
+			fail("Expected ExecutionError");
+		}
+		catch (const ExecutionError &e)
+		{
+			assertEquals(e.what(), "Call instruction expects top of the stack to be functional value, but got: 42");
+		}
+	}
 }
 
 namespace
@@ -836,6 +853,7 @@ static UnitTest tests[] = {
 	TEST_CASE(testDefunWithFunctionNameButNoArgumentsOrBody),
 	TEST_CASE(testDefunWithFunctionNameAndArgumentsButWithoutBody),
 	TEST_CASE(testDefunWithNonListArguments),
+	TEST_CASE(testCallingNonFunctionalValue),
 };
 
 int runUnitTests(const Settings &settings)

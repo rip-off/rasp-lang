@@ -55,7 +55,7 @@ namespace
 		return top;
 	}
 
-	Value handleFunction(Interpreter *interpreter, const Value &value, Stack &stack, Bindings &bindings)
+	Value handleFunction(Interpreter *interpreter, const SourceLocation &sourceLocation, const Value &value, Stack &stack, Bindings &bindings)
 	{
 		if(!value.isNumber())
 		{
@@ -71,8 +71,7 @@ namespace
 		Value top = pop(stack);
 		if(!top.isFunction())
 		{
-			// TODO: this is a runtime error, as we currently cannot prove this statically
-			throw CompilerBug("Call instruction expects top of the stack to be functional value");
+			throw ExecutionError(sourceLocation, "Call instruction expects top of the stack to be functional value, but got: " + str(top));
 		}
 
 		Arguments arguments;
@@ -172,7 +171,7 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 					std::cout << "DEBUG: " << it->sourceLocation() << " call " << value << '\n';
 				}
 				// TODO: member function?
-				Value result = handleFunction(this, value, stack, bindings);
+				Value result = handleFunction(this, it->sourceLocation(), value, stack, bindings);
 				stack.push_back(result);
 				if(settings_.trace)
 				{
