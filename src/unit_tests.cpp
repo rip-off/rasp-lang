@@ -28,6 +28,11 @@ struct Source
 		stream << content;
 	}
 
+	Source(const std::string &content)
+	{
+		stream << content;
+	}
+
 	Source(const Source &source)
 	{
 		stream << source.str();
@@ -110,7 +115,57 @@ namespace
 		assertEquals(result.type(), Value::TNumber);
 		assertEquals(result.number(), 84 + 13 - 5);
 	}
+
+	std::string boolStr(bool b) {
+		return b ? "true" : "false";
+	}
 	
+	void testNot(Interpreter &interpreter)
+	{
+		bool values[] = { false, true };
+		for (bool value : values) {
+			Source source = "(! " + boolStr(value) + ")";
+			Token token = lex(source);
+			Declarations declarations = interpreter.declarations();
+			InstructionList instructions = parse(token, declarations, interpreter.settings());
+			Value result = interpreter.exec(instructions);
+			assertEquals(result.type(), Value::TBoolean);
+			assertEquals(result.boolean(), !value);
+		}
+	}
+
+	void testOr(Interpreter &interpreter)
+	{
+		bool values[] = { false, true };
+		for (bool a : values) {
+			for (bool b : values) {
+				Source source = "(|| " + boolStr(a) + " " + boolStr(b) + ")";
+				Token token = lex(source);
+				Declarations declarations = interpreter.declarations();
+				InstructionList instructions = parse(token, declarations, interpreter.settings());
+				Value result = interpreter.exec(instructions);
+				assertEquals(result.type(), Value::TBoolean);
+				assertEquals(result.boolean(), a || b);
+			}
+		}
+	}
+
+	void testAnd(Interpreter &interpreter)
+	{
+		bool values[] = { false, true };
+		for (bool a : values) {
+			for (bool b : values) {
+				Source source = "(&& " + boolStr(a) + " " + boolStr(b) + ")";
+				Token token = lex(source);
+				Declarations declarations = interpreter.declarations();
+				InstructionList instructions = parse(token, declarations, interpreter.settings());
+				Value result = interpreter.exec(instructions);
+				assertEquals(result.type(), Value::TBoolean);
+				assertEquals(result.boolean(), a && b);
+			}
+		}
+	}
+
 	void testDivisionByZero(Interpreter &interpreter)
 	{
 		Source source = "(/ 42 0)";
@@ -808,6 +863,9 @@ static UnitTest tests[] = {
 	TEST_CASE(testParser),
 	TEST_CASE(testInterpreter),
 	TEST_CASE(testAll),
+	TEST_CASE(testNot),
+	TEST_CASE(testOr),
+	TEST_CASE(testAnd),
 	TEST_CASE(testDivisionByZero),
 	TEST_CASE(testVariablesInGlobalScope),
 	TEST_CASE(testGlobalsReferencesInFunction),

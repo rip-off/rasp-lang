@@ -56,75 +56,6 @@ namespace
 		return x >= y;
 	}
 
-	Value operatorNot(const Arguments &arguments)
-	{
-		if(arguments.size() != 1 || !arguments[0].isBoolean())
-		{
-			throw ExternalFunctionError("Expected 1 boolean argument");
-		}
-		return Value::boolean(!arguments[0].boolean());
-	}
-
-	Value operatorOr(const Arguments &arguments)
-	{
-		if(arguments.size() < 2)
-		{
-			throw ExternalFunctionError("Expected at least 2 arguments");
-		}
-		bool result = false;
-		for(Arguments::const_iterator i = arguments.begin() ; i != arguments.end() ; ++i)
-		{
-			if(!i->isBoolean())
-			{
-				throw ExternalFunctionError("Expected boolean argument");
-			}
-			if (i->boolean())
-			{
-				result = true;
-			}
-		}
-		return Value::boolean(result);
-	}
-
-	Value operatorAnd(const Arguments &arguments)
-	{
-		if(arguments.size() < 2)
-		{
-			throw ExternalFunctionError("Expected at least 2 arguments");
-		}
-		bool result = true;
-		for(Arguments::const_iterator i = arguments.begin() ; i != arguments.end() ; ++i)
-		{
-			if(!i->isBoolean())
-			{
-				throw ExternalFunctionError("Expected boolean argument");
-			}
-			if (!i->boolean())
-			{
-				result = false;
-			}
-		}
-		return Value::boolean(result);
-	}
-
-	Value equal(const Arguments &arguments)
-	{
-		if(arguments.size() != 2)
-		{
-			throw ExternalFunctionError("Expected 2 arguments");
-		}
-		return Value::boolean(arguments[0] == arguments[1]);
-	}
-
-	Value notEqual(const Arguments &arguments)
-	{
-		if(arguments.size() != 2)
-		{
-			throw ExternalFunctionError("Expected 2 arguments");
-		}
-		return Value::boolean(arguments[0] != arguments[1]);
-	}
-
 	void expectTwoNumbers(const Arguments &arguments)
 	{
 		if(arguments.size() != 2 || !(arguments[0].isNumber() && arguments[1].isNumber()))
@@ -180,12 +111,6 @@ namespace
 		ApiReg(">", CURRENT_SOURCE_LOCATION, numericPredicate<&greater>),
 		ApiReg("<=", CURRENT_SOURCE_LOCATION, numericPredicate<&lessEqual>),
 		ApiReg(">=", CURRENT_SOURCE_LOCATION, numericPredicate<&greaterEqual>),
-		// TODO: move out of math?
-		ApiReg("!", CURRENT_SOURCE_LOCATION, &operatorNot),
-		ApiReg("==", CURRENT_SOURCE_LOCATION, &equal),
-		ApiReg("!=", CURRENT_SOURCE_LOCATION, &notEqual),
-		ApiReg("||", CURRENT_SOURCE_LOCATION, &operatorOr),
-		ApiReg("&&", CURRENT_SOURCE_LOCATION, &operatorAnd),
 	};
 }
 
