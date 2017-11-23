@@ -131,7 +131,8 @@ namespace
 		Iterator next = begin.next();
 		if (next == end)
 		{
-			throw LexError(begin.sourceLocation(), "Stray / in program");
+			// Handles (/), i.e. division with no arguments
+			return begin;
 		}
 
 		if(*next == '/')

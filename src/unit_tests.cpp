@@ -174,7 +174,7 @@ namespace
 		}
 		catch (ExternalFunctionError e)
 		{
-			assertEquals("cannot divide by zero in external function 'div'", e.what());
+			assertEquals("cannot divide by zero in external function '/'", e.what());
 		}
 	}
 
@@ -718,6 +718,78 @@ namespace
 			assertEquals(e.what(), "Call instruction expects top of the stack to be functional value, but got: 42");
 		}
 	}
+
+	std::string MATHS[] = { "+", "-", "*", "/", "%", ">", "<", ">=", "<=" };
+
+	bool acceptsMoreThanTwoArguments(const std::string &maths)
+	{
+		return maths == "+" || maths == "*";
+	}
+
+	void testMathWithNoArguments(Interpreter &interpreter)
+	{
+		for (std::string math : MATHS)
+		{
+			Source source = "(" + math + ")";
+			try
+			{
+				execute(interpreter, source);
+				fail("Expected ExecutionError");
+			}
+			catch (const ExecutionError &e)
+			{
+				if (acceptsMoreThanTwoArguments(math))
+				{
+					assertEquals(e.what(), "Expected at least 2 arguments in external function '" + math + "'");
+				}
+				else
+				{
+					assertEquals(e.what(), "Expected 2 arguments in external function '" + math + "'");
+				}
+			}
+		}
+	}
+
+	void testMathWithOneArgument(Interpreter &interpreter)
+	{
+		for (std::string math : MATHS)
+		{
+			Source source = "(" + math + " 42)";
+			try
+			{
+				execute(interpreter, source);
+				fail("Expected ExecutionError");
+			}
+			catch (const ExecutionError &e)
+			{
+				if (acceptsMoreThanTwoArguments(math))
+				{
+					assertEquals(e.what(), "Expected at least 2 arguments in external function '" + math + "'");
+				}
+				else
+				{
+					assertEquals(e.what(), "Expected 2 arguments in external function '" + math + "'");
+				}
+			}
+		}
+	}
+
+	void testMathWithNonNumericArguments(Interpreter &interpreter)
+	{
+		for (std::string math : MATHS)
+		{
+			Source source = "(" + math + " \"forty\" 2)";
+			try
+			{
+				execute(interpreter, source);
+				fail("Expected ExecutionError");
+			}
+			catch (const ExecutionError &e)
+			{
+				assertEquals(e.what(), "Expected numeric argument in external function '" + math + "'");
+			}
+		}
+	}
 }
 
 namespace
@@ -815,6 +887,9 @@ static UnitTest tests[] = {
 	TEST_CASE(testDefunWithFunctionNameAndArgumentsButWithoutBody),
 	TEST_CASE(testDefunWithNonListArguments),
 	TEST_CASE(testCallingNonFunctionalValue),
+	TEST_CASE(testMathWithNoArguments),
+	TEST_CASE(testMathWithOneArgument),
+	TEST_CASE(testMathWithNonNumericArguments),
 };
 
 int runUnitTests(const Settings &settings)
