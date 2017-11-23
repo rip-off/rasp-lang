@@ -61,6 +61,14 @@ namespace
 	}
 	#define lex(s) lex(__FILE__, __LINE__, s)
 
+	Value execute(Interpreter &interpreter, const Source &source)
+	{
+		Token token = lex(source);
+		Declarations declarations = interpreter.declarations();
+		InstructionList instructions = parse(token, declarations, interpreter.settings());
+		return interpreter.exec(instructions);
+	}
+
 	void testInterpreter(Interpreter &interpreter)
 	{
 		InstructionList instructions;
@@ -108,10 +116,7 @@ namespace
 	void testAll(Interpreter &interpreter)
 	{
 		Source source = "(+ (* 2 42) (/ 133 10) (- 1 6))";
-		Token token = lex(source);
-		Declarations declarations = interpreter.declarations();
-		InstructionList instructions = parse(token, declarations, interpreter.settings());
-		Value result = interpreter.exec(instructions);
+		Value result = execute(interpreter, source);
 		assertEquals(result.type(), Value::TNumber);
 		assertEquals(result.number(), 84 + 13 - 5);
 	}
@@ -125,10 +130,7 @@ namespace
 		bool values[] = { false, true };
 		for (bool value : values) {
 			Source source = "(! " + boolStr(value) + ")";
-			Token token = lex(source);
-			Declarations declarations = interpreter.declarations();
-			InstructionList instructions = parse(token, declarations, interpreter.settings());
-			Value result = interpreter.exec(instructions);
+			Value result = execute(interpreter, source);
 			assertEquals(result.type(), Value::TBoolean);
 			assertEquals(result.boolean(), !value);
 		}
@@ -140,10 +142,7 @@ namespace
 		for (bool a : values) {
 			for (bool b : values) {
 				Source source = "(|| " + boolStr(a) + " " + boolStr(b) + ")";
-				Token token = lex(source);
-				Declarations declarations = interpreter.declarations();
-				InstructionList instructions = parse(token, declarations, interpreter.settings());
-				Value result = interpreter.exec(instructions);
+				Value result = execute(interpreter, source);
 				assertEquals(result.type(), Value::TBoolean);
 				assertEquals(result.boolean(), a || b);
 			}
@@ -156,10 +155,7 @@ namespace
 		for (bool a : values) {
 			for (bool b : values) {
 				Source source = "(&& " + boolStr(a) + " " + boolStr(b) + ")";
-				Token token = lex(source);
-				Declarations declarations = interpreter.declarations();
-				InstructionList instructions = parse(token, declarations, interpreter.settings());
-				Value result = interpreter.exec(instructions);
+				Value result = execute(interpreter, source);
 				assertEquals(result.type(), Value::TBoolean);
 				assertEquals(result.boolean(), a && b);
 			}
@@ -188,10 +184,7 @@ namespace
         source << "(var global 1)";
         source << "(set global (+ global 1))";
         source << "global";
-		Token token = lex(source);
-		Declarations declarations = interpreter.declarations();
-		InstructionList instructions = parse(token, declarations, interpreter.settings());
-		Value result = interpreter.exec(instructions);
+		Value result = execute(interpreter, source);
 		assertEquals(result.type(), Value::TNumber);
 		assertEquals(result.number(), 2);
 	}
@@ -203,10 +196,7 @@ namespace
         source << "(defun incrementGlobal () (set global (+ global 1)))";
         source << "(incrementGlobal)";
         source << "global";
-		Token token = lex(source);
-		Declarations declarations = interpreter.declarations();
-		InstructionList instructions = parse(token, declarations, interpreter.settings());
-		Value result = interpreter.exec(instructions);
+		Value result = execute(interpreter, source);
 		assertEquals(result.type(), Value::TNumber);
 		assertEquals(result.number(), 2);
 	}
@@ -219,10 +209,7 @@ namespace
         source << "  (set local (+ local 1))";
         source << "  local)";
         source << "(incrementLocal)";
-		Token token = lex(source);
-		Declarations declarations = interpreter.declarations();
-		InstructionList instructions = parse(token, declarations, interpreter.settings());
-		Value result = interpreter.exec(instructions);
+		Value result = execute(interpreter, source);
 		assertEquals(result.type(), Value::TNumber);
 		assertEquals(result.number(), 2);
 	}
@@ -235,10 +222,7 @@ namespace
         source << "  (defun inner () capture)";
         source << "  (inner))";
         source << "(outer)";
-		Token token = lex(source);
-		Declarations declarations = interpreter.declarations();
-		InstructionList instructions = parse(token, declarations, interpreter.settings());
-		Value result = interpreter.exec(instructions);
+		Value result = execute(interpreter, source);
 		assertEquals(result.type(), Value::TNumber);
 		assertEquals(result.number(), 42);
 	}
@@ -254,10 +238,7 @@ namespace
         source << "  (set capture 13)";
         source << "  (inner))";
         source << "(outer)";
-		Token token = lex(source);
-		Declarations declarations = interpreter.declarations();
-		InstructionList instructions = parse(token, declarations, interpreter.settings());
-		Value result = interpreter.exec(instructions);
+		Value result = execute(interpreter, source);
 		assertEquals(result.type(), Value::TNumber);
 		assertEquals(result.number(), 13);
 	}
@@ -271,10 +252,7 @@ namespace
         source << "  (inner)";
         source << "  capture)";
         source << "(outer)";
-		Token token = lex(source);
-		Declarations declarations = interpreter.declarations();
-		InstructionList instructions = parse(token, declarations, interpreter.settings());
-		Value result = interpreter.exec(instructions);
+		Value result = execute(interpreter, source);
 		assertEquals(result.type(), Value::TNumber);
 		assertEquals(result.number(), 2);
 	}
@@ -289,10 +267,7 @@ namespace
         source << "  inner)";
         source << "(var closure (outer))";
         source << "(closure)";
-		Token token = lex(source);
-		Declarations declarations = interpreter.declarations();
-		InstructionList instructions = parse(token, declarations, interpreter.settings());
-		Value result = interpreter.exec(instructions);
+		Value result = execute(interpreter, source);
 		assertEquals(result.type(), Value::TNumber);
 		assertEquals(result.number(), 13);
 	}
@@ -320,10 +295,7 @@ namespace
         source << "(var alice (new Person 13 \"Alice\"))";
         source << "(var bob (new Person 42 \"Bob\"))";
 		source << "(concat \"People: \" alice.name \", \" bob.name)";
-		Token token = lex(source);
-		Declarations declarations = interpreter.declarations();
-		InstructionList instructions = parse(token, declarations, interpreter.settings());
-		Value result = interpreter.exec(instructions);
+		Value result = execute(interpreter, source);
 		assertEquals(result.type(), Value::TString);
 		assertEquals(result.string(), "People: Alice, Bob");
 	}
@@ -336,10 +308,7 @@ namespace
         source << "  (set result (* result 2))";
 		source << ")";
 		source << "result";
-		Token token = lex(source);
-		Declarations declarations = interpreter.declarations();
-		InstructionList instructions = parse(token, declarations, interpreter.settings());
-		Value result = interpreter.exec(instructions);
+		Value result = execute(interpreter, source);
 		assertEquals(result.type(), Value::TNumber);
 		assertEquals(result.number(), 128);
 	}
@@ -354,10 +323,7 @@ namespace
         source << "  (set i (+ i 1))";
 		source << ")";
 		source << "result";
-		Token token = lex(source);
-		Declarations declarations = interpreter.declarations();
-		InstructionList instructions = parse(token, declarations, interpreter.settings());
-		Value result = interpreter.exec(instructions);
+		Value result = execute(interpreter, source);
 		assertEquals(result.type(), Value::TNumber);
 		assertEquals(result.number(), 45);
 	}
@@ -373,10 +339,7 @@ namespace
         source << "  (set i (+ i 1))";
 		source << ")";
 		source << "result";
-		Token token = lex(source);
-		Declarations declarations = interpreter.declarations();
-		InstructionList instructions = parse(token, declarations, interpreter.settings());
-		Value result = interpreter.exec(instructions);
+		Value result = execute(interpreter, source);
 		assertEquals(result.type(), Value::TNumber);
 		assertEquals(result.number(), 45);
 	}
@@ -386,10 +349,7 @@ namespace
 		Source source;
 		source << "(var result:number 13)";
 		source << "result";
-		Token token = lex(source);
-		Declarations declarations = interpreter.declarations();
-		InstructionList instructions = parse(token, declarations, interpreter.settings());
-		Value result = interpreter.exec(instructions);
+		Value result = execute(interpreter, source);
 		assertEquals(result.type(), Value::TNumber);
 		assertEquals(result.number(), 13);
 	}
@@ -399,10 +359,7 @@ namespace
 		Source source;
 		source << "(var result:string \"Hello, World\")";
 		source << "result";
-		Token token = lex(source);
-		Declarations declarations = interpreter.declarations();
-		InstructionList instructions = parse(token, declarations, interpreter.settings());
-		Value result = interpreter.exec(instructions);
+		Value result = execute(interpreter, source);
 		assertEquals(result.type(), Value::TString);
 		assertEquals(result.string(), "Hello, World");
 	}
@@ -412,10 +369,7 @@ namespace
 		Source source;
 		source << "(var result:boolean true)";
 		source << "result";
-		Token token = lex(source);
-		Declarations declarations = interpreter.declarations();
-		InstructionList instructions = parse(token, declarations, interpreter.settings());
-		Value result = interpreter.exec(instructions);
+		Value result = execute(interpreter, source);
 		assertEquals(result.type(), Value::TBoolean);
 		assertEquals(result.boolean(), true);
 	}
@@ -426,10 +380,7 @@ namespace
 		source << "(defun double:number (x:number) (* x 2))";
 		source << "(var result (double 42))";
 		source << "result";
-		Token token = lex(source);
-		Declarations declarations = interpreter.declarations();
-		InstructionList instructions = parse(token, declarations, interpreter.settings());
-		Value result = interpreter.exec(instructions);
+		Value result = execute(interpreter, source);
 		assertEquals(result.type(), Value::TNumber);
 		assertEquals(result.number(), 84);
 	}
@@ -440,10 +391,7 @@ namespace
 		source << "(type Person id:number name:string)";
 		source << "(var alice (new Person 42 \"Alice\"))";
 		source << "alice.name";
-		Token token = lex(source);
-		Declarations declarations = interpreter.declarations();
-		InstructionList instructions = parse(token, declarations, interpreter.settings());
-		Value result = interpreter.exec(instructions);
+		Value result = execute(interpreter, source);
 		assertEquals(result.type(), Value::TString);
 		assertEquals(result.string(), "Alice");
 	}
@@ -458,10 +406,7 @@ namespace
 		source << "  )";
 		source << ")";
 		source << "(recurse 10)";
-		Token token = lex(source);
-		Declarations declarations = interpreter.declarations();
-		InstructionList instructions = parse(token, declarations, interpreter.settings());
-		Value result = interpreter.exec(instructions);
+		Value result = execute(interpreter, source);
 		assertEquals(result.type(), Value::TNumber);
 		assertEquals(result.number(), 55);
 	}
@@ -475,10 +420,7 @@ namespace
 		source << "(defun test4 () (+ 4 (test3)))";
 		source << "(defun test5 () (+ 5 (test4)))";
 		source << "(test5)";
-		Token token = lex(source);
-		Declarations declarations = interpreter.declarations();
-		InstructionList instructions = parse(token, declarations, interpreter.settings());
-		Value result = interpreter.exec(instructions);
+		Value result = execute(interpreter, source);
 		assertEquals(result.type(), Value::TNumber);
 		assertEquals(result.number(), 15);
 	}
@@ -486,10 +428,7 @@ namespace
 	void testImmediateFunctionCall(Interpreter &interpreter)
 	{
 		Source source = "((defun immediate_function_call () 42))";
-		Token token = lex(source);
-		Declarations declarations = interpreter.declarations();
-		InstructionList instructions = parse(token, declarations, interpreter.settings());
-		Value result = interpreter.exec(instructions);
+		Value result = execute(interpreter, source);
 		assertEquals(result.type(), Value::TNumber);
 		assertEquals(result.number(), 42);
 	}
@@ -498,10 +437,7 @@ namespace
 	{
 		Source source = "(defun f (x y z) (concat \"x: \" x \", y: \" y \", z: \" z))";
 		source << "(f 1 2 3)";
-		Token token = lex(source);
-		Declarations declarations = interpreter.declarations();
-		InstructionList instructions = parse(token, declarations, interpreter.settings());
-		Value result = interpreter.exec(instructions);
+		Value result = execute(interpreter, source);
 		assertEquals(result.type(), Value::TString);
 		assertEquals(result.string(), "x: 1, y: 2, z: 3");
 	}
@@ -509,10 +445,7 @@ namespace
 	void testConditionalTrue(Interpreter &interpreter)
 	{
 		Source source = "(if true 42)";
-		Token token = lex(source);
-		Declarations declarations = interpreter.declarations();
-		InstructionList instructions = parse(token, declarations, interpreter.settings());
-		Value result = interpreter.exec(instructions);
+		Value result = execute(interpreter, source);
 		assertEquals(result.type(), Value::TNumber);
 		assertEquals(result.number(), 42);
 	}
@@ -520,10 +453,7 @@ namespace
 	void testConditionalNonZeroNumber(Interpreter &interpreter)
 	{
 		Source source = "(if 1 42)";
-		Token token = lex(source);
-		Declarations declarations = interpreter.declarations();
-		InstructionList instructions = parse(token, declarations, interpreter.settings());
-		Value result = interpreter.exec(instructions);
+		Value result = execute(interpreter, source);
 		assertEquals(result.type(), Value::TNumber);
 		assertEquals(result.number(), 42);
 	}
@@ -531,10 +461,7 @@ namespace
 	void testConditionalNonEmptyString(Interpreter &interpreter)
 	{
 		Source source = "(if \"Yep\" 42)";
-		Token token = lex(source);
-		Declarations declarations = interpreter.declarations();
-		InstructionList instructions = parse(token, declarations, interpreter.settings());
-		Value result = interpreter.exec(instructions);
+		Value result = execute(interpreter, source);
 		assertEquals(result.type(), Value::TNumber);
 		assertEquals(result.number(), 42);
 	}
@@ -542,40 +469,28 @@ namespace
 	void testConditionalFalse(Interpreter &interpreter)
 	{
 		Source source = "(if false 42)";
-		Token token = lex(source);
-		Declarations declarations = interpreter.declarations();
-		InstructionList instructions = parse(token, declarations, interpreter.settings());
-		Value result = interpreter.exec(instructions);
+		Value result = execute(interpreter, source);
 		assertEquals(result.type(), Value::TNil);
 	}
 
 	void testConditionalZero(Interpreter &interpreter)
 	{
 		Source source = "(if 0 42)";
-		Token token = lex(source);
-		Declarations declarations = interpreter.declarations();
-		InstructionList instructions = parse(token, declarations, interpreter.settings());
-		Value result = interpreter.exec(instructions);
+		Value result = execute(interpreter, source);
 		assertEquals(result.type(), Value::TNil);
 	}
 
 	void testConditionalEmptyString(Interpreter &interpreter)
 	{
 		Source source = "(if \"\" 42)";
-		Token token = lex(source);
-		Declarations declarations = interpreter.declarations();
-		InstructionList instructions = parse(token, declarations, interpreter.settings());
-		Value result = interpreter.exec(instructions);
+		Value result = execute(interpreter, source);
 		assertEquals(result.type(), Value::TNil);
 	}
 
 	void testConditionalWithElseWhenTrue(Interpreter &interpreter)
 	{
 		Source source = "(if true 13 else 42)";
-		Token token = lex(source);
-		Declarations declarations = interpreter.declarations();
-		InstructionList instructions = parse(token, declarations, interpreter.settings());
-		Value result = interpreter.exec(instructions);
+		Value result = execute(interpreter, source);
 		assertEquals(result.type(), Value::TNumber);
 		assertEquals(result.number(), 13);
 	}
@@ -583,10 +498,7 @@ namespace
 	void testConditionalWithElseWhenFalse(Interpreter &interpreter)
 	{
 		Source source = "(if false 13 else 42)";
-		Token token = lex(source);
-		Declarations declarations = interpreter.declarations();
-		InstructionList instructions = parse(token, declarations, interpreter.settings());
-		Value result = interpreter.exec(instructions);
+		Value result = execute(interpreter, source);
 		assertEquals(result.type(), Value::TNumber);
 		assertEquals(result.number(), 42);
 	}
@@ -667,10 +579,7 @@ namespace
 		source << "    Block comment";
 		source << "*/";
 		source << "/* Interesting */ /**/ /* comment */";
-		Token token = lex(source);
-		Declarations declarations = interpreter.declarations();
-		InstructionList instructions = parse(token, declarations, interpreter.settings());
-		Value result = interpreter.exec(instructions);
+		Value result = execute(interpreter, source);
 		assertEquals(result.type(), Value::TNumber);
 		assertEquals(result.number(), 55);
 	}
@@ -679,10 +588,7 @@ namespace
 	void testStringConcatenation(Interpreter &interpreter)
 	{
 		Source source = "(concat \"number: \" 42 \", boolean: \" true)";
-		Token token = lex(source);
-		Declarations declarations = interpreter.declarations();
-		InstructionList instructions = parse(token, declarations, interpreter.settings());
-		Value result = interpreter.exec(instructions);
+		Value result = execute(interpreter, source);
 		assertEquals(result.type(), Value::TString);
 		assertEquals(result.string(), "number: 42, boolean: true");
 	}
@@ -802,12 +708,9 @@ namespace
 	void testCallingNonFunctionalValue(Interpreter &interpreter)
 	{
 		Source source = "(42)";
-		Token token = lex(source);
-		Declarations declarations = interpreter.declarations();
 		try
 		{
-			InstructionList instructions = parse(token, declarations, interpreter.settings());
-			interpreter.exec(instructions);
+			execute(interpreter, source);
 			fail("Expected ExecutionError");
 		}
 		catch (const ExecutionError &e)
