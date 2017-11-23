@@ -52,7 +52,8 @@ namespace
 
 	int div(int x, int y)
 	{
-		if (y == 0) {
+		if (y == 0)
+		{
 			throw ExternalFunctionError(functionName(DIV), "cannot divide by zero");
 		}
 		return x / y;
@@ -60,7 +61,10 @@ namespace
 
 	int mod(int x, int y)
 	{
-		// TODO: check for mod by zero
+		if (y == 0)
+		{
+			throw ExternalFunctionError(functionName(MOD), "cannot mod by zero");
+		}
 		return x % y;
 	}
 

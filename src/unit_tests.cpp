@@ -162,15 +162,25 @@ namespace
 		}
 	}
 
+	void testModByZero(Interpreter &interpreter)
+	{
+		Source source = "(% 42 0)";
+		try
+		{
+			execute(interpreter, source);
+		}
+		catch (ExternalFunctionError e)
+		{
+			assertEquals("cannot mod by zero in external function '%'", e.what());
+		}
+	}
+
 	void testDivisionByZero(Interpreter &interpreter)
 	{
 		Source source = "(/ 42 0)";
-		Token token = lex(source);
-		Declarations declarations = interpreter.declarations();
-		InstructionList instructions = parse(token, declarations, interpreter.settings());
 		try
 		{
-			interpreter.exec(instructions);
+			execute(interpreter, source);
 		}
 		catch (ExternalFunctionError e)
 		{
@@ -841,6 +851,7 @@ static UnitTest tests[] = {
 	TEST_CASE(testNot),
 	TEST_CASE(testOr),
 	TEST_CASE(testAnd),
+	TEST_CASE(testModByZero),
 	TEST_CASE(testDivisionByZero),
 	TEST_CASE(testVariablesInGlobalScope),
 	TEST_CASE(testGlobalsReferencesInFunction),
