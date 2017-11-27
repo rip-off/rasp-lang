@@ -55,14 +55,24 @@ namespace
 		return top;
 	}
 
-	Value handleFunction(Interpreter *interpreter, const SourceLocation &sourceLocation, const Value &value, Stack &stack, Bindings &bindings)
+	unsigned getArgumentCount(const Value &value)
 	{
 		if(!value.isNumber())
 		{
-			throw CompilerBug("Call instruction expects a numeric argument");				
+			throw CompilerBug("Number expected");
 		}
-		// TODO: signed/unsigned mismatch...
-		unsigned argc = value.number();
+
+		int argc = value.number();
+		if (argc < 0)
+		{
+			throw CompilerBug("Argument count should not be negative");
+		}
+		return argc;
+	}
+
+	Value handleFunction(Interpreter *interpreter, const SourceLocation &sourceLocation, const Value &value, Stack &stack, Bindings &bindings)
+	{
+		unsigned argc = getArgumentCount(value);
 		if(stack.size() < argc + 1)
 		{
 			throw CompilerBug("Need " + str(argc + 1) + " values on stack to call function, but only have " + str(stack.size()));
@@ -96,12 +106,7 @@ namespace
 
 	Value handleCapture(Interpreter *interpreter, const Value &value, Stack &stack, Bindings &bindings)
 	{
-		if(!value.isNumber())
-		{
-			throw CompilerBug("Capture instruction expects a numeric argument");				
-		}
-		// TODO: signed/unsigned mismatch...
-		unsigned argc = value.number();
+		unsigned argc = getArgumentCount(value);
 		if(stack.size() < argc + 1)
 		{
 			throw CompilerBug("Need " + str(argc + 1) + " values on stack to capture closure, but only have " + str(stack.size()));
