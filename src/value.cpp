@@ -186,7 +186,7 @@ bool Value::isTruthy() const
 	case Value::TTypeDefinition:
 		return true;
 	default:
-		throw std::logic_error("Type not implemented");
+		throw CompilerBug("Type not implemented");
 	}
 }
 
