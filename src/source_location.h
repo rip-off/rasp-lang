@@ -17,5 +17,7 @@ private:
 	std::string filename_;
 };
 
+#define CURRENT_SOURCE_LOCATION SourceLocation(__FILE__, __LINE__)
+
 #endif
 

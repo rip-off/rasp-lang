@@ -800,6 +800,38 @@ namespace
 			}
 		}
 	}
+
+	void testComparingFunctionsIsNotSupported(Interpreter &interpreter)
+	{
+		Source source;
+		source << "(defun foo () 42)";
+		source << "(== foo foo)";
+		try
+		{
+			execute(interpreter, source);
+			fail("Expected ExecutionError");
+		}
+		catch (const ExecutionError &e)
+		{
+			assertEquals(e.what(), "Comparing functions is not supported");
+		}
+	}
+
+	void testComparingTypesIsNotSupported(Interpreter &interpreter)
+	{
+		Source source;
+		source << "(type Person id name)";
+		source << "(== Person Person)";
+		try
+		{
+			execute(interpreter, source);
+			fail("Expected ExecutionError");
+		}
+		catch (const ExecutionError &e)
+		{
+			assertEquals(e.what(), "Comparing types is not supported");
+		}
+	}
 }
 
 namespace
@@ -827,6 +859,7 @@ namespace
 		catch(const RaspError &e)
 		{
 			std::cerr << "ERROR: " << e.what() << '\n';
+			printStackTrace(std::cerr, e);
 			return 1;
 		}
 		catch(const AssertionError &e)
@@ -901,6 +934,8 @@ static UnitTest tests[] = {
 	TEST_CASE(testMathWithNoArguments),
 	TEST_CASE(testMathWithOneArgument),
 	TEST_CASE(testMathWithNonNumericArguments),
+	TEST_CASE(testComparingFunctionsIsNotSupported),
+	TEST_CASE(testComparingTypesIsNotSupported),
 };
 
 int runUnitTests(const Settings &settings)

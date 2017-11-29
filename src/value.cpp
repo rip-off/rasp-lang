@@ -10,6 +10,7 @@
 #include "escape.h"
 #include "function.h"
 #include "type_definition.h"
+#include "execution_error.h"
 
 Value::Value()
 	: type_(TNil)
@@ -303,9 +304,9 @@ bool operator==(const Value &left, const Value &right)
 	case Value::TBoolean:
 		return left.data_.boolean == right.data_.boolean;
 	case Value::TFunction:
-		throw std::logic_error("Comparing functions is not supported");
+		throw ExecutionError(CURRENT_SOURCE_LOCATION, "Comparing functions is not supported");
 	case Value::TTypeDefinition:
-		throw std::logic_error("Comparing types is not supported"); // TODO different exception?
+		throw ExecutionError(CURRENT_SOURCE_LOCATION, "Comparing types is not supported");
 	default:
 		throw CompilerBug("Type " + str(left.type_) + " not implemented");
 	}

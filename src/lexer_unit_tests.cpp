@@ -318,6 +318,7 @@ namespace
 		catch(const RaspError &e)
 		{
 			std::cerr << "ERROR: " << e.what() << '\n';
+			printStackTrace(std::cerr, e);
 			return 1;
 		}
 		catch(const AssertionError &e)

@@ -5,7 +5,6 @@
 
 namespace
 {
-	#define CURRENT_SOURCE_LOCATION SourceLocation(__FILE__, __LINE__)
 	#define ExternalFunctionError(functionName, message) ExternalFunctionError(functionName, CURRENT_SOURCE_LOCATION, message)
 
 	enum MathFunction {
