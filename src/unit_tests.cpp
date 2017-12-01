@@ -194,9 +194,9 @@ namespace
 	void testVariablesInGlobalScope(Interpreter &interpreter)
 	{
 		Source source;
-        source << "(var global 1)";
-        source << "(set global (+ global 1))";
-        source << "global";
+		source << "(var global 1)";
+		source << "(set global (+ global 1))";
+		source << "global";
 		Value result = execute(interpreter, source);
 		assertEquals(result.type(), Value::TNumber);
 		assertEquals(result.number(), 2);
@@ -205,10 +205,10 @@ namespace
 	void testGlobalsReferencesInFunction(Interpreter &interpreter)
 	{
 		Source source;
-        source << "(var global 1)";
-        source << "(defun incrementGlobal () (set global (+ global 1)))";
-        source << "(incrementGlobal)";
-        source << "global";
+		source << "(var global 1)";
+		source << "(defun incrementGlobal () (set global (+ global 1)))";
+		source << "(incrementGlobal)";
+		source << "global";
 		Value result = execute(interpreter, source);
 		assertEquals(result.type(), Value::TNumber);
 		assertEquals(result.number(), 2);
@@ -217,11 +217,11 @@ namespace
 	void testLocalsInFunction(Interpreter &interpreter)
 	{
 		Source source;
-        source << "(defun incrementLocal ()";
-        source << "  (var local 1)";
-        source << "  (set local (+ local 1))";
-        source << "  local)";
-        source << "(incrementLocal)";
+		source << "(defun incrementLocal ()";
+		source << "  (var local 1)";
+		source << "  (set local (+ local 1))";
+		source << "  local)";
+		source << "(incrementLocal)";
 		Value result = execute(interpreter, source);
 		assertEquals(result.type(), Value::TNumber);
 		assertEquals(result.number(), 2);
@@ -230,11 +230,11 @@ namespace
 	void testClosureCanAccessVariableInOuterScope(Interpreter &interpreter)
 	{
 		Source source;
-        source << "(defun outer ()";
-        source << "  (var capture 42)";
-        source << "  (defun inner () capture)";
-        source << "  (inner))";
-        source << "(outer)";
+		source << "(defun outer ()";
+		source << "  (var capture 42)";
+		source << "  (defun inner () capture)";
+		source << "  (inner))";
+		source << "(outer)";
 		Value result = execute(interpreter, source);
 		assertEquals(result.type(), Value::TNumber);
 		assertEquals(result.number(), 42);
@@ -243,12 +243,12 @@ namespace
 	void testClosureSeesUpdatedVariableInOuterScope(Interpreter &interpreter)
 	{
 		Source source;
-        source << "(defun outer ()";
-        source << "  (var capture 42)";
-        source << "  (defun inner () capture)";
-        source << "  (set capture 13)";
-        source << "  (inner))";
-        source << "(outer)";
+		source << "(defun outer ()";
+		source << "  (var capture 42)";
+		source << "  (defun inner () capture)";
+		source << "  (set capture 13)";
+		source << "  (inner))";
+		source << "(outer)";
 		Value result = execute(interpreter, source);
 		assertEquals(result.type(), Value::TNumber);
 		assertEquals(result.number(), 13);
@@ -257,12 +257,12 @@ namespace
 	void testClosureCanModifyVariableInOuterScope(Interpreter &interpreter)
 	{
 		Source source;
-        source << "(defun outer ()";
-        source << "  (var capture 1)";
-        source << "  (defun inner () (set capture (+ capture 1)))";
-        source << "  (inner)";
-        source << "  capture)";
-        source << "(outer)";
+		source << "(defun outer ()";
+		source << "  (var capture 1)";
+		source << "  (defun inner () (set capture (+ capture 1)))";
+		source << "  (inner)";
+		source << "  capture)";
+		source << "(outer)";
 		Value result = execute(interpreter, source);
 		assertEquals(result.type(), Value::TNumber);
 		assertEquals(result.number(), 2);
@@ -271,12 +271,12 @@ namespace
 	void testReturnedClosureCanStillAccessVariableInOuterScope(Interpreter &interpreter)
 	{
 		Source source;
-        source << "(defun outer ()";
-        source << "  (var capture 13)";
-        source << "  (defun inner () capture)";
-        source << "  inner)";
-        source << "(var closure (outer))";
-        source << "(closure)";
+		source << "(defun outer ()";
+		source << "  (var capture 13)";
+		source << "  (defun inner () capture)";
+		source << "  inner)";
+		source << "(var closure (outer))";
+		source << "(closure)";
 		Value result = execute(interpreter, source);
 		assertEquals(result.type(), Value::TNumber);
 		assertEquals(result.number(), 13);
@@ -320,9 +320,9 @@ namespace
 	void testTypesAndMemberAccess(Interpreter &interpreter)
 	{
 		Source source;
-        source << "(type Person id name)";
-        source << "(var alice (new Person 13 \"Alice\"))";
-        source << "(var bob (new Person 42 \"Bob\"))";
+		source << "(type Person id name)";
+		source << "(var alice (new Person 13 \"Alice\"))";
+		source << "(var bob (new Person 42 \"Bob\"))";
 		source << "(concat \"People: \" alice.name \", \" bob.name)";
 		Value result = execute(interpreter, source);
 		assertEquals(result.type(), Value::TString);
@@ -332,9 +332,9 @@ namespace
 	void testSimpleLoop(Interpreter &interpreter)
 	{
 		Source source;
-        source << "(var result 2)";
-        source << "(while (< result 100)";
-        source << "  (set result (* result 2))";
+		source << "(var result 2)";
+		source << "(while (< result 100)";
+		source << "  (set result (* result 2))";
 		source << ")";
 		source << "result";
 		Value result = execute(interpreter, source);
@@ -345,11 +345,11 @@ namespace
 	void testComplexLoop(Interpreter &interpreter)
 	{
 		Source source;
-        source << "(var result 0)";
-        source << "(var i 0)";
-        source << "(while (< i 10)";
-        source << "  (set result (+ result i))";
-        source << "  (set i (+ i 1))";
+		source << "(var result 0)";
+		source << "(var i 0)";
+		source << "(while (< i 10)";
+		source << "  (set result (+ result i))";
+		source << "  (set i (+ i 1))";
 		source << ")";
 		source << "result";
 		Value result = execute(interpreter, source);
@@ -360,12 +360,12 @@ namespace
 	void testLoopWithInnerVariableDeclaration(Interpreter &interpreter)
 	{
 		Source source;
-        source << "(var result 0)";
-        source << "(var i 0)";
-        source << "(while (< i 10)";
+		source << "(var result 0)";
+		source << "(var i 0)";
+		source << "(while (< i 10)";
 		source << "  (var expression (+ result i))";
-        source << "  (set result expression)";
-        source << "  (set i (+ i 1))";
+		source << "  (set result expression)";
+		source << "  (set i (+ i 1))";
 		source << ")";
 		source << "result";
 		Value result = execute(interpreter, source);
