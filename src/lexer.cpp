@@ -181,6 +181,15 @@ namespace
 		while(loop);
 	}
 
+	Identifier tryMakeIdentifier(const SourceLocation &sourceLocation, const std::string &string)
+	{
+		if (!Identifier::isValid(string))
+		{
+			throw LexError(sourceLocation, "Illegal identifier '" + string + "'");
+		}
+		return Identifier(string);
+	}
+
 	Token declarationOrIdentifierOrMemberAccess(const SourceLocation &sourceLocation, const std::string string)
 	{
 		const std::string::const_iterator end = string.end();
@@ -191,13 +200,13 @@ namespace
 		{
 			std::string name = std::string(current, colonDelimiter);
 			std::string type = std::string(colonDelimiter + 1, end);
-			Declaration declaration = Declaration(Identifier(name), type);
+			Declaration declaration = Declaration(tryMakeIdentifier(sourceLocation, name), type);
 			return Token::declaration(sourceLocation, declaration);
 		}
 
 		std::string::const_iterator dotDelimiter = std::find(current, end, '.');
 		std::string name = std::string(current, dotDelimiter);
-		Token identifier = Token::identifier(sourceLocation, Identifier(name));
+		Token identifier = Token::identifier(sourceLocation, tryMakeIdentifier(sourceLocation, name));
 
 		while(dotDelimiter != end)
 		{
@@ -205,7 +214,7 @@ namespace
 			dotDelimiter = std::find(current, end, '.');
 
 			std::string memberName = std::string(current, dotDelimiter);
-			Token memberAccess = Token::identifier(sourceLocation, Identifier(memberName));
+			Token memberAccess = Token::identifier(sourceLocation, tryMakeIdentifier(sourceLocation, memberName));
 			identifier.addChild(memberAccess);
 		}
 

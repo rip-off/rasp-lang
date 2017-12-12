@@ -300,6 +300,20 @@ namespace
 		assertEquals(functionBody[2].type(), Token::NUMBER);
 		assertEquals(functionBody[2].string(), "2");
 	}
+
+	void testIllegalIdentifierResultsInLexError()
+	{
+		std::string source = "=";
+		try
+		{
+			lex(source);
+			fail("Expected LexError");
+		}
+		catch (const LexError &e)
+		{
+			assertEquals(e.what(), "Illegal identifier '='");
+		}
+	}
 }
 
 namespace
@@ -352,6 +366,7 @@ int runLexerUnitTests()
 	+ RUN_BASIC_TEST(testLexerVariableDeclarationWithTypes)
 	+ RUN_BASIC_TEST(testLexerWithFunction)
 	+ RUN_BASIC_TEST(testLexerWithExplicitlyTypedFunction)
+	+ RUN_BASIC_TEST(testIllegalIdentifierResultsInLexError)
 	;
 }
 
