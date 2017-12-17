@@ -466,7 +466,7 @@ namespace
 				switch(declarations.checkIdentifier(identifier))
 				{
 				case IDENTIFIER_DEFINITION_UNDEFINED:
-					throw ParseError(token.sourceLocation(), "Variable '" + identifier.name() + "' not defined");
+					throw ParseError(token.sourceLocation(), "Identifier '" + identifier.name() + "' not defined");
 					break;
 				case IDENTIFIER_DEFINITION_LOCAL:
 					instructions.push_back(Instruction::refLocal(token.sourceLocation(), identifier));

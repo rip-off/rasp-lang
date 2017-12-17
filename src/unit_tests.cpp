@@ -615,7 +615,7 @@ namespace
 		}
 		catch (const ParseError &e)
 		{
-			assertEquals(e.what(), "Variable 'undefinedVariable' not defined");
+			assertEquals(e.what(), "Identifier 'undefinedVariable' not defined");
 		}
 	}
 
@@ -873,7 +873,7 @@ namespace
 		}
 		catch (const ParseError &e)
 		{
-			assertEquals(e.what(), "Variable 'Person' not defined");
+			assertEquals(e.what(), "Identifier 'Person' not defined");
 		}
 	}
 
