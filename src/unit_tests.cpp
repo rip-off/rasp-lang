@@ -832,6 +832,50 @@ namespace
 			assertEquals(e.what(), "Comparing types is not supported");
 		}
 	}
+
+	void testGlobalTypeIsAvailableInFunction(Interpreter &interpreter)
+	{
+		Source source;
+		source << "(type Person id name)";
+		source << "(defun globalType ()";
+		source << "  (new Person 42 \"Alice\"))";
+		source << "(var person (globalType))";
+		source << "person.id";
+		Value result = execute(interpreter, source);
+		assertEquals(result.type(), Value::TNumber);
+		assertEquals(result.number(), 42);
+	}
+
+	void testLocalTypeIsAvailableInsideDefiningFunction(Interpreter &interpreter)
+	{
+		Source source;
+		source << "(defun localType ()";
+		source << "  (type Person id name)";
+		source << "  (new Person 42 \"Alice\"))";
+		source << "(var person (localType))";
+		source << "person.id";
+		Value result = execute(interpreter, source);
+		assertEquals(result.type(), Value::TNumber);
+		assertEquals(result.number(), 42);
+	}
+
+	void testLocalTypeIsNotAvailableOutsideDefiningFunction(Interpreter &interpreter)
+	{
+		Source source;
+		source << "(defun inaccessibleType ()";
+		source << "  (type Person id name))";
+		source << "(var person (new Person 42 \"Alice\"))";
+		source << "person.id";
+		try
+		{
+			execute(interpreter, source);
+			fail("Expected ParseError");
+		}
+		catch (const ParseError &e)
+		{
+			assertEquals(e.what(), "Variable 'Person' not defined");
+		}
+	}
 }
 
 namespace
@@ -936,6 +980,9 @@ static UnitTest tests[] = {
 	TEST_CASE(testMathWithNonNumericArguments),
 	TEST_CASE(testComparingFunctionsIsNotSupported),
 	TEST_CASE(testComparingTypesIsNotSupported),
+	TEST_CASE(testGlobalTypeIsAvailableInFunction),
+	TEST_CASE(testLocalTypeIsAvailableInsideDefiningFunction),
+	TEST_CASE(testLocalTypeIsNotAvailableOutsideDefiningFunction),
 };
 
 int runUnitTests(const Settings &settings)
