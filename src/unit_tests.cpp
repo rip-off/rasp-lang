@@ -876,6 +876,31 @@ namespace
 			assertEquals(e.what(), "Variable 'Person' not defined");
 		}
 	}
+
+	void testTypeDefinitionWithPrimitiveTypedMembers(Interpreter &interpreter)
+	{
+		Source source;
+		source << "(type Person id:number name:string)";
+		source << "(var person (new Person 42 \"Alice\"))";
+		source << "person.id";
+		Value result = execute(interpreter, source);
+		assertEquals(result.type(), Value::TNumber);
+		assertEquals(result.number(), 42);
+	}
+
+#if 0
+	// TODO: fix custom types as type limiters
+	void testTypeDefinitionWithCustomTypedMembers(Interpreter &interpreter)
+	{
+		Source source;
+		source << "(type Node parent:Node value:number)";
+		source << "(var node (new Node nil 42))";
+		source << "node.id";
+		Value result = execute(interpreter, source);
+		assertEquals(result.type(), Value::TNumber);
+		assertEquals(result.number(), 42);
+	}
+#endif
 }
 
 namespace
@@ -983,6 +1008,8 @@ static UnitTest tests[] = {
 	TEST_CASE(testGlobalTypeIsAvailableInFunction),
 	TEST_CASE(testLocalTypeIsAvailableInsideDefiningFunction),
 	TEST_CASE(testLocalTypeIsNotAvailableOutsideDefiningFunction),
+	TEST_CASE(testTypeDefinitionWithPrimitiveTypedMembers),
+	// TEST_CASE(testTypeDefinitionWithCustomTypedMembers),
 };
 
 int runUnitTests(const Settings &settings)

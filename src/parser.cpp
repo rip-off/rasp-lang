@@ -290,7 +290,6 @@ namespace
 
 				// TODO: extract block into helper function?
 				// Note: allows recursive types
-				// TODO: test case for recursive types
 				declarations.add(identifier);
 				switch(declarations.checkIdentifier(identifier))
 				{
