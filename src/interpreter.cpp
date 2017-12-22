@@ -9,7 +9,7 @@
 
 namespace
 {
-	typedef std::vector<Value> Stack;
+	typedef Interpreter::Stack Stack;
 
 	Value pop(Stack &stack)
 	{
@@ -70,41 +70,7 @@ namespace
 		return argc;
 	}
 
-	Value handleFunction(Interpreter *interpreter, const SourceLocation &sourceLocation, const Value &value, Stack &stack, Bindings &bindings)
-	{
-		unsigned argc = getArgumentCount(value);
-		if(stack.size() < argc + 1)
-		{
-			throw CompilerBug("Need " + str(argc + 1) + " values on stack to call function, but only have " + str(stack.size()));
-		}
-			
-		Value top = pop(stack);
-		if(!top.isFunction())
-		{
-			throw ExecutionError(sourceLocation, "Call instruction expects top of the stack to be functional value, but got: " + str(top));
-		}
-
-		Arguments arguments;
-		while(argc --> 0)
-		{
-			arguments.push_back(pop(stack));
-		}
-
-		const Function &function = top.function();
-		try
-		{
-			// TODO: where is nicer to get the globals from, bindings or interpreter?
-			CallContext callContext(&bindings.globals(), &arguments, interpreter);
-			return function.call(callContext);
-		}
-		catch (RaspError &error)
-		{
-			error.buildStackTrace(" at function: " + function.name(), function.sourceLocation());
-			throw;
-		}
-	}
-
-	Value handleCapture(Interpreter *interpreter, const Value &value, Stack &stack, Bindings &bindings)
+	Value handleCapture(const Value &value, Stack &stack, Bindings &bindings)
 	{
 		unsigned argc = getArgumentCount(value);
 		if(stack.size() < argc + 1)
@@ -175,8 +141,7 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 				{
 					std::cout << "DEBUG: " << it->sourceLocation() << " call " << value << '\n';
 				}
-				// TODO: member function?
-				Value result = handleFunction(this, it->sourceLocation(), value, stack, bindings);
+				Value result = handleFunction(it->sourceLocation(), value, stack, bindings);
 				stack.push_back(result);
 				if(settings_.trace)
 				{
@@ -222,8 +187,7 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 				{
 					std::cout << "DEBUG: " << it->sourceLocation() << " capture " << value << '\n';
 				}
-				// TODO: member function?
-				Value result = handleCapture(this, value, stack, bindings);
+				Value result = handleCapture(value, stack, bindings);
 				stack.push_back(result);
 			}
 			break;
@@ -366,6 +330,40 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 	}
 	
 	return stack.empty() ? Value::nil() : pop(stack);
+}
+
+Value Interpreter::handleFunction(const SourceLocation &sourceLocation, const Value &value, Stack &stack, Bindings &bindings)
+{
+	unsigned argc = getArgumentCount(value);
+	if(stack.size() < argc + 1)
+	{
+		throw CompilerBug("Need " + str(argc + 1) + " values on stack to call function, but only have " + str(stack.size()));
+	}
+
+	Value top = pop(stack);
+	if(!top.isFunction())
+	{
+		throw ExecutionError(sourceLocation, "Call instruction expects top of the stack to be functional value, but got: " + str(top));
+	}
+
+	Arguments arguments;
+	while(argc --> 0)
+	{
+		arguments.push_back(pop(stack));
+	}
+
+	const Function &function = top.function();
+	try
+	{
+		// TODO: where is nicer to get the globals from, bindings or interpreter?
+		CallContext callContext(&bindings.globals(), &arguments, this);
+		return function.call(callContext);
+	}
+	catch (RaspError &error)
+	{
+		error.buildStackTrace(" at function: " + function.name(), function.sourceLocation());
+		throw;
+	}
 }
 
 Declarations Interpreter::declarations() const

@@ -10,6 +10,7 @@ class Interpreter
 {
 public:
 	typedef Bindings::Mapping Globals;
+	typedef std::vector<Value> Stack;
 
 	Interpreter(const Globals &globals, const Settings &settings);
 
@@ -24,6 +25,8 @@ public:
 	const Settings &settings() const;
 
 private:
+	Value handleFunction(const SourceLocation &sourceLocation, const Value &value, Stack &stack, Bindings &bindings);
+
 	Globals globals_;
 	Settings settings_;
 };
