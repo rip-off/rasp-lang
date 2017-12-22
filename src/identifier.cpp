@@ -57,3 +57,8 @@ bool Identifier::isValid(const std::string &name)
 	return true;
 }
 
+std::ostream &operator<<(std::ostream &out, const Identifier &identifier)
+{
+	return out << "Identifier(" << identifier.name_ << ")";
+}
+

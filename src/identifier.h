@@ -2,6 +2,7 @@
 #define IDENTIFIER_H
 
 #include <string>
+#include <iosfwd>
 
 class Identifier
 {
@@ -14,6 +15,8 @@ public:
 	}
 
 	static bool isValid(const std::string &name);
+
+	friend std::ostream &operator<<(std::ostream &, const Identifier &);
 
 private:
 	std::string name_;
