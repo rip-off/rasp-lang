@@ -85,6 +85,27 @@ namespace
 		return result;
 	}
 
+	void initIdentifier(const Token &token, const Declarations &declarations, InstructionList &instructions, const Identifier &identifier)
+	{
+		switch(declarations.checkIdentifier(identifier))
+		{
+		case IDENTIFIER_DEFINITION_UNDEFINED:
+			throw ParseError(token.sourceLocation(), "Identifier '" + identifier.name() + "' not defined");
+			break;
+		case IDENTIFIER_DEFINITION_LOCAL:
+			instructions.push_back(Instruction::initLocal(token.sourceLocation(), identifier.name()));
+			break;
+		case IDENTIFIER_DEFINITION_CLOSURE:
+			throw CompilerBug("Identifier '" + identifier.name() + "' unexpectedly classified as closure");
+			break;
+		case IDENTIFIER_DEFINITION_GLOBAL:
+			instructions.push_back(Instruction::initGlobal(token.sourceLocation(), identifier.name()));
+			break;
+		default:
+			throw CompilerBug("Failed to classify identifier " + identifier.name() + " at " + str(token.sourceLocation()));
+		}
+	}
+
 	void parse(const Token &token, Declarations &declarations, InstructionList &instructions, const Settings &settings);
 
 	void handleList(const Token &token, Declarations &declarations, InstructionList &instructions, const Settings &settings)
@@ -214,23 +235,7 @@ namespace
 				}
 				parse(children[2], declarations, instructions, settings);
 				declarations.add(identifier);
-				switch(declarations.checkIdentifier(identifier))
-				{
-				case IDENTIFIER_DEFINITION_UNDEFINED:
-					throw ParseError(token.sourceLocation(), "Identifier '" + identifier.name() + "' not defined");
-					break;
-				case IDENTIFIER_DEFINITION_LOCAL:
-					instructions.push_back(Instruction::initLocal(token.sourceLocation(), identifier.name()));
-					break;
-				case IDENTIFIER_DEFINITION_CLOSURE:
-					throw CompilerBug("Identifier '" + identifier.name() + "' unexpectedly classified as closure");
-					break;
-				case IDENTIFIER_DEFINITION_GLOBAL:
-					instructions.push_back(Instruction::initGlobal(token.sourceLocation(), identifier.name()));
-					break;
-				default:
-					throw CompilerBug("Failed to classify identifier " + identifier.name() + " at " + str(token.sourceLocation()));
-				}
+				initIdentifier(token, declarations, instructions, identifier);
 			}
 			else if(keyword == "set")
 			{
@@ -288,26 +293,9 @@ namespace
 				TypeDefinition typeDefinition = { identifier.name(), memberNames };
 				instructions.push_back(Instruction::push(token.sourceLocation(), Value::typeDefinition(typeDefinition)));
 
-				// TODO: extract block into helper function?
 				// Note: allows recursive types
 				declarations.add(identifier);
-				switch(declarations.checkIdentifier(identifier))
-				{
-				case IDENTIFIER_DEFINITION_UNDEFINED:
-					throw ParseError(token.sourceLocation(), "Identifier '" + identifier.name() + "' not defined");
-					break;
-				case IDENTIFIER_DEFINITION_LOCAL:
-					instructions.push_back(Instruction::initLocal(token.sourceLocation(), identifier.name()));
-					break;
-				case IDENTIFIER_DEFINITION_CLOSURE:
-					throw CompilerBug("Identifier '" + identifier.name() + "' unexpectedly classified as closure");
-					break;
-				case IDENTIFIER_DEFINITION_GLOBAL:
-					instructions.push_back(Instruction::initGlobal(token.sourceLocation(), identifier.name()));
-					break;
-				default:
-					throw CompilerBug("Failed to classify identifier " + identifier.name() + " at " + str(token.sourceLocation()));
-				}
+				initIdentifier(token, declarations, instructions, identifier);
 			}
 			else if(keyword == "defun")
 			{
@@ -372,23 +360,7 @@ namespace
 					instructions.push_back(Instruction::capture(token.sourceLocation(), closedValues.size()));
 				}
 
-				switch(declarations.checkIdentifier(identifier))
-				{
-				case IDENTIFIER_DEFINITION_UNDEFINED:
-					throw ParseError(token.sourceLocation(), "Identifier '" + identifier.name() + "' not defined");
-					break;
-				case IDENTIFIER_DEFINITION_LOCAL:
-					instructions.push_back(Instruction::initLocal(token.sourceLocation(), identifier.name()));
-					break;
-				case IDENTIFIER_DEFINITION_CLOSURE:
-					throw CompilerBug("Identifier '" + identifier.name() + "' unexpectedly classified as closure");
-					break;
-				case IDENTIFIER_DEFINITION_GLOBAL:
-					instructions.push_back(Instruction::initGlobal(token.sourceLocation(), identifier.name()));
-					break;
-				default:
-					throw CompilerBug("Failed to classify identifier " + identifier.name() + " at " + str(token.sourceLocation()));
-				}
+				initIdentifier(token, declarations, instructions, identifier);
 
 				if (settings.printInstructions)
 				{
