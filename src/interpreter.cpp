@@ -275,7 +275,7 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 			break;
 		case Instruction::AssignClosure:
 			{
-				// TODO:
+				// TODO: implement Instruction::AssignClosure
 				throw CompilerBug("unimplemented: AssignClosure");
 			}
 			break;
