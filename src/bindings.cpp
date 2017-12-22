@@ -24,15 +24,12 @@ const Value &Bindings::get(RefType refType, const Identifier &identifier) const
 void Bindings::set(RefType refType, const Identifier &identifier, const Value &value)
 {
 	Mapping &mapping = mappingFor(refType);
-	#if 1
-	mapping[identifier] = value;
-	#else // TODO:
-	auto result = mapping.insert(std::make_pair(identifier, value));
-	if (result.second)
+	Bindings::const_iterator it = mapping.find(identifier);
+	if (it == mapping.end())
 	{
 		throw CompilerBug("Cannot set an unbound " + str(refType) + " identifier: '" + identifier.name() + "'");
 	}
-	#endif
+	mapping[identifier] = value;
 }
 
 void Bindings::init(RefType refType, const Identifier &identifier, const Value &value)
