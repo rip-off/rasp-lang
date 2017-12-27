@@ -50,7 +50,7 @@ namespace
 		const Token::Children &rootChildren = token.children();
 		assertEquals(rootChildren.size(), 1);
 		const Token &literal = rootChildren.front();
-		assertEquals(literal.type(), Token::BOOLEAN);
+		assertEquals(literal.type(), Token::KEYWORD);
 		assertEquals(literal.string(), "true");
 	}
 
@@ -63,7 +63,7 @@ namespace
 		const Token::Children &rootChildren = token.children();
 		assertEquals(rootChildren.size(), 1);
 		const Token &literal = rootChildren.front();
-		assertEquals(literal.type(), Token::BOOLEAN);
+		assertEquals(literal.type(), Token::KEYWORD);
 		assertEquals(literal.string(), "false");
 	}
 

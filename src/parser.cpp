@@ -374,6 +374,14 @@ namespace
 					printInstructions(tempInstructions);
 				}
 			}
+			else if(keyword == KEYWORD_TRUE)
+			{
+				instructions.push_back(Instruction::push(token.sourceLocation(), Value::boolean(true)));
+			}
+			else if(keyword == KEYWORD_FALSE)
+			{
+				instructions.push_back(Instruction::push(token.sourceLocation(), Value::boolean(false)));
+			}
 			else
 			{
 				throw CompilerBug("unhandled keyword '" + token.string() + "' at line " + str(token.sourceLocation()));
@@ -413,24 +421,21 @@ namespace
 			assert(children.empty());
 			instructions.push_back(Instruction::push(token.sourceLocation(), Value::number(to<int>(token.string()))));
 			break;
-		case Token::BOOLEAN:
-			assert(children.empty());
-			if (token.string() == "true")
-			{
-				instructions.push_back(Instruction::push(token.sourceLocation(), Value::boolean(true)));
-			}
-			else if (token.string() == "false")
-			{
-				instructions.push_back(Instruction::push(token.sourceLocation(), Value::boolean(false)));
-			}
-			else
-			{
-				throw CompilerBug("illegal boolean literal '" + token.string() + "' " + str(token.sourceLocation()));
-			}
-			break;
 		case Token::KEYWORD:
 			{
-				throw ParseError(token.sourceLocation(), "Keyword '" + token.string() + "' must be first element of a list");
+				const std::string &keyword = token.string();
+				if(keyword == KEYWORD_TRUE)
+				{
+					instructions.push_back(Instruction::push(token.sourceLocation(), Value::boolean(true)));
+				}
+				else if(keyword == KEYWORD_FALSE)
+				{
+					instructions.push_back(Instruction::push(token.sourceLocation(), Value::boolean(false)));
+				}
+				else
+				{
+					throw ParseError(token.sourceLocation(), "Keyword '" + keyword + "' must be first element of a list");
+				}
 			}
 			break;
 		case Token::IDENTIFIER:
@@ -516,10 +521,6 @@ namespace
 		case Token::NUMBER:
 			assert(children.empty());
 			std::cout << "number: " << token.string() << '\n';
-			break;
-		case Token::BOOLEAN:
-			assert(children.empty());
-			std::cout << "boolean: " << token.string() << '\n';
 			break;
 		case Token::KEYWORD:
 			assert(children.empty());

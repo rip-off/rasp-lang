@@ -27,11 +27,6 @@ Token Token::keyword(const SourceLocation &sourceLocation, const std::string &ke
 	return Token(sourceLocation, KEYWORD, keyword);
 }
 
-Token Token::boolean(const SourceLocation &sourceLocation, const std::string &boolean)
-{
-	return Token(sourceLocation, BOOLEAN, boolean);
-}
-
 Token Token::identifier(const SourceLocation &sourceLocation, const Identifier &identifier)
 {
 	return Token(sourceLocation, IDENTIFIER, identifier.name());
@@ -72,7 +67,7 @@ const Token::Children &Token::children() const
 
 void Token::addChild(const Token &token)
 {
-	assert(!(type_ == NIL || type_ == STRING || type_ == NUMBER || type_ == BOOLEAN || type_ == KEYWORD));
+	assert(!(type_ == NIL || type_ == STRING || type_ == NUMBER || type_ == KEYWORD));
 	children_.push_back(token);
 }
 
@@ -95,8 +90,6 @@ std::ostream &operator<<(std::ostream &out, Token::Type tokenType) {
 			return out << "String";
 		case Token::NUMBER:
 			return out << "Number";
-		case Token::BOOLEAN:
-			return out << "Boolean";
 		case Token::KEYWORD:
 			return out << "Keyword";
 		case Token::IDENTIFIER:

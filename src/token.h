@@ -20,7 +20,6 @@ public:
 		LIST,
 		STRING,
 		NUMBER,
-		BOOLEAN,
 		KEYWORD,
 		IDENTIFIER,
 		DECLARATION,
@@ -33,8 +32,6 @@ public:
 	static Token string(const SourceLocation &sourceLocation, const std::string &text);
 
 	static Token number(const SourceLocation &sourceLocation, const std::string &number);
-
-	static Token boolean(const SourceLocation &sourceLocation, const std::string &boolean);
 
 	static Token keyword(const SourceLocation &sourceLocation, const std::string &keyword);
 

@@ -234,10 +234,6 @@ namespace
 		{
 			return Token::nil(current.sourceLocation());
 		}
-		else if(string == "true" || string == "false")
-		{
-			return Token::boolean(current.sourceLocation(), string);
-		}
 		else if(isKeyword(string))
 		{
 			return Token::keyword(current.sourceLocation(), string);
