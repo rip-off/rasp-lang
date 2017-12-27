@@ -7,6 +7,7 @@
 #include "bug.h"
 #include "utils.h"
 #include "escape.h"
+#include "keyword.h"
 #include "exceptions.h"
 
 namespace
@@ -229,17 +230,6 @@ namespace
 		std::string string(current, literalEnd);
 		current = literalEnd;
 
-		// Note: Duplicated with parser.cpp
-		static std::string keywords[] = {
-			"if",
-			"var",
-			"set",
-			"else",
-			"type",
-			"defun",
-			"while",
-		};
-		
 		if(string == "nil")
 		{
 			return Token::nil(current.sourceLocation());
@@ -248,7 +238,7 @@ namespace
 		{
 			return Token::boolean(current.sourceLocation(), string);
 		}
-		else if(array_is_element(keywords, string))
+		else if(isKeyword(string))
 		{
 			return Token::keyword(current.sourceLocation(), string);
 		}

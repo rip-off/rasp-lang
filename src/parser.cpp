@@ -6,6 +6,7 @@
 #include "bug.h"
 #include "token.h"
 #include "escape.h"
+#include "keyword.h"
 #include "bindings.h"
 #include "settings.h"
 #include "exceptions.h"
@@ -120,7 +121,7 @@ namespace
 		if(firstChild.type() == Token::KEYWORD)
 		{
 			const std::string &keyword = firstChild.string();
-			if(keyword == "while")
+			if(keyword == KEYWORD_WHILE)
 			{
 				if(children.size() == 1)
 				{
@@ -151,7 +152,7 @@ namespace
 				// +1 for this loop instruction itself!
 				instructions.push_back(Instruction::loop(token.sourceLocation(), bodyInstructions + 1 + conditionExpressionInstructions + 1));
 			}
-			else if(keyword == "if")
+			else if(keyword == KEYWORD_IF)
 			{
 				if(children.size() == 1)
 				{
@@ -209,11 +210,11 @@ namespace
 					instructions.insert(instructions.end(), elseInstructions.begin(), elseInstructions.end());
 				}
 			}
-			else if(keyword == "else")
+			else if(keyword == KEYWORD_ELSE)
 			{
 				throw ParseError(token.sourceLocation(), "Keyword 'else' cannot be used at the start of a list");
 			}
-			else if(keyword == "var")
+			else if(keyword == KEYWORD_VAR)
 			{
 				if(children.size() == 1)
 				{
@@ -237,7 +238,7 @@ namespace
 				declarations.add(identifier);
 				initIdentifier(token, declarations, instructions, identifier);
 			}
-			else if(keyword == "set")
+			else if(keyword == KEYWORD_SET)
 			{
 				if(children.size() == 2)
 				{
@@ -267,7 +268,7 @@ namespace
 					throw CompilerBug("Failed to classify identifier " + identifier.name() + " at " + str(token.sourceLocation()));
 				}
 			}
-			else if(keyword == "type")
+			else if(keyword == KEYWORD_TYPE)
 			{
 				if(children.empty())
 				{
@@ -297,7 +298,7 @@ namespace
 				declarations.add(identifier);
 				initIdentifier(token, declarations, instructions, identifier);
 			}
-			else if(keyword == "defun")
+			else if(keyword == KEYWORD_DEFUN)
 			{
 				if(children.size() == 1)
 				{
