@@ -107,6 +107,31 @@ namespace
 		}
 	}
 
+	bool handleLiteral(const Token &token, InstructionList &instructions)
+	{
+		const Token::Children &children = token.children();
+		const std::string &keyword = token.string();
+		if(keyword == KEYWORD_TRUE)
+		{
+			assert(children.empty());
+			instructions.push_back(Instruction::push(token.sourceLocation(), Value::boolean(true)));
+			return true;
+		}
+		else if(keyword == KEYWORD_FALSE)
+		{
+			assert(children.empty());
+			instructions.push_back(Instruction::push(token.sourceLocation(), Value::boolean(false)));
+			return true;
+		}
+		else if(keyword == KEYWORD_NIL)
+		{
+			assert(children.empty());
+			instructions.push_back(Instruction::push(token.sourceLocation(), Value::nil()));
+			return true;
+		}
+		return false;
+	}
+
 	void parse(const Token &token, Declarations &declarations, InstructionList &instructions, const Settings &settings);
 
 	void handleList(const Token &token, Declarations &declarations, InstructionList &instructions, const Settings &settings)
@@ -374,22 +399,7 @@ namespace
 					printInstructions(tempInstructions);
 				}
 			}
-			else if(keyword == KEYWORD_TRUE)
-			{
-				assert(children.empty());
-				instructions.push_back(Instruction::push(token.sourceLocation(), Value::boolean(true)));
-			}
-			else if(keyword == KEYWORD_FALSE)
-			{
-				assert(children.empty());
-				instructions.push_back(Instruction::push(token.sourceLocation(), Value::boolean(false)));
-			}
-			else if(keyword == KEYWORD_NIL)
-			{
-				assert(children.empty());
-				instructions.push_back(Instruction::push(token.sourceLocation(), Value::nil()));
-			}
-			else
+			else if(!handleLiteral(token, instructions))
 			{
 				throw CompilerBug("unhandled keyword '" + token.string() + "' at line " + str(token.sourceLocation()));
 			}
@@ -426,25 +436,9 @@ namespace
 			break;
 		case Token::KEYWORD:
 			{
-				const std::string &keyword = token.string();
-				if(keyword == KEYWORD_TRUE)
+				if(!handleLiteral(token, instructions))
 				{
-					assert(children.empty());
-					instructions.push_back(Instruction::push(token.sourceLocation(), Value::boolean(true)));
-				}
-				else if(keyword == KEYWORD_FALSE)
-				{
-					assert(children.empty());
-					instructions.push_back(Instruction::push(token.sourceLocation(), Value::boolean(false)));
-				}
-				else if(keyword == KEYWORD_NIL)
-				{
-					assert(children.empty());
-					instructions.push_back(Instruction::push(token.sourceLocation(), Value::nil()));
-				}
-				else
-				{
-					throw ParseError(token.sourceLocation(), "Keyword '" + keyword + "' must be first element of a list");
+					throw ParseError(token.sourceLocation(), "Keyword '" + token.string() + "' must be first element of a list");
 				}
 			}
 			break;
