@@ -1,3 +1,26 @@
+(type Result y z)
+
+(defun outer ()
+	(var y 0)
+	(defun middle ()
+		(var z 0)
+		(defun inner ()
+			(set y (+ y 1))
+			(set z (+ z 1))
+			(new Result y z)
+		)
+		inner
+	)
+	middle
+)
+
+(var middle1 (outer))
+(var inner1 (middle1))
+(var inner2 (middle1))
+(var result1 (inner1)) // Result 1 1
+(var result2 (inner2)) // Result 2 1
+
+/*
 (defun outer_function (some_value)
   (defun inner_function () some_value)
   inner_function)
@@ -13,4 +36,5 @@
 
 (var closure (make_closure "outer-parameter-value-1" "outer-parameter-value-2"))
 (closure "inner-parameter-value-1" "inner-parameter-value-2")
+*/
 
