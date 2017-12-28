@@ -1,11 +1,6 @@
 #include "token.h"
 #include "bug.h"
 
-Token Token::nil(const SourceLocation &sourceLocation)
-{
-	return Token(sourceLocation, NIL, "__nil_literal");
-}
-
 Token Token::list(const SourceLocation &sourceLocation)
 {
 	return Token(sourceLocation, LIST, "__list");
@@ -67,7 +62,7 @@ const Token::Children &Token::children() const
 
 void Token::addChild(const Token &token)
 {
-	assert(!(type_ == NIL || type_ == STRING || type_ == NUMBER || type_ == KEYWORD));
+	assert(!(type_ == STRING || type_ == NUMBER || type_ == KEYWORD));
 	children_.push_back(token);
 }
 
@@ -82,8 +77,6 @@ Token::Token(const SourceLocation &sourceLocation, Type type, const std::string 
 
 std::ostream &operator<<(std::ostream &out, Token::Type tokenType) {
 	switch(tokenType) {
-		case Token::NIL:
-			return out << "Nil";
 		case Token::LIST:
 			return out << "List";
 		case Token::STRING:

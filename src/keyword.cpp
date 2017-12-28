@@ -5,6 +5,7 @@
 const std::string KEYWORD_IF = "if";
 const std::string KEYWORD_VAR = "var";
 const std::string KEYWORD_SET = "set";
+const std::string KEYWORD_NIL = "nil";
 const std::string KEYWORD_ELSE = "else";
 const std::string KEYWORD_TYPE = "type";
 const std::string KEYWORD_TRUE = "true";
@@ -19,6 +20,7 @@ namespace
 		KEYWORD_IF,
 		KEYWORD_VAR,
 		KEYWORD_SET,
+		KEYWORD_NIL,
 		KEYWORD_ELSE,
 		KEYWORD_TYPE,
 		KEYWORD_TRUE,

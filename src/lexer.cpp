@@ -230,11 +230,7 @@ namespace
 		std::string string(current, literalEnd);
 		current = literalEnd;
 
-		if(string == "nil")
-		{
-			return Token::nil(current.sourceLocation());
-		}
-		else if(isKeyword(string))
+		if(isKeyword(string))
 		{
 			return Token::keyword(current.sourceLocation(), string);
 		}

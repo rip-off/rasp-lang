@@ -16,7 +16,6 @@ public:
 
 	enum Type
 	{
-		NIL,
 		LIST,
 		STRING,
 		NUMBER,
@@ -24,8 +23,6 @@ public:
 		IDENTIFIER,
 		DECLARATION,
 	};
-
-	static Token nil(const SourceLocation &sourceLocation);
 
 	static Token list(const SourceLocation &sourceLocation);
 

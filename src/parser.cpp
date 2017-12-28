@@ -376,11 +376,18 @@ namespace
 			}
 			else if(keyword == KEYWORD_TRUE)
 			{
+				assert(children.empty());
 				instructions.push_back(Instruction::push(token.sourceLocation(), Value::boolean(true)));
 			}
 			else if(keyword == KEYWORD_FALSE)
 			{
+				assert(children.empty());
 				instructions.push_back(Instruction::push(token.sourceLocation(), Value::boolean(false)));
+			}
+			else if(keyword == KEYWORD_NIL)
+			{
+				assert(children.empty());
+				instructions.push_back(Instruction::push(token.sourceLocation(), Value::nil()));
 			}
 			else
 			{
@@ -404,10 +411,6 @@ namespace
 		const Token::Children &children = token.children();
 		switch(token.type())
 		{
-		case Token::NIL:
-			assert(children.empty());
-			instructions.push_back(Instruction::push(token.sourceLocation(), Value::nil()));
-			break;
 		case Token::LIST:
 			{
 				handleList(token, declarations, instructions, settings);
@@ -426,11 +429,18 @@ namespace
 				const std::string &keyword = token.string();
 				if(keyword == KEYWORD_TRUE)
 				{
+					assert(children.empty());
 					instructions.push_back(Instruction::push(token.sourceLocation(), Value::boolean(true)));
 				}
 				else if(keyword == KEYWORD_FALSE)
 				{
+					assert(children.empty());
 					instructions.push_back(Instruction::push(token.sourceLocation(), Value::boolean(false)));
+				}
+				else if(keyword == KEYWORD_NIL)
+				{
+					assert(children.empty());
+					instructions.push_back(Instruction::push(token.sourceLocation(), Value::nil()));
 				}
 				else
 				{
@@ -494,10 +504,6 @@ namespace
 		const Token::Children &children = token.children();
 		switch(token.type())
 		{
-		case Token::NIL:
-			assert(children.empty());
-			std::cout << "nil\n";
-			break;
 		case Token::LIST:
 			if (children.empty())
 			{
