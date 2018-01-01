@@ -9,77 +9,77 @@ Instruction::Instruction(const SourceLocation &sourceLocation, Type type, const 
 
 Instruction Instruction::push(const SourceLocation &sourceLocation, const Value &value)
 {
-	return Instruction(sourceLocation, Push, value);
+	return Instruction(sourceLocation, PUSH, value);
 }
 
 Instruction Instruction::call(const SourceLocation &sourceLocation, int argc)
 {
-	return Instruction(sourceLocation, Call, Value::number(argc));
+	return Instruction(sourceLocation, CALL, Value::number(argc));
 }
 
 Instruction Instruction::jump(const SourceLocation &sourceLocation, int instructions)
 {
-	return Instruction(sourceLocation, Jump, Value::number(instructions));
+	return Instruction(sourceLocation, JUMP, Value::number(instructions));
 }
 
 Instruction Instruction::loop(const SourceLocation &sourceLocation, int instructions)
 {
-	return Instruction(sourceLocation, Loop, Value::number(instructions));
+	return Instruction(sourceLocation, LOOP, Value::number(instructions));
 }
 
 Instruction Instruction::close(const SourceLocation &sourceLocation, int argc)
 {
-	return Instruction(sourceLocation, Close, Value::number(argc));
+	return Instruction(sourceLocation, CLOSE, Value::number(argc));
 }
 
 Instruction Instruction::condJump(const SourceLocation &sourceLocation, int instructions)
 {
-	return Instruction(sourceLocation, CondJump, Value::number(instructions));
+	return Instruction(sourceLocation, COND_JUMP, Value::number(instructions));
 }
 
 Instruction Instruction::refLocal(const SourceLocation &sourceLocation, const Identifier &identifier)
 {
-	return Instruction(sourceLocation, RefLocal, Value::string(identifier.name()));
+	return Instruction(sourceLocation, REF_LOCAL, Value::string(identifier.name()));
 }
 
 Instruction Instruction::initLocal(const SourceLocation &sourceLocation, const std::string &identifier)
 {
-	return Instruction(sourceLocation, InitLocal, Value::string(identifier));
+	return Instruction(sourceLocation, INIT_LOCAL, Value::string(identifier));
 }
 
 Instruction Instruction::assignLocal(const SourceLocation &sourceLocation, const std::string &identifier)
 {
-	return Instruction(sourceLocation, AssignLocal, Value::string(identifier));
+	return Instruction(sourceLocation, ASSIGN_LOCAL, Value::string(identifier));
 }
 
 Instruction Instruction::refGlobal(const SourceLocation &sourceLocation, const Identifier &identifier)
 {
-	return Instruction(sourceLocation, RefGlobal, Value::string(identifier.name()));
+	return Instruction(sourceLocation, REF_GLOBAL, Value::string(identifier.name()));
 }
 
 Instruction Instruction::initGlobal(const SourceLocation &sourceLocation, const std::string &identifier)
 {
-	return Instruction(sourceLocation, InitGlobal, Value::string(identifier));
+	return Instruction(sourceLocation, INIT_GLOBAL, Value::string(identifier));
 }
 
 Instruction Instruction::assignGlobal(const SourceLocation &sourceLocation, const std::string &identifier)
 {
-	return Instruction(sourceLocation, AssignGlobal, Value::string(identifier));
+	return Instruction(sourceLocation, ASSIGN_GLOBAL, Value::string(identifier));
 }
 
 Instruction Instruction::refClosure(const SourceLocation &sourceLocation, const Identifier &identifier)
 {
-	return Instruction(sourceLocation, RefClosure, Value::string(identifier.name()));
+	return Instruction(sourceLocation, REF_CLOSURE, Value::string(identifier.name()));
 }
 
 Instruction Instruction::assignClosure(const SourceLocation &sourceLocation, const std::string &identifier)
 {
-	return Instruction(sourceLocation, AssignClosure, Value::string(identifier));
+	return Instruction(sourceLocation, ASSIGN_CLOSURE, Value::string(identifier));
 }
 
 Instruction Instruction::memberAccess(const SourceLocation &sourceLocation, const std::string &identifier)
 {
-	return Instruction(sourceLocation, MemberAccess, Value::string(identifier));
+	return Instruction(sourceLocation, MEMBER_ACCESS, Value::string(identifier));
 }
 
 Instruction::Type Instruction::type() const
@@ -101,35 +101,35 @@ std::ostream &operator<<(std::ostream &out, const Instruction &instruction)
 {
 	switch(instruction.type_)
 	{
-	case Instruction::Push:
+	case Instruction::PUSH:
 		return out << "push(" << instruction.value_ << ")";
-	case Instruction::Call:
+	case Instruction::CALL:
 		return out << "call(" << instruction.value_ << ")";
-	case Instruction::Jump:
+	case Instruction::JUMP:
 		return out << "jump(" << instruction.value_ << ")";
-	case Instruction::Loop:
+	case Instruction::LOOP:
 		return out << "loop(" << instruction.value_ << ")";
-	case Instruction::Close:
+	case Instruction::CLOSE:
 		return out << "close(" << instruction.value_ << ")";
-	case Instruction::CondJump:
+	case Instruction::COND_JUMP:
 		return out << "cond_jump(" << instruction.value_ << ")";
-	case Instruction::RefLocal:
+	case Instruction::REF_LOCAL:
 		return out << "ref_local(" << instruction.value_.string() << ")";
-	case Instruction::InitLocal:
+	case Instruction::INIT_LOCAL:
 		return out << "init_local(" << instruction.value_.string() << ")";
-	case Instruction::AssignLocal:
+	case Instruction::ASSIGN_LOCAL:
 		return out << "assign_local(" << instruction.value_.string() << ")";
-	case Instruction::RefGlobal:
+	case Instruction::REF_GLOBAL:
 		return out << "ref_global(" << instruction.value_.string() << ")";
-	case Instruction::InitGlobal:
+	case Instruction::INIT_GLOBAL:
 		return out << "init_global(" << instruction.value_.string() << ")";
-	case Instruction::AssignGlobal:
+	case Instruction::ASSIGN_GLOBAL:
 		return out << "assign_global(" << instruction.value_.string() << ")";
-	case Instruction::RefClosure:
+	case Instruction::REF_CLOSURE:
 		return out << "ref_closure(" << instruction.value_.string() << ")";
-	case Instruction::AssignClosure:
+	case Instruction::ASSIGN_CLOSURE:
 		return out << "assign_closure(" << instruction.value_.string() << ")";
-	case Instruction::MemberAccess:
+	case Instruction::MEMBER_ACCESS:
 		return out << "member(" << instruction.value_.string() << ")";
 	default:
 		throw CompilerBug("unhandled instruction type: " + str(instruction.type_));

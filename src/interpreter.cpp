@@ -128,14 +128,14 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 		const Value &value = it->value();
 		switch(type)
 		{
-		case Instruction::Push:
+		case Instruction::PUSH:
 			if(settings_.trace)
 			{				
 				std::cout << "DEBUG: " << it->sourceLocation() << " push " << value << '\n';
 			}
 			stack.push_back(value);
 			break;
-		case Instruction::Call:
+		case Instruction::CALL:
 			{
 				if(settings_.trace)
 				{
@@ -149,7 +149,7 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 				}
 			}
 			break;
-		case Instruction::Jump:
+		case Instruction::JUMP:
 			{
 				int instructionsToSkip = getInstructionsToSkip(type, value);
 				int remaining = instructions.end() - it;
@@ -165,7 +165,7 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 				it += instructionsToSkip;
 			}
 			break;
-		case Instruction::Loop:
+		case Instruction::LOOP:
 			{
 				int instructionsToSkip = getInstructionsToSkip(type, value);
 				int instructionsAvailable = instructions.size(); // Note: signed type is important!
@@ -181,7 +181,7 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 				it -= instructionsToSkip;
 			}
 			break;
-		case Instruction::Close:
+		case Instruction::CLOSE:
 			{
 				if(settings_.trace)
 				{
@@ -191,7 +191,7 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 				stack.push_back(result);
 			}
 			break;
-		case Instruction::CondJump:
+		case Instruction::COND_JUMP:
 			{
 				if(stack.empty())
 				{
@@ -216,14 +216,14 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 				}
 			}
 			break;
-		case Instruction::RefLocal:
+		case Instruction::REF_LOCAL:
 			handleRef(Bindings::Local, value, stack, bindings);
 			if(settings_.trace)
 			{
 				std::cout << "DEBUG: " << it->sourceLocation() << " local ref '" << value.string() << "' is " << stack.back() << '\n';
 			}
 			break;
-		case Instruction::InitLocal:
+		case Instruction::INIT_LOCAL:
 			{
 				const Value &intialisedValue = handleInit(Bindings::Local, value, stack, bindings);
 				if(settings_.trace)
@@ -232,7 +232,7 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 				}
 			}
 			break;
-		case Instruction::AssignLocal:
+		case Instruction::ASSIGN_LOCAL:
 			{
 				const Value &assignedValue = handleAssign(Bindings::Local, value, stack, bindings);
 				if(settings_.trace)
@@ -241,14 +241,14 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 				}
 			}
 			break;
-		case Instruction::RefGlobal:
+		case Instruction::REF_GLOBAL:
 			handleRef(Bindings::Global, value, stack, bindings);
 			if(settings_.trace)
 			{
 				std::cout << "DEBUG: " << it->sourceLocation() << " global ref '" << value.string() << "' is " << stack.back() << '\n';
 			}
 			break;
-		case Instruction::InitGlobal:
+		case Instruction::INIT_GLOBAL:
 			{
 				const Value &intialisedValue = handleInit(Bindings::Global, value, stack, bindings);
 				if(settings_.trace)
@@ -257,7 +257,7 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 				}
 			}
 			break;
-		case Instruction::AssignGlobal:
+		case Instruction::ASSIGN_GLOBAL:
 			{
 				const Value &assignedValue = handleAssign(Bindings::Global, value, stack, bindings);
 				if(settings_.trace)
@@ -266,20 +266,20 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 				}
 			}
 			break;
-		case Instruction::RefClosure:
+		case Instruction::REF_CLOSURE:
 			handleRef(Bindings::Closure, value, stack, bindings);
 			if(settings_.trace)
 			{
 				std::cout << "DEBUG: " << it->sourceLocation() << " closure ref '" << value.string() << "' is " << stack.back() << '\n';
 			}
 			break;
-		case Instruction::AssignClosure:
+		case Instruction::ASSIGN_CLOSURE:
 			{
 				// TODO: implement Instruction::AssignClosure
 				throw CompilerBug("unimplemented: AssignClosure");
 			}
 			break;
-		case Instruction::MemberAccess:
+		case Instruction::MEMBER_ACCESS:
 			{
 				if(settings_.trace)
 				{
