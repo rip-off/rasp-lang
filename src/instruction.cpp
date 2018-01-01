@@ -27,9 +27,9 @@ Instruction Instruction::loop(const SourceLocation &sourceLocation, int instruct
 	return Instruction(sourceLocation, Loop, Value::number(instructions));
 }
 
-Instruction Instruction::capture(const SourceLocation &sourceLocation, int argc)
+Instruction Instruction::close(const SourceLocation &sourceLocation, int argc)
 {
-	return Instruction(sourceLocation, Capture, Value::number(argc));
+	return Instruction(sourceLocation, Close, Value::number(argc));
 }
 
 Instruction Instruction::condJump(const SourceLocation &sourceLocation, int instructions)
@@ -109,8 +109,8 @@ std::ostream &operator<<(std::ostream &out, const Instruction &instruction)
 		return out << "jump(" << instruction.value_ << ")";
 	case Instruction::Loop:
 		return out << "loop(" << instruction.value_ << ")";
-	case Instruction::Capture:
-		return out << "capture(" << instruction.value_ << ")";
+	case Instruction::Close:
+		return out << "close(" << instruction.value_ << ")";
 	case Instruction::CondJump:
 		return out << "cond_jump(" << instruction.value_ << ")";
 	case Instruction::RefLocal:

@@ -383,7 +383,7 @@ namespace
 					}
 					InternalFunction function(token.sourceLocation(), identifier.name(), parameters, tempInstructions);
 					instructions.push_back(Instruction::push(token.sourceLocation(), Value::function(function)));
-					instructions.push_back(Instruction::capture(token.sourceLocation(), closedValues.size()));
+					instructions.push_back(Instruction::close(token.sourceLocation(), closedValues.size()));
 				}
 
 				initIdentifier(token, declarations, instructions, identifier);

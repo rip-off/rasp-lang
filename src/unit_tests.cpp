@@ -291,7 +291,7 @@ namespace
 		assertTrue(value, "Expected there is a global for '+'");
 		instructions.push_back(Instruction::push(CURRENT_SOURCE_LOCATION, *value));
 		int argumentsToCapture = 2;
-		instructions.push_back(Instruction::capture(CURRENT_SOURCE_LOCATION, argumentsToCapture));
+		instructions.push_back(Instruction::close(CURRENT_SOURCE_LOCATION, argumentsToCapture));
 		instructions.push_back(Instruction::call(CURRENT_SOURCE_LOCATION, 0));
 		Value result = interpreter.exec(instructions);
 		assertEquals(Value::TNumber, result.type());

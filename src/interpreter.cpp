@@ -70,18 +70,18 @@ namespace
 		return argc;
 	}
 
-	Value handleCapture(const Value &value, Stack &stack, Bindings &bindings)
+	Value handleClose(const Value &value, Stack &stack, Bindings &bindings)
 	{
 		unsigned argc = getArgumentCount(value);
 		if(stack.size() < argc + 1)
 		{
-			throw CompilerBug("Need " + str(argc + 1) + " values on stack to capture closure, but only have " + str(stack.size()));
+			throw CompilerBug("Need " + str(argc + 1) + " values on stack to close over captured values, but only have " + str(stack.size()));
 		}
 			
 		Value top = pop(stack);
 		if(!top.isFunction())
 		{
-			throw CompilerBug("Capture instruction expects top of the stack to be functional value");
+			throw CompilerBug("Close instruction expects top of the stack to be functional value");
 		}
 
 		Arguments closedValues;
@@ -181,13 +181,13 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 				it -= instructionsToSkip;
 			}
 			break;
-		case Instruction::Capture:
+		case Instruction::Close:
 			{
 				if(settings_.trace)
 				{
-					std::cout << "DEBUG: " << it->sourceLocation() << " capture " << value << '\n';
+					std::cout << "DEBUG: " << it->sourceLocation() << " close " << value << '\n';
 				}
-				Value result = handleCapture(value, stack, bindings);
+				Value result = handleClose(value, stack, bindings);
 				stack.push_back(result);
 			}
 			break;

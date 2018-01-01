@@ -13,13 +13,14 @@ class Instruction
 public:
 	typedef std::vector<Instruction> InstructionList;
 
+	// TODO: uppercase
 	enum Type
 	{
 		Call,
 		Push,
 		Jump,
 		Loop,
-		Capture,
+		Close,
 		CondJump,
 		RefLocal,
 		InitLocal,
@@ -40,7 +41,7 @@ public:
 
 	static Instruction jump(const SourceLocation &sourceLocation, int instructions);
 
-	static Instruction capture(const SourceLocation &sourceLocation, int argc);
+	static Instruction close(const SourceLocation &sourceLocation, int argc);
 
 	static Instruction condJump(const SourceLocation &sourceLocation, int instructions);
 	
