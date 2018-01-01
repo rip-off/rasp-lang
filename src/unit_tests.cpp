@@ -100,16 +100,16 @@ namespace
 		InstructionList result = parse(root, declarations, interpreter.settings());
 		assertEquals(result.size(), 4);
 
-		assertEquals(result[0].type(), Instruction::Push);
+		assertEquals(result[0].type(), Instruction::PUSH);
 		assertEquals(result[0].value().number(), 13);
 
-		assertEquals(result[1].type(), Instruction::Push);
+		assertEquals(result[1].type(), Instruction::PUSH);
 		assertEquals(result[1].value().number(), 42);
 
-		assertEquals(result[2].type(), Instruction::RefGlobal);
+		assertEquals(result[2].type(), Instruction::REF_GLOBAL);
 		assertEquals(result[2].value().string(), "+");
 
-		assertEquals(result[3].type(), Instruction::Call);
+		assertEquals(result[3].type(), Instruction::CALL);
 		assertEquals(result[3].value().number(), 2);
 	}
 

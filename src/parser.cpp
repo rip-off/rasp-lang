@@ -74,7 +74,8 @@ namespace
 		std::vector<Identifier> result;
 		for (const Instruction &instruction : instructions)
 		{
-			if (instruction.type() == Instruction::RefClosure)
+			// TODO: ASSIGN_CLOSURE
+			if (instruction.type() == Instruction::REF_CLOSURE)
 			{
 				Identifier identifier = Identifier(instruction.value().string());
 				if (std::find(result.begin(), result.end(), identifier) == result.end())
