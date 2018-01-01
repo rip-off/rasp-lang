@@ -379,6 +379,6 @@ const Settings &Interpreter::settings() const
 const Value *Interpreter::global(const Identifier &name) const
 {
 	Bindings::const_iterator i = globals_.find(name);
-	return (i == globals_.end() ? nullptr : &(i->second));
+	return (i == globals_.end() ? nullptr : i->second.get());
 }
 

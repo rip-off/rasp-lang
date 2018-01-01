@@ -18,7 +18,7 @@ const Value &Bindings::get(RefType refType, const Identifier &identifier) const
 	{
 		throw CompilerBug("Cannot get an unbound " + str(refType) + " identifier: '" + identifier.name() + "'");
 	}
-	return it->second;
+	return *it->second;
 }
 
 void Bindings::set(RefType refType, const Identifier &identifier, const Value &value)
@@ -29,14 +29,14 @@ void Bindings::set(RefType refType, const Identifier &identifier, const Value &v
 	{
 		throw CompilerBug("Cannot set an unbound " + str(refType) + " identifier: '" + identifier.name() + "'");
 	}
-	mapping[identifier] = value;
+	*mapping[identifier] = value;
 }
 
 void Bindings::init(RefType refType, const Identifier &identifier, const Value &value)
 {
     Mapping &mapping = mappingFor(refType);
 	#if 1
-	mapping[identifier] = value;
+	mapping[identifier] = makeValue(value);
 	#else // TODO: fix testLoopWithInnerVariableDeclaration
 	auto result = mapping.insert(std::make_pair(identifier, value));
 	if (!result.second)
@@ -48,7 +48,7 @@ void Bindings::init(RefType refType, const Identifier &identifier, const Value &
 
 void Bindings::initLocal(const Identifier &identifier, const Value &value)
 {
-	auto result = localsByName_.insert(std::make_pair(identifier, value));
+	auto result = localsByName_.insert(std::make_pair(identifier, makeValue(value)));
 	if (!result.second)
 	{
 		throw CompilerBug("Cannot initialise an already bound local identifier: '" + identifier.name() + "'");
@@ -90,6 +90,11 @@ const Bindings::Mapping &Bindings::mappingFor(RefType refType) const
         int rawValue = refType;
         throw CompilerBug("Unhandled refType " + str(rawValue));
     }
+}
+
+Bindings::ValuePtr makeValue(const Value &value)
+{
+	return Bindings::ValuePtr(new Value(value));
 }
     
 std::ostream &operator<<(std::ostream &out, Bindings::RefType refType)

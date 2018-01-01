@@ -2,6 +2,7 @@
 #define BINDINGS_H
 
 #include <map>
+#include <memory>
 
 #include "value.h"
 #include "identifier.h"
@@ -9,7 +10,8 @@
 class Bindings
 {
 public:
-    typedef std::map<Identifier, Value> Mapping;
+    typedef std::shared_ptr<Value> ValuePtr;
+    typedef std::map<Identifier, ValuePtr> Mapping;
     typedef Mapping::const_iterator const_iterator;
     enum RefType {
         Local,
@@ -45,6 +47,8 @@ private:
     Mapping &mappingFor(RefType refType);
     const Mapping &mappingFor(RefType refType) const;
 };
+
+Bindings::ValuePtr makeValue(const Value &value);
 
 std::ostream &operator<<(std::ostream &out, Bindings::RefType refType);
 

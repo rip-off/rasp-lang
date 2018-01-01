@@ -69,7 +69,7 @@ void registerBindings(Bindings::Mapping &bindings, const ApiReg (&registry)[N])
 	{
 		Identifier identifier = Identifier(current->name());
 		Value function = Value::function(current->function());
-		bindings.insert(std::make_pair(identifier, function));
+		bindings.insert(std::make_pair(identifier, makeValue(function)));
 	}
 }
 
