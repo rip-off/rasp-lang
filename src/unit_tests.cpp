@@ -59,15 +59,17 @@ namespace
 		std::string fragmentName = "<unit test @ " + str(filename) + ":" + str(line) + ">";
 		return ::lex(fragmentName, source.str());
 	}
-	#define lex(s) lex(__FILE__, __LINE__, s)
 
-	Value execute(Interpreter &interpreter, const Source &source)
+	Value execute(const char *filename, int line, Interpreter &interpreter, const Source &source)
 	{
-		Token token = lex(source);
+		Token token = lex(filename, line, source);
 		Declarations declarations = interpreter.declarations();
 		InstructionList instructions = parse(token, declarations, interpreter.settings());
 		return interpreter.exec(instructions);
+
 	}
+	#define lex(source) lex(__FILE__, __LINE__, source)
+	#define execute(interpreter, source) execute(__FILE__, __LINE__, interpreter, source)
 
 	void testInterpreter(Interpreter &interpreter)
 	{
