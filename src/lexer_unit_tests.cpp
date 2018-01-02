@@ -325,7 +325,7 @@ namespace
 	{
 		try
 		{
-			std::cout << "Running " << name << "..." << '\n';
+			std::cout << "Running " << name << " ..." << '\n';
 			unitTest();
 			std::cout << "PASSED " << flushAssertions() << " assertions\n";
 			return 0;

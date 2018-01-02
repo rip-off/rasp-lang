@@ -916,7 +916,7 @@ namespace
 	{
 		try
 		{
-			std::cout << "Running " << unitTest.name << "..." << '\n';
+			std::cout << "Running " << unitTest.name << " ..." << '\n';
 			Interpreter::Globals globals;
 			standardMath(globals);
 			standardLibrary(globals);
