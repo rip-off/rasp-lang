@@ -29,12 +29,13 @@ Value InternalFunction::call(CallContext &callContext) const
 	{
 		throw ExecutionError(sourceLocation_, "Function '" + name_ + "' passed " + str(arguments.size()) + " arguments but expected " + str(parameters_.size()));
 	}
-	Bindings localBindings(&callContext.globals());
+	Bindings::Mapping closedValues = callContext.closedValues();
+	Bindings localBindings(&callContext.globals(), &closedValues);
 	for (unsigned i = 0 ; i < parameters_.size() ; ++i)
 	{
 		localBindings.initLocal(parameters_[i], arguments[i]);
 	}
-	return callContext.interpreter().exec(instructionList_, localBindings);
+	return callContext.interpreter()->exec(instructionList_, localBindings);
 }
 
 const std::string &InternalFunction::name() const

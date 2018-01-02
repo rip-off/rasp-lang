@@ -6,7 +6,15 @@
 
 Bindings::Bindings(Mapping *globalsByName)
 :
-	globalsByName_(globalsByName)
+	globalsByName_(globalsByName),
+	closedValuesByName_(nullptr)
+{
+}
+
+Bindings::Bindings(Mapping *globalsByName, Mapping *closedValuesByName)
+:
+	globalsByName_(globalsByName),
+	closedValuesByName_(closedValuesByName)
 {
 }
 
@@ -55,6 +63,16 @@ void Bindings::initLocal(const Identifier &identifier, const Value &value)
 	}
 }
 
+Bindings::ValuePtr &Bindings::getPointer(const Identifier &identifier)
+{
+	Bindings::const_iterator it = localsByName_.find(identifier);
+	if (it == localsByName_.end())
+	{
+		throw CompilerBug("Cannot get pointer for an unbound local identifier: '" + identifier.name() + "'");
+	}
+	return localsByName_[identifier];
+}
+
 Bindings::Mapping &Bindings::globals()
 {
     return *globalsByName_;
@@ -69,7 +87,11 @@ Bindings::Mapping &Bindings::mappingFor(RefType refType)
     case Global:
         return *globalsByName_;
     case Closure:
-        return localsByName_;
+        if (!closedValuesByName_)
+        {
+             throw CompilerBug("No closedValuesByName_");
+        }
+        return *closedValuesByName_;
     default:
         int rawValue = refType;
         throw CompilerBug("Unhandled refType " + str(rawValue));
@@ -85,7 +107,11 @@ const Bindings::Mapping &Bindings::mappingFor(RefType refType) const
     case Global:
         return *globalsByName_;
     case Closure:
-        return localsByName_;
+        if (!closedValuesByName_)
+        {
+             throw CompilerBug("No closedValuesByName_");
+        }
+        return *closedValuesByName_;
     default:
         int rawValue = refType;
         throw CompilerBug("Unhandled refType " + str(rawValue));

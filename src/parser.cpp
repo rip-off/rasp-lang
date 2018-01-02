@@ -379,8 +379,7 @@ namespace
 				{
 					for (unsigned i = 0 ; i < closedValues.size() ; ++i)
 					{
-						parameters.insert(parameters.begin(), closedValues[i]);
-						instructions.push_back(Instruction::refLocal(token.sourceLocation(), closedValues[i]));
+						instructions.push_back(Instruction::initClosure(token.sourceLocation(), closedValues[i]));
 					}
 					InternalFunction function(token.sourceLocation(), identifier.name(), parameters, tempInstructions);
 					instructions.push_back(Instruction::push(token.sourceLocation(), Value::function(function)));

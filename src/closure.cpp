@@ -1,35 +1,30 @@
 #include "closure.h"
 
-Closure::Closure(const Function &function, const Arguments &closedValues)
+Closure::Closure(const Function &function, const Bindings::Mapping &closedValuesByName)
 :
-	innerFunction(function.clone()),
-	closedValues(closedValues)
+	innerFunction_(function.clone()),
+	closedValuesByName_(closedValuesByName)
 {
 }
 
 Closure *Closure::clone() const
 {
-	return new Closure(*innerFunction, closedValues);
+	return new Closure(*innerFunction_, closedValuesByName_);
 }
 
 Value Closure::call(CallContext &callContext) const
 {
-	const Arguments &passedArguments = callContext.arguments();
-	Arguments allArguments;
-	allArguments.reserve(closedValues.size() + passedArguments.size());
-	allArguments.insert(allArguments.end(), closedValues.begin(), closedValues.end());
-	allArguments.insert(allArguments.end(), passedArguments.begin(), passedArguments.end());
-	CallContext nestedContext(&callContext.globals(), &allArguments, &callContext.interpreter());
-	return innerFunction->call(nestedContext);
+	CallContext nestedContext(&callContext.globals(), closedValuesByName_, callContext.arguments(), callContext.interpreter());
+	return innerFunction_->call(nestedContext);
 }
 
 const std::string &Closure::name() const
 {
-	return innerFunction->name();
+	return innerFunction_->name();
 }
 
 const SourceLocation &Closure::sourceLocation() const
 {
-	return innerFunction->sourceLocation();
+	return innerFunction_->sourceLocation();
 }
 

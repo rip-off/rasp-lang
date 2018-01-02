@@ -72,6 +72,11 @@ Instruction Instruction::refClosure(const SourceLocation &sourceLocation, const 
 	return Instruction(sourceLocation, REF_CLOSURE, Value::string(identifier.name()));
 }
 
+Instruction Instruction::initClosure(const SourceLocation &sourceLocation, const Identifier &identifier)
+{
+	return Instruction(sourceLocation, INIT_CLOSURE, Value::string(identifier.name()));
+}
+
 Instruction Instruction::assignClosure(const SourceLocation &sourceLocation, const std::string &identifier)
 {
 	return Instruction(sourceLocation, ASSIGN_CLOSURE, Value::string(identifier));
@@ -127,6 +132,8 @@ std::ostream &operator<<(std::ostream &out, const Instruction &instruction)
 		return out << "assign_global(" << instruction.value_.string() << ")";
 	case Instruction::REF_CLOSURE:
 		return out << "ref_closure(" << instruction.value_.string() << ")";
+	case Instruction::INIT_CLOSURE:
+		return out << "init_closure(" << instruction.value_.string() << ")";
 	case Instruction::ASSIGN_CLOSURE:
 		return out << "assign_closure(" << instruction.value_.string() << ")";
 	case Instruction::MEMBER_ACCESS:

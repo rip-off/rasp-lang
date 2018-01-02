@@ -7,14 +7,14 @@
 class Closure : public Function
 {
 public:
-	Closure(const Function &function, const Arguments &closedValues);
+	Closure(const Function &function, const Bindings::Mapping &closedValuesByName);
 	virtual Closure *clone() const;
 	virtual Value call(CallContext &) const;
 	virtual	const std::string &name() const;
 	virtual	const SourceLocation &sourceLocation() const;
 private:
-	std::unique_ptr<Function> innerFunction;
-	Arguments closedValues;
+	std::unique_ptr<Function> innerFunction_;
+	Bindings::Mapping closedValuesByName_;
 };
 
 #endif

@@ -284,6 +284,7 @@ namespace
 		assertEquals(result.number(), 13);
 	}
 
+#if 0
 	void testClosure(Interpreter &interpreter)
 	{
 		InstructionList instructions;
@@ -299,6 +300,7 @@ namespace
 		assertEquals(Value::TNumber, result.type());
 		assertEquals(result.number(), 55);
 	}
+#endif
 
 	void testTypesAndMemberAccess(Interpreter &interpreter)
 	{
@@ -966,7 +968,7 @@ static UnitTest tests[] = {
 	TEST_CASE(testClosureCanModifyVariableInOuterScope),
 	*/
 	TEST_CASE(testReturnedClosureCanStillAccessVariableInOuterScope),
-	TEST_CASE(testClosure),
+	// TODO: TEST_CASE(testClosure),
 	TEST_CASE(testTypesAndMemberAccess),
 	TEST_CASE(testSimpleLoop),
 	TEST_CASE(testComplexLoop),

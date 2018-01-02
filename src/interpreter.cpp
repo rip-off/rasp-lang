@@ -70,12 +70,15 @@ namespace
 		return argc;
 	}
 
-	Value handleClose(const Value &value, Stack &stack, Bindings &bindings)
+	typedef std::pair<Identifier, Bindings::ValuePtr> ClosedNameAndValue;
+	typedef std::vector<ClosedNameAndValue> ClosureValues;
+
+	Value handleClose(const Value &value, Stack &stack, ClosureValues &closureValues, Bindings &bindings)
 	{
 		unsigned argc = getArgumentCount(value);
-		if(stack.size() < argc + 1)
+		if(closureValues.size() < argc) // TODO:
 		{
-			throw CompilerBug("Need " + str(argc + 1) + " values on stack to close over captured values, but only have " + str(stack.size()));
+			throw CompilerBug("Need " + str(argc) + " values on stack to close over captured values, but only have " + str(closureValues.size()));
 		}
 			
 		Value top = pop(stack);
@@ -84,13 +87,15 @@ namespace
 			throw CompilerBug("Close instruction expects top of the stack to be functional value");
 		}
 
-		Arguments closedValues;
-		while(argc --> 0)
+		Bindings::Mapping closedValuesByName;
+		for (int i = 0 ; i < argc ; ++i)
 		{
-			closedValues.push_back(pop(stack));
+			auto &pair = closureValues.back();
+			closedValuesByName[pair.first] = pair.second;
+			closureValues.pop_back();
 		}
 
-		Closure closure(top.function(), closedValues);
+		Closure closure(top.function(), closedValuesByName);
 		return Value::function(closure);
 	}
 
@@ -121,6 +126,7 @@ Value Interpreter::exec(const InstructionList &instructions)
 Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 {
 	Stack stack;
+	ClosureValues closureValues;
 
 	for(InstructionList::const_iterator it = instructions.begin() ; it != instructions.end() ; ++it)
 	{
@@ -187,7 +193,7 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 				{
 					std::cout << "DEBUG: " << it->sourceLocation() << " close " << value << '\n';
 				}
-				Value result = handleClose(value, stack, bindings);
+				Value result = handleClose(value, stack, closureValues, bindings);
 				stack.push_back(result);
 			}
 			break;
@@ -273,6 +279,17 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 				std::cout << "DEBUG: " << it->sourceLocation() << " closure ref '" << value.string() << "' is " << stack.back() << '\n';
 			}
 			break;
+		case Instruction::INIT_CLOSURE:
+			{
+				Identifier identifier = Identifier(value.string());
+				Bindings::ValuePtr &binding = bindings.getPointer(identifier);
+				closureValues.push_back(ClosedNameAndValue(identifier, binding));
+				if(settings_.trace)
+				{
+					std::cout << "DEBUG: " << it->sourceLocation() << " closure init '" << value.string() << "' is " << *binding << '\n';
+				}
+			}
+			break;
 		case Instruction::ASSIGN_CLOSURE:
 			{
 				// TODO: implement Instruction::AssignClosure
@@ -326,6 +343,21 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 					std::cout << index << ":  " << *it << '\n';
 				}
 			}
+
+			if (closureValues.empty())
+			{
+				std::cout << "closureValues is empty\n";
+			}
+			else
+			{
+				std::cout << "closureValues contains " << closureValues.size() << " entries:\n";
+				int index = 0;
+				for(const ClosedNameAndValue &closedValue: closureValues)
+				{
+					++index;
+					std::cout << index << ":  " << closedValue.first << " -> " << *closedValue.second << " @ " << closedValue.second << '\n';
+				}
+			}
 		}
 	}
 	
@@ -356,7 +388,7 @@ Value Interpreter::handleFunction(const SourceLocation &sourceLocation, const Va
 	try
 	{
 		// TODO: where is nicer to get the globals from, bindings or interpreter?
-		CallContext callContext(&bindings.globals(), &arguments, this);
+		CallContext callContext(&bindings.globals(), arguments, this);
 		return function.call(callContext);
 	}
 	catch (RaspError &error)

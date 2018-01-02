@@ -11,17 +11,24 @@ class Interpreter;
 
 class CallContext
 {
-	typedef Bindings::Mapping Globals;
 public:
-	CallContext(Globals *globals, Arguments *arguments, Interpreter *);
+	CallContext(Bindings::Mapping *globals, const Arguments &, Interpreter *);
+
+	CallContext(Bindings::Mapping *globals, const Bindings::Mapping &closedValues, const Arguments &, Interpreter *);
 
 	const Arguments &arguments() const;
-	Globals &globals();
-	Interpreter &interpreter();
+
+	// TODO: pointer?
+	Bindings::Mapping &globals();
+
+	const Bindings::Mapping &closedValues() const;
+
+	Interpreter *interpreter();
 
 private:
-	Globals *globals_;
-	Arguments *arguments_;
+	Bindings::Mapping *globals_;
+	Bindings::Mapping closedValues_;
+	Arguments arguments_;
 	Interpreter *interpreter_;
 };
 

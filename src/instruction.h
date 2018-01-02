@@ -28,6 +28,7 @@ public:
 		INIT_GLOBAL,
 		ASSIGN_GLOBAL,
 		REF_CLOSURE,
+		INIT_CLOSURE,
 		ASSIGN_CLOSURE,
 		MEMBER_ACCESS,
 	};
@@ -57,6 +58,8 @@ public:
 	static Instruction assignGlobal(const SourceLocation &sourceLocation, const std::string &identifier);
 
 	static Instruction refClosure(const SourceLocation &sourceLocation, const Identifier &identifier);
+
+	static Instruction initClosure(const SourceLocation &sourceLocation, const Identifier &identifier);
 	
 	static Instruction assignClosure(const SourceLocation &sourceLocation, const std::string &identifier);
 

@@ -21,6 +21,8 @@ public:
 
     Bindings(Mapping *globalsByName);
 
+    Bindings(Mapping *globalsByName, Mapping *closedValuesByName);
+
     // Value should be bound
     const Value &get(RefType refType, const Identifier &identifier) const;
 
@@ -34,6 +36,8 @@ public:
     // Value should not be bound
     void initLocal(const Identifier &identifier, const Value &value);
 
+    ValuePtr &getPointer(const Identifier &identifier);
+
     Mapping &globals();
     
 private:
@@ -43,6 +47,7 @@ private:
 
     Mapping localsByName_;
     Mapping *globalsByName_;
+    Mapping *closedValuesByName_;
 
     Mapping &mappingFor(RefType refType);
     const Mapping &mappingFor(RefType refType) const;

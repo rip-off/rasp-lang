@@ -1,8 +1,8 @@
 #include "common.h"
 
 CallContext::CallContext(
-	Globals *globals,
-	Arguments *arguments, 
+	Bindings::Mapping *globals,
+	const Arguments &arguments,
 	Interpreter *interpreter)
 :
 	globals_(globals),
@@ -11,18 +11,36 @@ CallContext::CallContext(
 {
 }
 
-const Arguments &CallContext::arguments() const
+CallContext::CallContext(
+	Bindings::Mapping *globals,
+	const Bindings::Mapping &closedValues,
+	const Arguments &arguments,
+	Interpreter *interpreter)
+:
+	globals_(globals),
+	closedValues_(closedValues),
+	arguments_(arguments),
+	interpreter_(interpreter)
 {
-	return *arguments_;
 }
 
-CallContext::Globals &CallContext::globals()
+const Arguments &CallContext::arguments() const
+{
+	return arguments_;
+}
+
+Bindings::Mapping &CallContext::globals()
 {
 	return *globals_;
 }
 
-Interpreter &CallContext::interpreter()
+const Bindings::Mapping &CallContext::closedValues() const
 {
-	return *interpreter_;
+	return closedValues_;
+}
+
+Interpreter *CallContext::interpreter()
+{
+	return interpreter_;
 }
 
