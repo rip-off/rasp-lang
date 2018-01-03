@@ -47,22 +47,23 @@ public:
 	
 	static Instruction refLocal(const SourceLocation &sourceLocation, const Identifier &identifier);
 
-	static Instruction initLocal(const SourceLocation &sourceLocation, const std::string &identifier);
+	static Instruction initLocal(const SourceLocation &sourceLocation, const Identifier &identifier);
 
-	static Instruction assignLocal(const SourceLocation &sourceLocation, const std::string &identifier);
+	static Instruction assignLocal(const SourceLocation &sourceLocation, const Identifier &identifier);
 
 	static Instruction refGlobal(const SourceLocation &sourceLocation, const Identifier &identifier);
 	
-	static Instruction initGlobal(const SourceLocation &sourceLocation, const std::string &identifier);
+	static Instruction initGlobal(const SourceLocation &sourceLocation, const Identifier &identifier);
 
-	static Instruction assignGlobal(const SourceLocation &sourceLocation, const std::string &identifier);
+	static Instruction assignGlobal(const SourceLocation &sourceLocation, const Identifier &identifier);
 
 	static Instruction refClosure(const SourceLocation &sourceLocation, const Identifier &identifier);
 
 	static Instruction initClosure(const SourceLocation &sourceLocation, const Identifier &identifier);
 	
-	static Instruction assignClosure(const SourceLocation &sourceLocation, const std::string &identifier);
+	static Instruction assignClosure(const SourceLocation &sourceLocation, const Identifier &identifier);
 
+	// TODO: Identifier
 	static Instruction memberAccess(const SourceLocation &sourceLocation, const std::string &identifier);
 
 	Type type() const;

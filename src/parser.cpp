@@ -95,13 +95,13 @@ namespace
 			throw ParseError(token.sourceLocation(), "Identifier '" + identifier.name() + "' not defined");
 			break;
 		case IDENTIFIER_DEFINITION_LOCAL:
-			instructions.push_back(Instruction::initLocal(token.sourceLocation(), identifier.name()));
+			instructions.push_back(Instruction::initLocal(token.sourceLocation(), identifier));
 			break;
 		case IDENTIFIER_DEFINITION_CLOSURE:
 			throw CompilerBug("Identifier '" + identifier.name() + "' unexpectedly classified as closure");
 			break;
 		case IDENTIFIER_DEFINITION_GLOBAL:
-			instructions.push_back(Instruction::initGlobal(token.sourceLocation(), identifier.name()));
+			instructions.push_back(Instruction::initGlobal(token.sourceLocation(), identifier));
 			break;
 		default:
 			throw CompilerBug("Failed to classify identifier " + identifier.name() + " at " + str(token.sourceLocation()));
@@ -282,13 +282,13 @@ namespace
 					throw ParseError(token.sourceLocation(), "Identifier '" + identifier.name() + "' not defined");
 					break;
 				case IDENTIFIER_DEFINITION_LOCAL:
-					instructions.push_back(Instruction::assignLocal(token.sourceLocation(), identifier.name()));
+					instructions.push_back(Instruction::assignLocal(token.sourceLocation(), identifier));
 					break;
 				case IDENTIFIER_DEFINITION_CLOSURE:
-					instructions.push_back(Instruction::assignClosure(token.sourceLocation(), identifier.name()));
+					instructions.push_back(Instruction::assignClosure(token.sourceLocation(), identifier));
 					break;
 				case IDENTIFIER_DEFINITION_GLOBAL:
-					instructions.push_back(Instruction::assignGlobal(token.sourceLocation(), identifier.name()));
+					instructions.push_back(Instruction::assignGlobal(token.sourceLocation(), identifier));
 					break;
 				default:
 					throw CompilerBug("Failed to classify identifier " + identifier.name() + " at " + str(token.sourceLocation()));

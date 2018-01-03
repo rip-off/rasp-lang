@@ -42,14 +42,14 @@ Instruction Instruction::refLocal(const SourceLocation &sourceLocation, const Id
 	return Instruction(sourceLocation, REF_LOCAL, Value::string(identifier.name()));
 }
 
-Instruction Instruction::initLocal(const SourceLocation &sourceLocation, const std::string &identifier)
+Instruction Instruction::initLocal(const SourceLocation &sourceLocation, const Identifier &identifier)
 {
-	return Instruction(sourceLocation, INIT_LOCAL, Value::string(identifier));
+	return Instruction(sourceLocation, INIT_LOCAL, Value::string(identifier.name()));
 }
 
-Instruction Instruction::assignLocal(const SourceLocation &sourceLocation, const std::string &identifier)
+Instruction Instruction::assignLocal(const SourceLocation &sourceLocation, const Identifier &identifier)
 {
-	return Instruction(sourceLocation, ASSIGN_LOCAL, Value::string(identifier));
+	return Instruction(sourceLocation, ASSIGN_LOCAL, Value::string(identifier.name()));
 }
 
 Instruction Instruction::refGlobal(const SourceLocation &sourceLocation, const Identifier &identifier)
@@ -57,14 +57,14 @@ Instruction Instruction::refGlobal(const SourceLocation &sourceLocation, const I
 	return Instruction(sourceLocation, REF_GLOBAL, Value::string(identifier.name()));
 }
 
-Instruction Instruction::initGlobal(const SourceLocation &sourceLocation, const std::string &identifier)
+Instruction Instruction::initGlobal(const SourceLocation &sourceLocation, const Identifier &identifier)
 {
-	return Instruction(sourceLocation, INIT_GLOBAL, Value::string(identifier));
+	return Instruction(sourceLocation, INIT_GLOBAL, Value::string(identifier.name()));
 }
 
-Instruction Instruction::assignGlobal(const SourceLocation &sourceLocation, const std::string &identifier)
+Instruction Instruction::assignGlobal(const SourceLocation &sourceLocation, const Identifier &identifier)
 {
-	return Instruction(sourceLocation, ASSIGN_GLOBAL, Value::string(identifier));
+	return Instruction(sourceLocation, ASSIGN_GLOBAL, Value::string(identifier.name()));
 }
 
 Instruction Instruction::refClosure(const SourceLocation &sourceLocation, const Identifier &identifier)
@@ -77,9 +77,9 @@ Instruction Instruction::initClosure(const SourceLocation &sourceLocation, const
 	return Instruction(sourceLocation, INIT_CLOSURE, Value::string(identifier.name()));
 }
 
-Instruction Instruction::assignClosure(const SourceLocation &sourceLocation, const std::string &identifier)
+Instruction Instruction::assignClosure(const SourceLocation &sourceLocation, const Identifier &identifier)
 {
-	return Instruction(sourceLocation, ASSIGN_CLOSURE, Value::string(identifier));
+	return Instruction(sourceLocation, ASSIGN_CLOSURE, Value::string(identifier.name()));
 }
 
 Instruction Instruction::memberAccess(const SourceLocation &sourceLocation, const std::string &identifier)

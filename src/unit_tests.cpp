@@ -285,13 +285,15 @@ namespace
 		assertEquals(result.number(), 13);
 	}
 
-	// TODO: consistently pass Identifier to (init|assign|ref)(Global|Local|Closure)
 	void testClosure(Interpreter &interpreter)
 	{
+		Identifier x = Identifier("x");
+		Identifier y = Identifier("y");
+
 		InstructionList inner;
 		{
-			inner.push_back(Instruction::refClosure(CURRENT_SOURCE_LOCATION, Identifier("x")));
-			inner.push_back(Instruction::refClosure(CURRENT_SOURCE_LOCATION, Identifier("y")));
+			inner.push_back(Instruction::refClosure(CURRENT_SOURCE_LOCATION, x));
+			inner.push_back(Instruction::refClosure(CURRENT_SOURCE_LOCATION, y));
 			const Value *value = interpreter.global(Identifier("+"));
 			assertTrue(value, "Expected there is a global for '+'");
 			inner.push_back(Instruction::push(CURRENT_SOURCE_LOCATION, *value));
@@ -301,11 +303,11 @@ namespace
 		InstructionList outer;
 		{
 			outer.push_back(Instruction::push(CURRENT_SOURCE_LOCATION, Value::number(42)));
-			outer.push_back(Instruction::initLocal(CURRENT_SOURCE_LOCATION, "x"));
+			outer.push_back(Instruction::initLocal(CURRENT_SOURCE_LOCATION, x));
 			outer.push_back(Instruction::push(CURRENT_SOURCE_LOCATION, Value::number(13)));
-			outer.push_back(Instruction::initLocal(CURRENT_SOURCE_LOCATION, "y"));
-			outer.push_back(Instruction::initClosure(CURRENT_SOURCE_LOCATION, Identifier("x")));
-			outer.push_back(Instruction::initClosure(CURRENT_SOURCE_LOCATION, Identifier("y")));
+			outer.push_back(Instruction::initLocal(CURRENT_SOURCE_LOCATION, y));
+			outer.push_back(Instruction::initClosure(CURRENT_SOURCE_LOCATION, x));
+			outer.push_back(Instruction::initClosure(CURRENT_SOURCE_LOCATION, y));
 			std::vector<Identifier> noParameters;
 			// TODO: second arg as Identifier?
 			InternalFunction closure(CURRENT_SOURCE_LOCATION, "inner", noParameters, inner);
