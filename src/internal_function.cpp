@@ -6,7 +6,7 @@
 
 InternalFunction::InternalFunction(
 	const SourceLocation &sourceLocation,
-	const std::string &name, 
+	const Identifier &name,
 	const std::vector<Identifier> &parameters,
 	const InstructionList &instructionList)
 :
@@ -27,7 +27,7 @@ Value InternalFunction::call(CallContext &callContext) const
 	const Arguments &arguments = callContext.arguments();
 	if (arguments.size() != parameters_.size())
 	{
-		throw ExecutionError(sourceLocation_, "Function '" + name_ + "' passed " + str(arguments.size()) + " arguments but expected " + str(parameters_.size()));
+		throw ExecutionError(sourceLocation_, "Function '" + name_.name() + "' passed " + str(arguments.size()) + " arguments but expected " + str(parameters_.size()));
 	}
 	Bindings::Mapping closedValues = callContext.closedValues();
 	Bindings localBindings(&callContext.globals(), &closedValues);
@@ -40,7 +40,7 @@ Value InternalFunction::call(CallContext &callContext) const
 
 const std::string &InternalFunction::name() const
 {
-	return name_;
+	return name_.name();
 }
 
 const SourceLocation &InternalFunction::sourceLocation() const

@@ -309,8 +309,7 @@ namespace
 			outer.push_back(Instruction::initClosure(CURRENT_SOURCE_LOCATION, x));
 			outer.push_back(Instruction::initClosure(CURRENT_SOURCE_LOCATION, y));
 			std::vector<Identifier> noParameters;
-			// TODO: second arg as Identifier?
-			InternalFunction closure(CURRENT_SOURCE_LOCATION, "inner", noParameters, inner);
+			InternalFunction closure(CURRENT_SOURCE_LOCATION, Identifier("inner"), noParameters, inner);
 			outer.push_back(Instruction::push(CURRENT_SOURCE_LOCATION, Value::function(closure)));
 			outer.push_back(Instruction::close(CURRENT_SOURCE_LOCATION, 2));
 			outer.push_back(Instruction::call(CURRENT_SOURCE_LOCATION, 0));

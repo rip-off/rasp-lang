@@ -372,7 +372,7 @@ namespace
 				std::vector<Identifier> closedValues = getClosedValues(tempInstructions);
 				if (closedValues.empty())
 				{
-					InternalFunction function(token.sourceLocation(), identifier.name(), parameters, tempInstructions);
+					InternalFunction function(token.sourceLocation(), identifier, parameters, tempInstructions);
 					instructions.push_back(Instruction::push(token.sourceLocation(), Value::function(function)));
 				}
 				else
@@ -381,7 +381,7 @@ namespace
 					{
 						instructions.push_back(Instruction::initClosure(token.sourceLocation(), closedValues[i]));
 					}
-					InternalFunction function(token.sourceLocation(), identifier.name(), parameters, tempInstructions);
+					InternalFunction function(token.sourceLocation(), identifier, parameters, tempInstructions);
 					instructions.push_back(Instruction::push(token.sourceLocation(), Value::function(function)));
 					instructions.push_back(Instruction::close(token.sourceLocation(), closedValues.size()));
 				}

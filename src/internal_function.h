@@ -9,7 +9,7 @@ class InternalFunction : public Function
 public:
 	InternalFunction(
 		const SourceLocation &sourceLocation,
-		const std::string &name, 
+		const Identifier &name,
 		const std::vector<Identifier> &parameters, 
 		const InstructionList &instructionList);
 
@@ -20,7 +20,7 @@ public:
 
 private:
 	SourceLocation sourceLocation_;
-	std::string name_;
+	Identifier name_;
 	std::vector<Identifier> parameters_;
 	InstructionList instructionList_;
 };
