@@ -16,7 +16,7 @@ public:
     enum RefType {
         Local,
         Global,
-        Closure // TODO
+        Closure
     };
 
     Bindings(Mapping *globalsByName);

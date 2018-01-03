@@ -292,8 +292,11 @@ Value Interpreter::exec(const InstructionList &instructions, Bindings &bindings)
 			break;
 		case Instruction::ASSIGN_CLOSURE:
 			{
-				// TODO: implement Instruction::AssignClosure
-				throw CompilerBug("unimplemented: AssignClosure");
+				const Value &assignedValue = handleAssign(Bindings::Closure, value, stack, bindings);
+				if(settings_.trace)
+				{
+					std::cout << "DEBUG: " << it->sourceLocation() << " closure assign '" << value.string() << "' to " << assignedValue << '\n';
+				}
 			}
 			break;
 		case Instruction::MEMBER_ACCESS:

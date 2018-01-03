@@ -240,8 +240,6 @@ namespace
 		assertEquals(result.number(), 42);
 	}
 
-// TODO: test closure variable access
-#if 0
 	void testClosureSeesUpdatedVariableInOuterScope(Interpreter &interpreter)
 	{
 		Source source;
@@ -269,7 +267,6 @@ namespace
 		assertEquals(result.type(), Value::TNumber);
 		assertEquals(result.number(), 2);
 	}
-#endif
 
 	void testReturnedClosureCanStillAccessVariableInOuterScope(Interpreter &interpreter)
 	{
@@ -981,10 +978,8 @@ static UnitTest tests[] = {
 	TEST_CASE(testGlobalsReferencesInFunction),
 	TEST_CASE(testLocalsInFunction),
 	TEST_CASE(testClosureCanAccessVariableInOuterScope),
-	/*
 	TEST_CASE(testClosureSeesUpdatedVariableInOuterScope),
 	TEST_CASE(testClosureCanModifyVariableInOuterScope),
-	*/
 	TEST_CASE(testReturnedClosureCanStillAccessVariableInOuterScope),
 	TEST_CASE(testClosure),
 	TEST_CASE(testTypesAndMemberAccess),
