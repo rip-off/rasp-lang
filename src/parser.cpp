@@ -470,7 +470,8 @@ namespace
 					{
 						throw CompilerBug("Expected identifier but got " + str(child.type()));
 					}
-					instructions.push_back(Instruction::memberAccess(token.sourceLocation(), child.string()));
+					Identifier member(child.string());
+					instructions.push_back(Instruction::memberAccess(token.sourceLocation(), member));
 				}
 			}
 			break;

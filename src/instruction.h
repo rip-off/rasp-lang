@@ -63,8 +63,7 @@ public:
 	
 	static Instruction assignClosure(const SourceLocation &sourceLocation, const Identifier &identifier);
 
-	// TODO: Identifier
-	static Instruction memberAccess(const SourceLocation &sourceLocation, const std::string &identifier);
+	static Instruction memberAccess(const SourceLocation &sourceLocation, const Identifier &identifier);
 
 	Type type() const;
 

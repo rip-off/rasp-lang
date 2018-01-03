@@ -82,9 +82,9 @@ Instruction Instruction::assignClosure(const SourceLocation &sourceLocation, con
 	return Instruction(sourceLocation, ASSIGN_CLOSURE, Value::string(identifier.name()));
 }
 
-Instruction Instruction::memberAccess(const SourceLocation &sourceLocation, const std::string &identifier)
+Instruction Instruction::memberAccess(const SourceLocation &sourceLocation, const Identifier &identifier)
 {
-	return Instruction(sourceLocation, MEMBER_ACCESS, Value::string(identifier));
+	return Instruction(sourceLocation, MEMBER_ACCESS, Value::string(identifier.name()));
 }
 
 Instruction::Type Instruction::type() const
