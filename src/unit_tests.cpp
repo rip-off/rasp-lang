@@ -12,6 +12,7 @@
 #include "interpreter.h"
 #include "standard_math.h"
 #include "standard_library.h"
+#include "internal_function.h"
 #include "standard_library_error.h"
 
 #define RASP_ENABLE_ASSERTION_MACROS
@@ -284,23 +285,39 @@ namespace
 		assertEquals(result.number(), 13);
 	}
 
-#if 0
+	// TODO: consistently pass Identifier to (init|assign|ref)(Global|Local|Closure)
 	void testClosure(Interpreter &interpreter)
 	{
-		InstructionList instructions;
-		instructions.push_back(Instruction::push(CURRENT_SOURCE_LOCATION, Value::number(42)));
-		instructions.push_back(Instruction::push(CURRENT_SOURCE_LOCATION, Value::number(13)));
-		const Value *value = interpreter.global(Identifier("+"));
-		assertTrue(value, "Expected there is a global for '+'");
-		instructions.push_back(Instruction::push(CURRENT_SOURCE_LOCATION, *value));
-		int argumentsToCapture = 2;
-		instructions.push_back(Instruction::close(CURRENT_SOURCE_LOCATION, argumentsToCapture));
-		instructions.push_back(Instruction::call(CURRENT_SOURCE_LOCATION, 0));
-		Value result = interpreter.exec(instructions);
+		InstructionList inner;
+		{
+			inner.push_back(Instruction::refClosure(CURRENT_SOURCE_LOCATION, Identifier("x")));
+			inner.push_back(Instruction::refClosure(CURRENT_SOURCE_LOCATION, Identifier("y")));
+			const Value *value = interpreter.global(Identifier("+"));
+			assertTrue(value, "Expected there is a global for '+'");
+			inner.push_back(Instruction::push(CURRENT_SOURCE_LOCATION, *value));
+			inner.push_back(Instruction::call(CURRENT_SOURCE_LOCATION, 2));
+		}
+
+		InstructionList outer;
+		{
+			outer.push_back(Instruction::push(CURRENT_SOURCE_LOCATION, Value::number(42)));
+			outer.push_back(Instruction::initLocal(CURRENT_SOURCE_LOCATION, "x"));
+			outer.push_back(Instruction::push(CURRENT_SOURCE_LOCATION, Value::number(13)));
+			outer.push_back(Instruction::initLocal(CURRENT_SOURCE_LOCATION, "y"));
+			outer.push_back(Instruction::initClosure(CURRENT_SOURCE_LOCATION, Identifier("x")));
+			outer.push_back(Instruction::initClosure(CURRENT_SOURCE_LOCATION, Identifier("y")));
+			std::vector<Identifier> noParameters;
+			// TODO: second arg as Identifier?
+			InternalFunction closure(CURRENT_SOURCE_LOCATION, "inner", noParameters, inner);
+			outer.push_back(Instruction::push(CURRENT_SOURCE_LOCATION, Value::function(closure)));
+			outer.push_back(Instruction::close(CURRENT_SOURCE_LOCATION, 2));
+			outer.push_back(Instruction::call(CURRENT_SOURCE_LOCATION, 0));
+		}
+
+		Value result = interpreter.exec(outer);
 		assertEquals(Value::TNumber, result.type());
 		assertEquals(result.number(), 55);
 	}
-#endif
 
 	void testTypesAndMemberAccess(Interpreter &interpreter)
 	{
@@ -968,7 +985,7 @@ static UnitTest tests[] = {
 	TEST_CASE(testClosureCanModifyVariableInOuterScope),
 	*/
 	TEST_CASE(testReturnedClosureCanStillAccessVariableInOuterScope),
-	// TODO: TEST_CASE(testClosure),
+	TEST_CASE(testClosure),
 	TEST_CASE(testTypesAndMemberAccess),
 	TEST_CASE(testSimpleLoop),
 	TEST_CASE(testComplexLoop),
