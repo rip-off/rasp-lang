@@ -1,3 +1,7 @@
+Links:
+* https://github.com/rip-off/rasp-lang/
+* https://travis-ci.org/rip-off/rasp-lang
+
 Doing:
 * Decide!
 
