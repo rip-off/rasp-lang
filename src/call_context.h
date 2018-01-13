@@ -1,5 +1,5 @@
-#ifndef COMMON_H
-#define COMMON_H
+#ifndef CALL_CONTEXT_H
+#define CALL_CONTEXT_H
 
 #include <vector>
 #include "value.h"

@@ -2,7 +2,7 @@
 #define FUNCTION_H
 
 #include <string>
-#include "common.h"
+#include "call_context.h"
 #include "source_location.h"
 
 class Function
