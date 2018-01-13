@@ -191,6 +191,31 @@ bool Value::isTruthy() const
 	}
 }
 
+std::ostream &operator<<(std::ostream &out, const Value::Type &type)
+{
+	switch(type)
+	{
+	case Value::TNil:
+		return out << "TNil";
+	case Value::TArray:
+		return out << "TArray";
+	case Value::TString:
+		return out << "TString";
+	case Value::TNumber:
+		return out << "TNumber";
+	case Value::TObject:
+		return out << "TObject";
+	case Value::TBoolean:
+		return out << "TBoolean";
+	case Value::TFunction:
+		return out << "TFunction";
+	case Value::TTypeDefinition:
+		return out << "TTypeDefinition";
+	default:
+		throw CompilerBug("Type " + str(static_cast<int>(type)) + " not implemented");
+	}
+}
+
 std::ostream &operator<<(std::ostream &out, const Value &value)
 {
 	switch(value.type_)

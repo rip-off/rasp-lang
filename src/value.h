@@ -150,6 +150,7 @@ public:
     return !isTruthy();
   }
 
+	friend std::ostream &operator<<(std::ostream &out, const Type &type);
 	friend std::ostream &operator<<(std::ostream &out, const Value &value);
 	friend bool operator==(const Value &left, const Value &right);
 	friend bool operator!=(const Value &left, const Value &right)
