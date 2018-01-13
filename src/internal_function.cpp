@@ -30,7 +30,8 @@ Value InternalFunction::call(CallContext &callContext) const
 		throw ExecutionError(sourceLocation_, "Function '" + name_.name() + "' passed " + str(arguments.size()) + " arguments but expected " + str(parameters_.size()));
 	}
 	Bindings::Mapping closedValues = callContext.closedValues();
-	Bindings localBindings(&callContext.globals(), &closedValues);
+	// TODO: guarantee lifecycle of "closedValues"?
+	Bindings localBindings(callContext.globals(), &closedValues);
 	for (unsigned i = 0 ; i < parameters_.size() ; ++i)
 	{
 		localBindings.initLocal(parameters_[i], arguments[i]);

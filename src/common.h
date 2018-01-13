@@ -18,8 +18,7 @@ public:
 
 	const Arguments &arguments() const;
 
-	// TODO: pointer?
-	Bindings::Mapping &globals();
+	Bindings::Mapping *globals();
 
 	const Bindings::Mapping &closedValues() const;
 

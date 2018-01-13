@@ -14,7 +14,7 @@ Closure *Closure::clone() const
 
 Value Closure::call(CallContext &callContext) const
 {
-	CallContext nestedContext(&callContext.globals(), closedValuesByName_, callContext.arguments(), callContext.interpreter());
+	CallContext nestedContext(callContext.globals(), closedValuesByName_, callContext.arguments(), callContext.interpreter());
 	return innerFunction_->call(nestedContext);
 }
 

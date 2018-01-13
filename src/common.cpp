@@ -29,9 +29,9 @@ const Arguments &CallContext::arguments() const
 	return arguments_;
 }
 
-Bindings::Mapping &CallContext::globals()
+Bindings::Mapping *CallContext::globals()
 {
-	return *globals_;
+	return globals_;
 }
 
 const Bindings::Mapping &CallContext::closedValues() const
