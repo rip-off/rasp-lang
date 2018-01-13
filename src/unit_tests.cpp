@@ -259,6 +259,20 @@ namespace
 		Source source;
 		source << "(defun outer ()";
 		source << "  (var capture 1)";
+		source << "  (defun inner () (set capture 2))";
+		source << "  (inner)";
+		source << "  capture)";
+		source << "(outer)";
+		Value result = execute(interpreter, source);
+		assertEquals(result.type(), Value::TNumber);
+		assertEquals(result.number(), 2);
+	}
+
+	void testClosureCanReadAndWriteVariableInOuterScope(Interpreter &interpreter)
+	{
+		Source source;
+		source << "(defun outer ()";
+		source << "  (var capture 1)";
 		source << "  (defun inner () (set capture (+ capture 1)))";
 		source << "  (inner)";
 		source << "  capture)";
@@ -1028,6 +1042,7 @@ static UnitTest tests[] = {
 	TEST_CASE(testClosureCanAccessVariableInOuterScope),
 	TEST_CASE(testClosureSeesUpdatedVariableInOuterScope),
 	TEST_CASE(testClosureCanModifyVariableInOuterScope),
+	TEST_CASE(testClosureCanReadAndWriteVariableInOuterScope),
 	TEST_CASE(testReturnedClosureCanStillAccessVariableInOuterScope),
 	TEST_CASE(testClosure),
 	TEST_CASE(testTypesAndMemberAccess),
