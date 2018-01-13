@@ -7,9 +7,23 @@
 #include "standard_library_error.h"
 #include "type_definition.h"
 
+#define ExternalFunctionError(message) ExternalFunctionError(__FUNCTION__, CURRENT_SOURCE_LOCATION, message)
+
 namespace
 {
-	void print_to_stream(std::ostream &out, const Arguments &arguments)
+	typedef void Formatter(std::ostream &out, const Value &);
+
+	// TODO: Helper function visible in user facing error messages
+	// E.g: Cannot format value of type TFunction in external function 'formattingUnsupported'
+	void formattingUnsupported(std::ostream &, const Value &value) {
+		throw ExternalFunctionError("Cannot format value of type " + str(value.type()));
+	}
+
+	void debugFormatting(std::ostream &out, const Value &value) {
+		out << value;
+	}
+
+	void print_to_stream(std::ostream &out, const Arguments &arguments, Formatter *other)
 	{
 		for(Arguments::const_iterator i = arguments.begin() ; i != arguments.end() ; ++i)
 		{
@@ -29,8 +43,7 @@ namespace
 				out << (value.boolean() ? "true" : "false");
 				break;
 			default:
-				// TODO: Should printing arbitrary types (functions, user defined types, ...) be allowed?
-				out << value;
+				other(out, value);
 				break;
 			}
 		}
@@ -39,19 +52,24 @@ namespace
 
 namespace
 {
-	#define ExternalFunctionError(message) ExternalFunctionError(__FUNCTION__, CURRENT_SOURCE_LOCATION, message)
-
 	Value print(const Arguments &arguments)
 	{
-		print_to_stream(std::cout, arguments);
-		return Value();
+	  print_to_stream(std::cout, arguments, &formattingUnsupported);
+		return Value::nil();
 	}
 
 	Value println(const Arguments &arguments)
 	{
-		Value result = print(arguments);
+		print_to_stream(std::cout, arguments, &formattingUnsupported);
 		std::cout << '\n';
-		return result;
+		return Value::nil();
+	}
+
+	Value debug(const Arguments &arguments)
+	{
+		print_to_stream(std::cout, arguments, &debugFormatting);
+		std::cout << '\n';
+		return Value::nil();
 	}
 
 	Value concat(const Arguments &arguments)
@@ -61,7 +79,7 @@ namespace
 			throw ExternalFunctionError("Expect at least 2 arguments");
 		}
 		std::stringstream result;
-		print_to_stream(result, arguments);
+		print_to_stream(result, arguments, &formattingUnsupported);
 		return Value::string(result.str());
 	}
 
@@ -208,7 +226,7 @@ namespace
 			throw ExternalFunctionError("Expected at least 1 argument");
 		}
 		std::stringstream stream;
-		print_to_stream(stream, arguments);
+		print_to_stream(stream, arguments, &formattingUnsupported);
 		return Value::string(stream.str());
 	}
 
@@ -347,6 +365,7 @@ namespace
 		ApiReg("&&", CURRENT_SOURCE_LOCATION, &operatorAnd),
 		ENTRY(time),
 		ENTRY(print),
+		ENTRY(debug),
 		ENTRY(concat),
 		ENTRY(is_nil),
 		ENTRY(format),

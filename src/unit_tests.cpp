@@ -920,6 +920,54 @@ namespace
 		assertEquals(result.number(), 42);
 	}
 #endif
+
+	void testCannotFormatFunctions(Interpreter &interpreter)
+	{
+		Source source = "(format println)";
+		try
+		{
+			execute(interpreter, source);
+			fail("Expected ExecutionError");
+		}
+		catch (const ExecutionError &e)
+		{
+			assertEquals(e.what(), "Cannot format value of type TFunction in external function 'formattingUnsupported'");
+		}
+	}
+
+	void testCannotPrintTypes(Interpreter &interpreter)
+	{
+		Source source;
+		source << "(type Person id name)";
+		source << "(print Person)";
+		try
+		{
+			execute(interpreter, source);
+			fail("Expected ExecutionError");
+		}
+		catch (const ExecutionError &e)
+		{
+			assertEquals(e.what(), "Cannot format value of type TTypeDefinition in external function 'formattingUnsupported'");
+		}
+	}
+
+	void testCannotPrintlnObjects(Interpreter &interpreter)
+	{
+		Source source;
+		source << "(type Person id name)";
+		source << "(var person (new Person 42 \"Alice\"))";
+		source << "(println person)";
+		try
+		{
+			execute(interpreter, source);
+			fail("Expected ExecutionError");
+		}
+		catch (const ExecutionError &e)
+		{
+			assertEquals(e.what(), "Cannot format value of type TObject in external function 'formattingUnsupported'");
+		}
+	}
+
 }
 
 namespace
@@ -1027,6 +1075,9 @@ static UnitTest tests[] = {
 	TEST_CASE(testLocalTypeIsNotAvailableOutsideDefiningFunction),
 	TEST_CASE(testTypeDefinitionWithPrimitiveTypedMembers),
 	// TEST_CASE(testTypeDefinitionWithCustomTypedMembers),
+	TEST_CASE(testCannotFormatFunctions),
+	TEST_CASE(testCannotPrintTypes),
+	TEST_CASE(testCannotPrintlnObjects),
 };
 
 int runUnitTests(const Settings &settings)
