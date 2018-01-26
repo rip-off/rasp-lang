@@ -1,5 +1,5 @@
 
-(defun debug (message object)
+(defun debug_log (message object)
 	(if false
 		(println "DEBUG " message ": " object)))
 
@@ -58,9 +58,9 @@
 		(var element (array_element row column_input))
 		(if (== element " ")
 			(set row (array_set_element row column_input player))
-			(debug "row" row)
+			(debug_log "row" row)
 			(set state (array_set_element state row_input row))
-			(debug "state" state)
+			(debug_log "state" state)
 			(set moved true))
 		(if (!= element " ")
 			(println "Sorry, that space is taken!")))
@@ -127,7 +127,7 @@
 	(while (! (game_over state))
 		(print_state state)
 		(set state (make_move player state))
-		(debug "main state" state)
+		(debug_log "main state" state)
 		(var next_player nil)
 		(if (== player "X")
 			(set next_player "O"))
