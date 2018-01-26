@@ -119,21 +119,22 @@
 
 (defun game_over (state)
 	(|| (win_by_row state) (win_by_column state) (win_by_diagonal state)))
+
+(var PLAYER_X "X")
+(var PLAYER_O "O")
+
+(defun next_player (current_player)
+  (if (== current_player PLAYER_X) PLAYER_O else PLAYER_X))
 	
 (defun main ()
 	(var state (create_tic_tac_toe_state))
 	(var running true)
-	(var player "X")
+	(var player PLAYER_X)
 	(while (! (game_over state))
 		(print_state state)
 		(set state (make_move player state))
 		(debug_log "main state" state)
-		(var next_player nil)
-		(if (== player "X")
-			(set next_player "O"))
-		(if (!= player "X")
-			(set next_player "X"))
-		(set player next_player))
+		(set player (next_player player)))
   // TODO: print winner / draw
 	(println "Thanks for playing!"))
 
