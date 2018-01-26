@@ -130,14 +130,16 @@
     (set row (+ row 1)))
   (== total_occupied 9))
 
-(defun someone_has_won (state)
-  (||
-    (! (is_nil (winner_by_row state)))
-    (! (is_nil (winner_by_column state)))
-    (! (is_nil (winner_by_diagonal state)))))
+(defun winner (state)
+  (var result (winner_by_row state))
+  (if (is_nil winner)
+    (set result (winner_by_column state)))
+  (if (is_nil winner)
+    (set result (winner_by_diagonal state)))
+  result)
 
 (defun game_over (state)
-	(|| (someone_has_won state) (board_full state)))
+	(|| (! (is_nil (winner state))) (board_full state)))
 
 (var PLAYER_X "X")
 (var PLAYER_O "O")
