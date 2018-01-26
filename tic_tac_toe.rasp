@@ -55,7 +55,6 @@
 	(while (! moved)
 		(var row_input (read_tic_tac_toe_position "row"))
 		(var column_input (read_tic_tac_toe_position "column"))
-		(println "You entered " (+ row_input 1) ", " (+ column_input 1))
 		(var row (array_element state row_input))
 		(var element (array_element row column_input))
 		(if (== element EMPTY_CELL)
