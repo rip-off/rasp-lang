@@ -118,7 +118,7 @@
 		)
 	result)
 
-(defun is_draw (state)
+(defun board_full (state)
   (var total_occupied 0)
   (var row 0)
   (while (< row 3)
@@ -131,7 +131,7 @@
   (== total_occupied 9))
 
 (defun game_over (state)
-	(|| (win_by_row state) (win_by_column state) (win_by_diagonal state) (is_draw state)))
+	(|| (win_by_row state) (win_by_column state) (win_by_diagonal state) (board_full state)))
 
 (var PLAYER_X "X")
 (var PLAYER_O "O")
