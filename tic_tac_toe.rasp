@@ -119,8 +119,20 @@
 		)
 	result)
 
+(defun is_draw (state)
+  (var total_occupied 0)
+  (var row 0)
+  (while (< row 3)
+    (var column 0)
+    (while (< column 3)
+      (if (!= (cell state row column) EMPTY_CELL)
+        (set total_occupied (+ total_occupied 1)))
+      (set column (+ column 1)))
+    (set row (+ row 1)))
+  (== total_occupied 9))
+
 (defun game_over (state)
-	(|| (win_by_row state) (win_by_column state) (win_by_diagonal state)))
+	(|| (win_by_row state) (win_by_column state) (win_by_diagonal state) (is_draw state)))
 
 (var PLAYER_X "X")
 (var PLAYER_O "O")
