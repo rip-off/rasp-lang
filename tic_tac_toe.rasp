@@ -132,11 +132,13 @@
 	(var state (create_tic_tac_toe_state))
 	(var running true)
 	(var player PLAYER_X)
-	(while (! (game_over state))
+	(while running
 		(print_state state)
 		(set state (make_move player state))
 		(debug_log "main state" state)
-		(set player (next_player player)))
+		(set player (next_player player))
+		(if (game_over state)
+		  (set running false)))
   // TODO: print winner / draw
 	(println "Thanks for playing!"))
 
