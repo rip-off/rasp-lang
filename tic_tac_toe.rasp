@@ -158,7 +158,11 @@
 		(set player (next_player player))
 		(if (game_over state)
 		  (set running false)))
-  // TODO: print winner / draw
+  (println "Game over...")
+  (if (! (is_nil (winner state)))
+    (println "Winner: " (winner state))
+  else
+    (println "Draw!"))
 	(println "Thanks for playing!"))
 
 (main)
