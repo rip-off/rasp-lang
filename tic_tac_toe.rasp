@@ -63,8 +63,8 @@
 			(debug_log "row" row)
 			(set state (array_set_element state row_input row))
 			(debug_log "state" state)
-			(set moved true))
-		(if (!= element EMPTY_CELL)
+			(set moved true)
+		else
 			(println "Sorry, that space is taken!")))
 	state)
 
