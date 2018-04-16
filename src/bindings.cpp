@@ -73,11 +73,6 @@ Bindings::ValuePtr &Bindings::getPointer(const Identifier &identifier)
 	return localsByName_[identifier];
 }
 
-Bindings::Mapping &Bindings::globals()
-{
-    return *globalsByName_;
-}
-
 Bindings::Mapping &Bindings::mappingFor(RefType refType)
 {
     switch(refType)

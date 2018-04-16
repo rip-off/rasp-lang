@@ -38,8 +38,6 @@ public:
 
     ValuePtr &getPointer(const Identifier &identifier);
 
-    Mapping &globals();
-    
 private:
     // Deliberately private & unimplemented
     Bindings(const Bindings &);

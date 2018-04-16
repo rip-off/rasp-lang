@@ -390,8 +390,7 @@ Value Interpreter::handleFunction(const SourceLocation &sourceLocation, const Va
 	const Function &function = top.function();
 	try
 	{
-		// TODO: where is nicer to get the globals from, bindings or interpreter?
-		CallContext callContext(&bindings.globals(), arguments, this);
+		CallContext callContext(&globals_, arguments, this);
 		return function.call(callContext);
 	}
 	catch (RaspError &error)
