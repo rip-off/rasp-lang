@@ -71,3 +71,31 @@ Done:
 * Conditions
 * Variable declarations
 
+
+Type analysis / deduction
+* Every expression may have a type
+* Start with TYPE_UNDETERMINED
+* Look for clues
+** Numeric, string and boolean literals are typed
+** Challenge: nil type
+** Built-in function calls are typed
+** Challenge: some functions are generic
+
+(var x 10) // x:number
+(var y x) // y <- typeof(x)
+(var z (+ ...)) // z -> typeof(+)
+(defun (f) (var a (f))) // a -> typeof(f)
+(var b [1 2 3]) // b -> typeof(???) array[int] desired
+(var c nil) // c -> typeof(???)
+
+Goals:
+  * Predict errors prior to execution (e.g. (+ "forty-six" 2)
+  * Constrain values to expected bounds (e.g. x is always numeric)
+  * Enforce at runtime
+  * Allow for overloading same function name based on type
+
+Algorithm:
+ * Build dependency graph between expressions
+ * Propagate known types into graph
+ * Find & report inconsistent resolutions
+
