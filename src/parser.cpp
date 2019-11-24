@@ -65,6 +65,7 @@ namespace
 			throw ParseError(token.sourceLocation(), "Declaration expected, but got " + str(token.type()));
 		}
 		const Token::Children &children = token.children();
+		assert(children.size() == 2);
 		checkValidType(children[1]);
 		return tryMakeIdentifier(children[0]);
 	}
