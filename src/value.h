@@ -2,13 +2,15 @@
 #define VALUE_H
 
 #include <map>
+#include <memory>
 #include <iosfwd>
 #include <string>
 #include <vector>
 #include <cassert>
 
+#include "type_definition.h"
+
 class Function;
-struct TypeDefinition;
 
 class Value
 {
@@ -24,7 +26,7 @@ private:
 		std::string *string;
 		Array *array;
 		Object *object;
-		TypeDefinition *typeDefinition;
+		TypePointer *typeDefinition;
 	};
 
 public:
@@ -55,7 +57,7 @@ public:
 	static Value object(const Object &object);
 	static Value string(const std::string &text);
 	static Value function(const Function &function);
-	static Value typeDefinition(const TypeDefinition &typeDefinition);
+	static Value typeDefinition(const TypePointer &typeDefinition);
 
 	bool isNil() const
 	{
@@ -130,7 +132,7 @@ public:
 	const TypeDefinition &typeDefinition() const
 	{
 		assert(isTypeDefinition());
-		return *data_.typeDefinition;
+		return **data_.typeDefinition;
 	}
 
 	Type type() const
@@ -166,7 +168,7 @@ private:
 	explicit Value(const Function &function);
 	explicit Value(const Array &array);
 	explicit Value(const Object &object);
-	explicit Value(const TypeDefinition &typeDefinition);
+	explicit Value(const TypePointer &typeDefinition);
 
 	Type type_;
 	Data data_;

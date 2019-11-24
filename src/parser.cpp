@@ -317,7 +317,7 @@ namespace
 					memberNames.push_back(identifier);
 				}
 
-				TypeDefinition typeDefinition = { identifier.name(), memberNames };
+				TypePointer typeDefinition = std::make_shared<TypeDefinition>(identifier.name(), memberNames);
 				instructions.push_back(Instruction::push(token.sourceLocation(), Value::typeDefinition(typeDefinition)));
 
 				// Note: allows recursive types

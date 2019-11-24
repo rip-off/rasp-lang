@@ -53,10 +53,10 @@ Value::Value(const Array &elements)
 	data_.array = new Array(elements);
 }
 
-Value::Value(const TypeDefinition &typeDefinition)
+Value::Value(const TypePointer &typeDefinition)
 	: type_(TTypeDefinition)
 {
-	data_.typeDefinition = new TypeDefinition(typeDefinition);
+	data_.typeDefinition = new TypePointer(typeDefinition);
 }
 
 Value::~Value()
@@ -104,7 +104,7 @@ Value::Value(const Value &value)
 	}
 	else if(type_ == TTypeDefinition)
 	{
-		data_.typeDefinition = new TypeDefinition(*value.data_.typeDefinition);
+		data_.typeDefinition = new TypePointer(*value.data_.typeDefinition);
 	}
 	else
 	{
@@ -154,7 +154,7 @@ Value Value::function(const Function &function)
 	return Value(function);
 }
 
-Value Value::typeDefinition(const TypeDefinition &typeDefinition)
+Value Value::typeDefinition(const TypePointer &typeDefinition)
 {
 	return Value(typeDefinition);
 }
@@ -257,11 +257,11 @@ std::ostream &operator<<(std::ostream &out, const Value &value)
 		}
 		return out;
 	case Value::TBoolean:
-		return out << (value.data_.boolean ? "true" : "false");
+		return out << (value.boolean() ? "true" : "false");
 	case Value::TFunction:
-		return out << "<function: " << value.data_.function->name() << '>';
+		return out << "<function: " << value.function().name() << '>';
 	case Value::TTypeDefinition:
-		return out << "<type: " << value.data_.typeDefinition->name << '>';
+		return out << "<type: " << value.typeDefinition().name() << '>';
 	default:
 		throw CompilerBug("Type " + str(value.type_) + " not implemented");
 	}

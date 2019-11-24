@@ -266,17 +266,18 @@ namespace
 		}
 
 		const TypeDefinition &typeDefinition = arguments.front().typeDefinition();
-		size_t memberCount = typeDefinition.memberNames.size();
+		const std::vector<Identifier> &memberNames = typeDefinition.memberNames();
+		size_t memberCount = memberNames.size();
 		size_t constructorArguments = arguments.size() - 1;
 		if (memberCount != constructorArguments)
 		{
-			throw ExternalFunctionError("Type " + typeDefinition.name + " requires " + str(memberCount) + " members, but found " + str(constructorArguments));
+			throw ExternalFunctionError("Type " + typeDefinition.name() + " requires " + str(memberCount) + " members, but found " + str(constructorArguments));
 		}
 
 		Value::Object object;
 		for (size_t i = 0 ; i < memberCount ; ++i)
 		{
-			const std::string &memberName = typeDefinition.memberNames[i].name();
+			const std::string &memberName = memberNames[i].name();
 			object[memberName] = arguments[i + 1];
 		}
 
