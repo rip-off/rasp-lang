@@ -10,11 +10,11 @@
 class TypeDefinition
 {
 private:
-	std::string name_;
+	Identifier name_;
 	std::vector<Identifier> memberNames_;
 
 public:
-	TypeDefinition(const std::string &name, const std::vector<Identifier> &memberNames)
+	TypeDefinition(const Identifier &name, const std::vector<Identifier> &memberNames)
 	:
 		name_(name),
 		memberNames_(memberNames)
@@ -23,7 +23,7 @@ public:
 
 	const std::string &name() const
 	{
-		return name_;
+		return name_.name();
 	}
 
 	const std::vector<Identifier> &memberNames() const
