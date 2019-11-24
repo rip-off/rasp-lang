@@ -926,6 +926,18 @@ namespace
 	void testTypeDefinitionWithCustomTypedMembers(Interpreter &interpreter)
 	{
 		Source source;
+		source << "(type Name first:string last:string)";
+		source << "(type Person id:number name:Name)";
+		source << "(var person (new Person 42 (new Name \"Joe\" \"Bloggs\")))";
+		source << "(concat person.name.first \" \" person.name.last)";
+		Value result = execute(interpreter, source);
+		assertEquals(result.type(), Value::TString);
+		assertEquals(result.string(), "Joe Bloggs");
+	}
+
+	void testTypeDefinitionWithRecursiveCustomTypedMembers(Interpreter &interpreter)
+	{
+		Source source;
 		source << "(type Node parent:Node value:number)";
 		source << "(var node (new Node nil 42))";
 		source << "node.id";
@@ -934,6 +946,22 @@ namespace
 		assertEquals(result.number(), 42);
 	}
 #endif
+
+	void testTypeDefinitionWithUndefinedType(Interpreter &interpreter)
+	{
+		Source source = "(type Foo x:UndefinedType)";
+		Token token = lex(source);
+		Declarations declarations = interpreter.declarations();
+		try
+		{
+			parse(token, declarations, interpreter.settings());
+			fail("Expected ParseError");
+		}
+		catch (const ParseError &e)
+		{
+			assertEquals(e.what(), "Unknown type 'UndefinedType'");
+		}
+	}
 
 	void testCannotFormatFunctions(Interpreter &interpreter)
 	{
@@ -1090,6 +1118,8 @@ static UnitTest tests[] = {
 	TEST_CASE(testLocalTypeIsNotAvailableOutsideDefiningFunction),
 	TEST_CASE(testTypeDefinitionWithPrimitiveTypedMembers),
 	// TEST_CASE(testTypeDefinitionWithCustomTypedMembers),
+	// TEST_CASE(testTypeDefinitionWithRecursiveCustomTypedMembers),
+	TEST_CASE(testTypeDefinitionWithUndefinedType),
 	TEST_CASE(testCannotFormatFunctions),
 	TEST_CASE(testCannotPrintTypes),
 	TEST_CASE(testCannotPrintlnObjects),
