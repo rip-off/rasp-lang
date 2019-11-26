@@ -470,7 +470,7 @@ namespace
 				if (settings.printInstructions)
 				{
 					std::cout << "Function (" << identifier.name();
-					for (unsigned i = 0 ; i < parameters.size()  ; ++i)
+					for (unsigned i = 0 ; i < parameters.size() ; ++i)
 					{
 						std::cout << " " << parameters[i].name();
 					}
