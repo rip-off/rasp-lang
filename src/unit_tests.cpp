@@ -1209,11 +1209,22 @@ static UnitTest tests[] = {
 
 int runUnitTests(const Settings &settings)
 {
-	int result = 0;
+  int successes = 0;
+	int failures = 0;
 	for (UnitTest test: tests)
 	{
-		result += runUnitTest(test, settings);
+		failures += runUnitTest(test, settings);
+		++successes;
 	}
-	return result;
+
+	if (failures == 0)
+	{
+	  std::cout << "SUCCESS " << successes << " test cases\n";
+	}
+	else
+	{
+	  std::cout << "FAILED " << failures << " of " << successes << " test cases\n";
+	}
+	return failures;
 }
 
