@@ -321,6 +321,11 @@ namespace
 		}
 		Identifier identifier = tryMakeIdentifier(children[1]);
 		// TODO: what if identifier is member access: object.field?
+		if (!children[1].children().empty())
+		{
+			throw ParseError(token.sourceLocation(), "Keyword 'inc' does not support object members");
+		}
+
 		// Generate instructions for (set <var> (+ 1 <var>))
 		instructions.push_back(Instruction::push(token.sourceLocation(), Value::number(1)));
 		handleVariableReference(token, identifier, declarations, instructions);
