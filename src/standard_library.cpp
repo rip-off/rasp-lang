@@ -23,29 +23,33 @@ namespace
 		out << value;
 	}
 
+	void print_to_stream(std::ostream &out, const Value &value, Formatter *other)
+	{
+		switch(value.type())
+		{
+		case Value::TNil:
+			out << "nil";
+			break;
+		case Value::TString:
+			out << value.string();
+			break;
+		case Value::TNumber:
+			out << value.number();
+			break;
+		case Value::TBoolean:
+			out << (value.boolean() ? "true" : "false");
+			break;
+		default:
+			other(out, value);
+			break;
+		}
+	}
+
 	void print_to_stream(std::ostream &out, const Arguments &arguments, Formatter *other)
 	{
 		for(Arguments::const_iterator i = arguments.begin() ; i != arguments.end() ; ++i)
 		{
-			const Value &value = *i;
-			switch(value.type())
-			{
-			case Value::TNil:
-				out << "nil";
-				break;
-			case Value::TString:
-				out << value.string();
-				break;
-			case Value::TNumber:
-				out << value.number();
-				break;
-			case Value::TBoolean:
-				out << (value.boolean() ? "true" : "false");
-				break;
-			default:
-				other(out, value);
-				break;
-			}
+			print_to_stream(out, *i, other);
 		}
 	}
 }
@@ -80,6 +84,17 @@ namespace
 		}
 		std::stringstream result;
 		print_to_stream(result, arguments, &formattingUnsupported);
+		return Value::string(result.str());
+	}
+
+  Value to_str(const Arguments &arguments)
+	{
+		if(arguments.size() != 1)
+		{
+			throw ExternalFunctionError("Expect single argument");
+		}
+		std::stringstream result;
+		print_to_stream(result, arguments.front(), &formattingUnsupported);
 		return Value::string(result.str());
 	}
 
@@ -387,6 +402,7 @@ namespace
 		ENTRY(print),
 		ENTRY(debug),
 		ENTRY(concat),
+		ENTRY(to_str),
 		ENTRY(is_nil),
 		ENTRY(format),
 		ENTRY(println),
