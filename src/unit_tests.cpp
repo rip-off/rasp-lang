@@ -115,6 +115,70 @@ namespace
 		assertEquals(result[3].type(), Instruction::CALL);
 		assertEquals(result[3].value().number(), 2);
 	}
+	
+	void testParserForIncKeywordWithGlobalVariable(Interpreter &interpreter)
+	{
+		SourceLocation sourceLocation = CURRENT_SOURCE_LOCATION;
+		Identifier variableName("x");
+		Token function = Token::keyword(sourceLocation, "inc");
+		Token variable = Token::identifier(sourceLocation, variableName);
+		Token list = Token::list(sourceLocation);
+		list.addChild(function);
+		list.addChild(variable);
+		Token root = Token::list(sourceLocation);
+		root.addChild(list);
+		Declarations declarations = interpreter.declarations();
+		declarations.add(variableName);
+		InstructionList result = parse(root, declarations, interpreter.settings());
+		assertEquals(result.size(), 5);
+
+		assertEquals(result[0].type(), Instruction::PUSH);
+		assertEquals(result[0].value().number(), 1);
+
+		assertEquals(result[1].type(), Instruction::REF_GLOBAL);
+		assertEquals(result[1].value().string(), variableName.name());
+
+		assertEquals(result[2].type(), Instruction::REF_GLOBAL);
+		assertEquals(result[2].value().string(), "+");
+		
+		assertEquals(result[3].type(), Instruction::CALL);
+		assertEquals(result[3].value().number(), 2);
+
+		assertEquals(result[4].type(), Instruction::ASSIGN_GLOBAL);
+		assertEquals(result[4].value().string(), variableName.name());
+	}
+	
+	void testParserForIncKeywordWithLocalVariable(Interpreter &interpreter)
+	{
+		SourceLocation sourceLocation = CURRENT_SOURCE_LOCATION;
+		Identifier variableName("x");
+		Token function = Token::keyword(sourceLocation, "inc");
+		Token variable = Token::identifier(sourceLocation, variableName);
+		Token list = Token::list(sourceLocation);
+		list.addChild(function);
+		list.addChild(variable);
+		Token root = Token::list(sourceLocation);
+		root.addChild(list);
+		Declarations localDeclarations = interpreter.declarations().newScope();
+		localDeclarations.add(variableName);
+		InstructionList result = parse(root, localDeclarations, interpreter.settings());
+		assertEquals(result.size(), 5);
+
+		assertEquals(result[0].type(), Instruction::PUSH);
+		assertEquals(result[0].value().number(), 1);
+
+		assertEquals(result[1].type(), Instruction::REF_LOCAL);
+		assertEquals(result[1].value().string(), variableName.name());
+
+		assertEquals(result[2].type(), Instruction::REF_GLOBAL);
+		assertEquals(result[2].value().string(), "+");
+		
+		assertEquals(result[3].type(), Instruction::CALL);
+		assertEquals(result[3].value().number(), 2);
+
+		assertEquals(result[4].type(), Instruction::ASSIGN_LOCAL);
+		assertEquals(result[4].value().string(), variableName.name());
+	}
 
 	void testMathExpression(Interpreter &interpreter)
 	{
@@ -1058,6 +1122,8 @@ namespace
 static UnitTest tests[] = {
 	TEST_CASE(testParser),
 	TEST_CASE(testInterpreter),
+	TEST_CASE(testParserForIncKeywordWithGlobalVariable),
+	TEST_CASE(testParserForIncKeywordWithLocalVariable),
 	TEST_CASE(testMathExpression),
 	TEST_CASE(testNot),
 	TEST_CASE(testOr),
