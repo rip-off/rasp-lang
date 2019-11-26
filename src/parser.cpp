@@ -501,15 +501,31 @@ namespace
 		}
 	}
 
+	void handleIdentifier(const Token &token, Declarations &declarations, InstructionList &instructions)
+	{
+		Identifier identifier = tryMakeIdentifier(token);
+		handleVariableReference(token, identifier, declarations, instructions);
+
+		const Token::Children &children = token.children();
+		for(Token::Children::const_iterator i = children.begin() ; i != children.end() ; ++i)
+		{
+			const Token &child = *i;
+			if (child.type() != Token::IDENTIFIER)
+			{
+				throw CompilerBug("Expected identifier but got " + str(child.type()));
+			}
+			Identifier member(child.string());
+			instructions.push_back(Instruction::memberAccess(token.sourceLocation(), member));
+		}
+	}
+
 	void parse(const Token &token, Declarations &declarations, InstructionList &instructions, const Settings &settings)
 	{
 		const Token::Children &children = token.children();
 		switch(token.type())
 		{
 		case Token::LIST:
-			{
-				handleList(token, declarations, instructions, settings);
-			}
+			handleList(token, declarations, instructions, settings);
 			break;
 		case Token::STRING:
 			assert(children.empty());
@@ -520,37 +536,19 @@ namespace
 			instructions.push_back(Instruction::push(token.sourceLocation(), Value::number(to<int>(token.string()))));
 			break;
 		case Token::KEYWORD:
+			if(!handleLiteral(token, instructions))
 			{
-				if(!handleLiteral(token, instructions))
-				{
-					throw ParseError(token.sourceLocation(), "Keyword '" + token.string() + "' must be first element of a list");
-				}
+				throw ParseError(token.sourceLocation(), "Keyword '" + token.string() + "' must be first element of a list");
 			}
 			break;
 		case Token::IDENTIFIER:
-			{
-				Identifier identifier = tryMakeIdentifier(token);
-				handleVariableReference(token, identifier, declarations, instructions);
-
-				for(Token::Children::const_iterator i = children.begin() ; i != children.end() ; ++i)
-				{
-					const Token &child = *i;
-					if (child.type() != Token::IDENTIFIER)
-					{
-						throw CompilerBug("Expected identifier but got " + str(child.type()));
-					}
-					Identifier member(child.string());
-					instructions.push_back(Instruction::memberAccess(token.sourceLocation(), member));
-				}
-			}
+			handleIdentifier(token, declarations, instructions);
 			break;
 		case Token::DECLARATION:
-			{
-				assert(children.size() == 2);
-				assert(children[0].type() == Token::IDENTIFIER);
-				assert(children[1].type() == Token::IDENTIFIER);
-				return parse(children[0], declarations, instructions, settings);
-			}
+			assert(children.size() == 2);
+			assert(children[0].type() == Token::IDENTIFIER);
+			assert(children[1].type() == Token::IDENTIFIER);
+			return parse(children[0], declarations, instructions, settings);
 		}
 	}
 
