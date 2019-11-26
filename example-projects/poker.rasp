@@ -35,15 +35,15 @@
   result)
 
 (defun print_cards (cards)
-  (var x 0)
-  (while (< x (array_length cards))
-    (var card (array_element cards x))
+  (var i 0)
+  (while (< i (array_length cards))
+    (var card (array_element cards i))
     (print (rank card) (suit card))
-    (if (== (- CARDS_IN_SUIT 1) (% x CARDS_IN_SUIT))
+    (if (== (- CARDS_IN_SUIT 1) (% i CARDS_IN_SUIT))
       (println)
       else
       (print " | "))
-    (set x (+ x 1)))
+    (inc i))
   (println))
 
 (defun populate_deck ()
@@ -67,13 +67,7 @@
 
 (srand)
 (var deck (populate_deck))
-(println "DECK:")
-(print_cards deck)
-(println)
-(println)
-
 (var next_card 0)
-
 (defun deal_hand ()
   (var hand (array_new HAND_SIZE))
   (var i 0)
@@ -83,13 +77,17 @@
     (inc i))
   hand)
 
+(println "DECK:")
+(print_cards deck)
+
 (var dealer (deal_hand))
 (var player (deal_hand))
 
 (print "Player: ")
 (print_cards player)
+(println)
 
 (print "Dealer: ")
 (print_cards dealer)
-
+(println)
 
