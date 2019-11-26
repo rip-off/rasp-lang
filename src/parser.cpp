@@ -363,6 +363,83 @@ namespace
 		initIdentifier(token, declarations, instructions, identifier);
 	}
 
+	void handleDefunKeyword(const Token &token, Declarations &declarations, InstructionList &instructions, const Settings &settings)
+	{
+		const Token::Children &children = token.children();
+		if(children.size() == 1)
+		{
+			throw ParseError(token.sourceLocation(), "Keyword 'defun' function requires a name");
+		}
+		else if(children.size() == 2)
+		{
+			throw ParseError(token.sourceLocation(), "Keyword 'defun' function requires parameter list");
+		}
+		else if(children.size() < 4)
+		{
+			throw ParseError(token.sourceLocation(), "Keyword 'defun' function lacks a body");
+		}
+
+		Identifier identifier = tryMakeDeclaration(children[1]);
+		if (declarations.isDefined(identifier))
+		{
+			throw ParseError(token.sourceLocation(), "Keyword 'defun' identifier " + identifier.name() + " already defined");
+		}
+		// Allow recursion
+		declarations.add(identifier);
+
+		if (children[2].type() != Token::LIST)
+		{
+			throw ParseError(token.sourceLocation(), "Keyword 'defun' function parameter list is incorrect");
+		}
+
+		std::vector<Identifier> parameters;
+		Declarations localDeclarations = declarations.newScope();
+
+		const Token::Children &rawParameters = children[2].children();
+		for (unsigned i = 0 ; i < rawParameters.size() ; ++i)
+		{
+			Identifier parameter = tryMakeDeclaration(rawParameters[i]);
+			parameters.push_back(parameter);
+			localDeclarations.add(parameter);
+		}
+
+		InstructionList tempInstructions;
+		for(unsigned i = 3 ; i < children.size() ; ++i)
+		{
+			parse(children[i], localDeclarations, tempInstructions, settings);
+		}
+
+		std::vector<Identifier> closedValues = getClosedValues(tempInstructions);
+		if (closedValues.empty())
+		{
+			InternalFunction function(token.sourceLocation(), identifier, parameters, tempInstructions);
+			instructions.push_back(Instruction::push(token.sourceLocation(), Value::function(function)));
+		}
+		else
+		{
+			for (unsigned i = 0 ; i < closedValues.size() ; ++i)
+			{
+				instructions.push_back(Instruction::initClosure(token.sourceLocation(), closedValues[i]));
+			}
+			InternalFunction function(token.sourceLocation(), identifier, parameters, tempInstructions);
+			instructions.push_back(Instruction::push(token.sourceLocation(), Value::function(function)));
+			instructions.push_back(Instruction::close(token.sourceLocation(), closedValues.size()));
+		}
+
+		initIdentifier(token, declarations, instructions, identifier);
+
+		if (settings.printInstructions)
+		{
+			std::cout << "Function (" << identifier.name();
+			for (unsigned i = 0 ; i < parameters.size() ; ++i)
+			{
+				std::cout << " " << parameters[i].name();
+			}
+			std::cout << ") @ " << token.sourceLocation() << '\n';
+			printInstructions(tempInstructions);
+		}
+	}
+
 	void handleList(const Token &token, Declarations &declarations, InstructionList &instructions, const Settings &settings)
 	{
 		const Token::Children &children = token.children();
@@ -405,78 +482,7 @@ namespace
 			}
 			else if(keyword == KEYWORD_DEFUN)
 			{
-				if(children.size() == 1)
-				{
-					throw ParseError(token.sourceLocation(), "Keyword 'defun' function requires a name");
-				}
-				else if(children.size() == 2)
-				{
-					throw ParseError(token.sourceLocation(), "Keyword 'defun' function requires parameter list");
-				}
-				else if(children.size() < 4)
-				{
-					throw ParseError(token.sourceLocation(), "Keyword 'defun' function lacks a body");
-				}
-
-				Identifier identifier = tryMakeDeclaration(children[1]);
-				if (declarations.isDefined(identifier))
-				{
-					throw ParseError(token.sourceLocation(), "Keyword 'defun' identifier " + identifier.name() + " already defined");
-				}
-				// Allow recursion
-				declarations.add(identifier);
-				
-				if (children[2].type() != Token::LIST)
-				{
-					throw ParseError(token.sourceLocation(), "Keyword 'defun' function parameter list is incorrect");
-				}
-
-				std::vector<Identifier> parameters;
-				Declarations localDeclarations = declarations.newScope();
-				
-				const Token::Children &rawParameters = children[2].children();
-				for (unsigned i = 0 ; i < rawParameters.size() ; ++i)
-				{
-					Identifier parameter = tryMakeDeclaration(rawParameters[i]);
-					parameters.push_back(parameter);
-					localDeclarations.add(parameter);
-				}
-
-				InstructionList tempInstructions;
-				for(unsigned i = 3 ; i < children.size() ; ++i)
-				{
-					parse(children[i], localDeclarations, tempInstructions, settings);
-				}
-
-				std::vector<Identifier> closedValues = getClosedValues(tempInstructions);
-				if (closedValues.empty())
-				{
-					InternalFunction function(token.sourceLocation(), identifier, parameters, tempInstructions);
-					instructions.push_back(Instruction::push(token.sourceLocation(), Value::function(function)));
-				}
-				else
-				{
-					for (unsigned i = 0 ; i < closedValues.size() ; ++i)
-					{
-						instructions.push_back(Instruction::initClosure(token.sourceLocation(), closedValues[i]));
-					}
-					InternalFunction function(token.sourceLocation(), identifier, parameters, tempInstructions);
-					instructions.push_back(Instruction::push(token.sourceLocation(), Value::function(function)));
-					instructions.push_back(Instruction::close(token.sourceLocation(), closedValues.size()));
-				}
-
-				initIdentifier(token, declarations, instructions, identifier);
-
-				if (settings.printInstructions)
-				{
-					std::cout << "Function (" << identifier.name();
-					for (unsigned i = 0 ; i < parameters.size() ; ++i)
-					{
-						std::cout << " " << parameters[i].name();
-					}
-					std::cout << ") @ " << token.sourceLocation() << '\n';
-					printInstructions(tempInstructions);
-				}
+				handleDefunKeyword(token, declarations, instructions, settings);
 			}
 			else if(!handleLiteral(token, instructions))
 			{
