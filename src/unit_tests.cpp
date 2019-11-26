@@ -434,6 +434,21 @@ namespace
 		assertEquals(result.type(), Value::TNumber);
 		assertEquals(result.number(), 45);
 	}
+	
+	void testComplexLoopWithIncKeyword(Interpreter &interpreter)
+	{
+		Source source;
+		source << "(var result 0)";
+		source << "(var i 0)";
+		source << "(while (< i 10)";
+		source << "  (set result (+ result i))";
+		source << "  (inc i)";
+		source << ")";
+		source << "result";
+		Value result = execute(interpreter, source);
+		assertEquals(result.type(), Value::TNumber);
+		assertEquals(result.number(), 45);
+	}
 
 	void testLoopWithInnerVariableDeclaration(Interpreter &interpreter)
 	{
@@ -1142,6 +1157,7 @@ static UnitTest tests[] = {
 	TEST_CASE(testTypesAndMemberAccess),
 	TEST_CASE(testSimpleLoop),
 	TEST_CASE(testComplexLoop),
+	TEST_CASE(testComplexLoopWithIncKeyword),
 	TEST_CASE(testLoopWithInnerVariableDeclaration),
 	TEST_CASE(testVariableDeclarationWithNumberType),
 	TEST_CASE(testVariableDeclarationWithStringType),
