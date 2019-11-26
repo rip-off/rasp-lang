@@ -302,17 +302,6 @@ namespace
 				}
 				Identifier identifier = tryMakeIdentifier(children[1]);
 				
-				/*
-				 > (set x (+ x 1))
-Parsing repl(2):0
-Generated 5 instructions:
-1: push(1)
-2: ref_global(x)
-3: ref_global(+)
-4: call(2)
-5: assign_global(x)
-				*/
-				
 				instructions.push_back(Instruction::push(token.sourceLocation(), Value::number(1)));
 				// TODO: de-duplicate vs Token::Identifier
 				switch(declarations.checkIdentifier(identifier))
