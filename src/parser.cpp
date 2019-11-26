@@ -137,7 +137,7 @@ namespace
 
 	void handleVariableReference(const Token &token, const Identifier &identifier, Declarations &declarations, InstructionList &instructions)
 	{
-	  switch(declarations.checkIdentifier(identifier))
+		switch(declarations.checkIdentifier(identifier))
 		{
 		case IDENTIFIER_DEFINITION_UNDEFINED:
 			throw ParseError(token.sourceLocation(), "Identifier '" + identifier.name() + "' not defined");
@@ -158,7 +158,7 @@ namespace
 	
 	void handleVariableAssignment(const Token &token, const Identifier &identifier, Declarations &declarations, InstructionList &instructions)
 	{
-	  switch(declarations.checkIdentifier(identifier))
+		switch(declarations.checkIdentifier(identifier))
 		{
 		case IDENTIFIER_DEFINITION_UNDEFINED:
 			throw ParseError(token.sourceLocation(), "Identifier '" + identifier.name() + "' not defined");
@@ -179,7 +179,7 @@ namespace
 
 	void handleWhileKeyword(const Token &token, Declarations &declarations, InstructionList &instructions, const Settings &settings)
 	{
-	  const Token::Children &children = token.children();
+		const Token::Children &children = token.children();
 		if(children.size() == 1)
 		{
 			throw ParseError(token.sourceLocation(), "'while' expression is missing condition");
