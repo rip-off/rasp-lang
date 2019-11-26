@@ -294,6 +294,67 @@ namespace
 					throw CompilerBug("Failed to classify identifier " + identifier.name() + " at " + str(token.sourceLocation()));
 				}
 			}
+			else if(keyword == KEYWORD_INC)
+			{
+				if(children.size() != 2)
+				{
+					throw ParseError(token.sourceLocation(), "Keyword 'inc' takes a single identifier");
+				}
+				Identifier identifier = tryMakeIdentifier(children[1]);
+				
+				/*
+				 > (set x (+ x 1))
+Parsing repl(2):0
+Generated 5 instructions:
+1: push(1)
+2: ref_global(x)
+3: ref_global(+)
+4: call(2)
+5: assign_global(x)
+				*/
+				
+				instructions.push_back(Instruction::push(token.sourceLocation(), Value::number(1)));
+				// TODO: de-duplicate vs Token::Identifier
+				switch(declarations.checkIdentifier(identifier))
+				{
+				case IDENTIFIER_DEFINITION_UNDEFINED:
+					throw ParseError(token.sourceLocation(), "Identifier '" + identifier.name() + "' not defined");
+					break;
+				case IDENTIFIER_DEFINITION_LOCAL:
+					instructions.push_back(Instruction::refLocal(token.sourceLocation(), identifier));
+					break;
+				case IDENTIFIER_DEFINITION_CLOSURE:
+					instructions.push_back(Instruction::refClosure(token.sourceLocation(), identifier));
+					break;
+				case IDENTIFIER_DEFINITION_GLOBAL:
+					instructions.push_back(Instruction::refGlobal(token.sourceLocation(), identifier));
+					break;
+				default:
+					throw CompilerBug("Failed to classify identifier " + identifier.name() + " at " + str(token.sourceLocation()));
+				}
+				Identifier plus("+");
+				assert(declarations.checkIdentifier(plus) == IDENTIFIER_DEFINITION_GLOBAL);
+				instructions.push_back(Instruction::refGlobal(token.sourceLocation(), plus));
+				instructions.push_back(Instruction::call(token.sourceLocation(), 2));
+				
+				switch(declarations.checkIdentifier(identifier))
+				{
+				case IDENTIFIER_DEFINITION_UNDEFINED:
+					throw ParseError(token.sourceLocation(), "Identifier '" + identifier.name() + "' not defined");
+					break;
+				case IDENTIFIER_DEFINITION_LOCAL:
+					instructions.push_back(Instruction::assignLocal(token.sourceLocation(), identifier));
+					break;
+				case IDENTIFIER_DEFINITION_CLOSURE:
+					instructions.push_back(Instruction::assignClosure(token.sourceLocation(), identifier));
+					break;
+				case IDENTIFIER_DEFINITION_GLOBAL:
+					instructions.push_back(Instruction::assignGlobal(token.sourceLocation(), identifier));
+					break;
+				default:
+					throw CompilerBug("Failed to classify identifier " + identifier.name() + " at " + str(token.sourceLocation()));
+				}
+			}
 			else if(keyword == KEYWORD_TYPE)
 			{
 				if(children.empty())

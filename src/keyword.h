@@ -6,6 +6,7 @@
 extern const std::string KEYWORD_IF;
 extern const std::string KEYWORD_VAR;
 extern const std::string KEYWORD_SET;
+extern const std::string KEYWORD_INC;
 extern const std::string KEYWORD_NIL;
 extern const std::string KEYWORD_ELSE;
 extern const std::string KEYWORD_TYPE;
