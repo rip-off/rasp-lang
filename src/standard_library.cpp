@@ -353,6 +353,25 @@ namespace
 		return Value::boolean(result);
 	}
 
+	Value srand(const Arguments &arguments)
+	{
+	  if(!arguments.empty())
+		{
+			throw ExternalFunctionError("Expected no arguments");
+		}
+		std::srand(std::time(nullptr));
+		return Value::nil();
+	}
+
+	Value rand(const Arguments &arguments)
+	{
+	  if(!arguments.empty())
+		{
+			throw ExternalFunctionError("Expected no arguments");
+		}
+		return Value::number(std::rand());
+	}
+
 #define ENTRY(X) ApiReg(#X, CURRENT_SOURCE_LOCATION, &X)
 
 	const ApiReg registry[] = 
@@ -377,6 +396,8 @@ namespace
 		ENTRY(array_set_element),
 		ENTRY(array_new),
 		ENTRY(try_convert_string_to_int),
+		ENTRY(srand),
+		ENTRY(rand),
 	};
 
 #undef ENTRY
