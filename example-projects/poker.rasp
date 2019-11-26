@@ -52,7 +52,7 @@
   (var i 0)
   (while (< i CARDS_IN_DECK)
     (set deck (array_set_element deck i i))
-    (set i (+ i 1)))
+    (inc i))
   // Shuffle
   (var j (- CARDS_IN_DECK 1))
   (while (> j 1)
@@ -79,8 +79,8 @@
   (var i 0)
   (while (< i HAND_SIZE)
     (set hand (array_set_element hand i (array_element deck next_card)))
-    (set next_card (+ next_card 1))
-    (set i (+ i 1)))
+    (inc next_card)
+    (inc i))
   hand)
 
 (var dealer (deal_hand))
