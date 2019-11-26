@@ -1,0 +1,95 @@
+// Poker!
+(var NUM_SUITS 4)
+(var CARDS_IN_SUIT 13)
+(var HAND_SIZE 5)
+(var CARDS_IN_DECK (* NUM_SUITS CARDS_IN_SUIT))
+
+(defun suit (card)
+  (var index (/ card CARDS_IN_SUIT))
+  (var result "UNKNOWN_CARD_SUIT")
+  (if (== index 0)
+    (set result "♠"))
+  (if (== index 1)
+    (set result "♥"))
+  (if (== index 2)
+    (set result "♦"))
+  (if (== index 3)
+    (set result "♣"))
+  result)
+
+(defun rank (card)
+  (var result "UNKNOWN_CARD_RANK")
+  (var value (% card CARDS_IN_SUIT))
+  (if (== value 0)
+    (set result "A"))
+  (if (&& (> value 0) (< value 9))
+    (set result (to_str (+ 1 value))))
+  (if (== value 9)
+    (set result "T"))
+  (if (== value 10)
+    (set result "J"))
+  (if (== value 11)
+    (set result "Q"))
+  (if (== value 12)
+    (set result "K"))
+  result)
+
+(defun print_cards (cards)
+  (var x 0)
+  (while (< x (array_length cards))
+    (var card (array_element cards x))
+    (print (rank card) (suit card))
+    (if (== (- CARDS_IN_SUIT 1) (% x CARDS_IN_SUIT))
+      (println)
+      else
+      (print " | "))
+    (set x (+ x 1)))
+  (println))
+
+(defun populate_deck ()
+  (var deck (array_new CARDS_IN_DECK))
+  // Initialise deck
+  (var i 0)
+  (while (< i CARDS_IN_DECK)
+    (set deck (array_set_element deck i i))
+    (set i (+ i 1)))
+  // Shuffle
+  (var j (- CARDS_IN_DECK 1))
+  (while (> j 1)
+    (var r (% (rand) j))
+    (var temp (array_element deck r))
+    (set deck (array_set_element deck r (array_element deck j)))
+    (set deck (array_set_element deck j temp))
+    (set j (- j 1)))
+  deck)
+
+// main
+
+(srand)
+(var deck (populate_deck))
+(println "DECK:")
+(print_cards deck)
+(println)
+(println)
+
+(var next_card 0)
+
+(defun deal_hand ()
+  (var hand (array_new HAND_SIZE))
+  (var i 0)
+  (while (< i HAND_SIZE)
+    (set hand (array_set_element hand i (array_element deck next_card)))
+    (set next_card (+ next_card 1))
+    (set i (+ i 1)))
+  hand)
+
+(var dealer (deal_hand))
+(var player (deal_hand))
+
+(print "Player: ")
+(print_cards player)
+
+(print "Dealer: ")
+(print_cards dealer)
+
+
