@@ -133,6 +133,8 @@ namespace
 		return false;
 	}
 
+	void parse(const Token &token, Declarations &declarations, InstructionList &instructions, const Settings &settings);
+
 	void handleVariableReference(const Token &token, const Identifier &identifier, Declarations &declarations, InstructionList &instructions)
 	{
 	  switch(declarations.checkIdentifier(identifier))
@@ -175,7 +177,142 @@ namespace
 		}
 	}
 
-	void handleIncrementKeyword(const Token &token, Declarations &declarations, InstructionList &instructions)
+	void handleWhileKeyword(const Token &token, Declarations &declarations, InstructionList &instructions, const Settings &settings)
+	{
+	  const Token::Children &children = token.children();
+		if(children.size() == 1)
+		{
+			throw ParseError(token.sourceLocation(), "'while' expression is missing condition");
+		}
+		else if(children.size() == 2)
+		{
+			throw ParseError(token.sourceLocation(), "'while' expression is missing code to execute");
+		}
+		unsigned previousInstructionCount = instructions.size();
+		// Evaluate the conditional expression first
+		parse(children[1], declarations, instructions, settings);
+		unsigned conditionExpressionInstructions = instructions.size() - previousInstructionCount;
+		// Generate the list of instructions to be executed if branch is taken
+		InstructionList tempInstructions;
+		for(unsigned i = 2 ; i < children.size() ; ++i)
+		{
+			parse(children[i], declarations, tempInstructions, settings);
+		}
+		unsigned bodyInstructions = tempInstructions.size();
+		// Actual branch instruction
+		// +1 for the loop instruction itself!
+		instructions.push_back(Instruction::condJump(token.sourceLocation(), bodyInstructions + 1));
+		// Insert the remaining instructions into the stream
+		instructions.insert(instructions.end(), tempInstructions.begin(), tempInstructions.end());
+		// Return to loop start
+		// +1 for jump instruction
+		// +1 for this loop instruction itself!
+		instructions.push_back(Instruction::loop(token.sourceLocation(), bodyInstructions + 1 + conditionExpressionInstructions + 1));
+	}
+
+	void handleIfKeyword(const Token &token, Declarations &declarations, InstructionList &instructions, const Settings &settings)
+	{
+		const Token::Children &children = token.children();
+		if(children.size() == 1)
+		{
+			throw ParseError(token.sourceLocation(), "Keyword 'if' expression is missing condition");
+		}
+		else if(children.size() == 2)
+		{
+			throw ParseError(token.sourceLocation(), "Keyword 'if' expression is missing code to execute");
+		}
+		// Evaluate the conditional expression first
+		parse(children[1], declarations, instructions, settings);
+		unsigned i = 2;
+
+		InstructionList ifInstructions;
+		while(i < children.size())
+		{
+			if(children[i].type() == Token::KEYWORD && children[i].string() == "else")
+			{
+				++i;
+				if (i == children.size())
+				{
+					throw ParseError(token.sourceLocation(), "Keyword 'else' cannot be used at the end of a list");
+				}
+				break;
+			}
+			parse(children[i], declarations, ifInstructions, settings);
+			++i;
+		}
+
+		InstructionList elseInstructions;
+		while(i < children.size())
+		{
+			if(children[i].type() == Token::KEYWORD && children[i].string() == "else")
+			{
+				throw ParseError(token.sourceLocation(), "Keyword 'else' cannot be used inside an existing 'else' block");
+			}
+			parse(children[i], declarations, elseInstructions, settings);
+			++i;
+		}
+
+		int instructionsToSkip = ifInstructions.size();
+		if(!elseInstructions.empty())
+		{
+			++instructionsToSkip;
+		}
+
+		// Skip over the "if" block when conditional expression is false
+		instructions.push_back(Instruction::condJump(token.sourceLocation(), instructionsToSkip));
+		// "if" block
+		instructions.insert(instructions.end(), ifInstructions.begin(), ifInstructions.end());
+		if(!elseInstructions.empty())
+		{
+			// When the condition is true, we need to unconditionally skip over the "else" block
+			instructions.push_back(Instruction::jump(token.sourceLocation(), elseInstructions.size()));
+			instructions.insert(instructions.end(), elseInstructions.begin(), elseInstructions.end());
+		}
+	}
+
+	void handleVarKeyword(const Token &token, Declarations &declarations, InstructionList &instructions, const Settings &settings)
+	{
+		const Token::Children &children = token.children();
+		if(children.size() == 1)
+		{
+			throw ParseError(token.sourceLocation(), "Keyword 'var' declaration requires a name");
+		}
+		else if(children.size() == 2)
+		{
+			throw ParseError(token.sourceLocation(), "Keyword 'var' missing initialisation value");
+		}
+		else if(children.size() > 3)
+		{
+			throw ParseError(token.sourceLocation(), "Keyword 'var' too many arguments");
+		}
+
+		Identifier identifier = tryMakeDeclaration(children[1]);
+		if (declarations.isDefined(identifier))
+		{
+			throw ParseError(token.sourceLocation(), "Keyword 'var' identifier '" + identifier.name() + "' already defined");
+		}
+		parse(children[2], declarations, instructions, settings);
+		declarations.add(identifier);
+		initIdentifier(token, declarations, instructions, identifier);
+	}
+
+	void handleSetKeyword(const Token &token, Declarations &declarations, InstructionList &instructions, const Settings &settings)
+	{
+		const Token::Children &children = token.children();
+		if(children.size() == 2)
+		{
+			throw ParseError(token.sourceLocation(), "Keyword 'set' variable assignment requires a name");
+		}
+		else if(children.size() != 3)
+		{
+			throw ParseError(token.sourceLocation(), "Keyword 'set' missing assignment value");
+		}
+		Identifier identifier = tryMakeIdentifier(children[1]);
+		parse(children[2], declarations, instructions, settings);
+		handleVariableAssignment(token, identifier, declarations, instructions);
+	}
+
+	void handleIncKeyword(const Token &token, Declarations &declarations, InstructionList &instructions)
 	{
 		const Token::Children &children = token.children();
 		if(children.size() != 2)
@@ -194,7 +331,37 @@ namespace
 		handleVariableAssignment(token, identifier, declarations, instructions);
 	}
 
-	void parse(const Token &token, Declarations &declarations, InstructionList &instructions, const Settings &settings);
+	void handleTypeKeyword(const Token &token, Declarations &declarations, InstructionList &instructions)
+	{
+		const Token::Children &children = token.children();
+		if(children.empty())
+		{
+			throw ParseError(token.sourceLocation(), "Keyword 'type' requires a name");
+		}
+		else if(children.size() == 1)
+		{
+			throw ParseError(token.sourceLocation(), "Keyword 'type' function requires members");
+		}
+		Identifier identifier = tryMakeIdentifier(children[1]);
+		if (declarations.isDefined(identifier))
+		{
+			throw ParseError(token.sourceLocation(), "Keyword 'type' identifier " + identifier.name() + " already defined");
+		}
+
+		std::vector<Identifier> memberNames;
+		for (int i = 2 ; i < children.size() ; ++i)
+		{
+			Identifier identifier = tryMakeDeclaration(children[i]);
+			memberNames.push_back(identifier);
+		}
+
+		TypePointer typeDefinition = std::make_shared<TypeDefinition>(identifier, memberNames);
+		instructions.push_back(Instruction::push(token.sourceLocation(), Value::typeDefinition(typeDefinition)));
+
+		// Note: allows recursive types
+		declarations.add(identifier);
+		initIdentifier(token, declarations, instructions, identifier);
+	}
 
 	void handleList(const Token &token, Declarations &declarations, InstructionList &instructions, const Settings &settings)
 	{
@@ -210,92 +377,11 @@ namespace
 			const std::string &keyword = firstChild.string();
 			if(keyword == KEYWORD_WHILE)
 			{
-				if(children.size() == 1)
-				{
-					throw ParseError(token.sourceLocation(), "'while' expression is missing condition");
-				}
-				else if(children.size() == 2)
-				{
-					throw ParseError(token.sourceLocation(), "'while' expression is missing code to execute");
-				}
-				unsigned previousInstructionCount = instructions.size();
-				// Evaluate the conditional expression first
-				parse(children[1], declarations, instructions, settings);
-				unsigned conditionExpressionInstructions = instructions.size() - previousInstructionCount;
-				// Generate the list of instructions to be executed if branch is taken
-				InstructionList tempInstructions;
-				for(unsigned i = 2 ; i < children.size() ; ++i)
-				{
-					parse(children[i], declarations, tempInstructions, settings);
-				}
-				unsigned bodyInstructions = tempInstructions.size();
-				// Actual branch instruction
-				// +1 for the loop instruction itself!
-				instructions.push_back(Instruction::condJump(token.sourceLocation(), bodyInstructions + 1));
-				// Insert the remaining instructions into the stream
-				instructions.insert(instructions.end(), tempInstructions.begin(), tempInstructions.end());
-				// Return to loop start
-				// +1 for jump instruction
-				// +1 for this loop instruction itself!
-				instructions.push_back(Instruction::loop(token.sourceLocation(), bodyInstructions + 1 + conditionExpressionInstructions + 1));
+				handleWhileKeyword(token, declarations, instructions, settings);
 			}
 			else if(keyword == KEYWORD_IF)
 			{
-				if(children.size() == 1)
-				{
-					throw ParseError(token.sourceLocation(), "Keyword 'if' expression is missing condition");
-				}
-				else if(children.size() == 2)
-				{
-					throw ParseError(token.sourceLocation(), "Keyword 'if' expression is missing code to execute");
-				}
-				// Evaluate the conditional expression first
-				parse(children[1], declarations, instructions, settings);
-				unsigned i = 2;
-
-				InstructionList ifInstructions;
-				while(i < children.size())
-				{
-					if(children[i].type() == Token::KEYWORD && children[i].string() == "else")
-					{
-						++i;
-						if (i == children.size())
-						{
-							throw ParseError(token.sourceLocation(), "Keyword 'else' cannot be used at the end of a list");
-						}
-						break;
-					}
-					parse(children[i], declarations, ifInstructions, settings);
-					++i;
-				}
-
-				InstructionList elseInstructions;
-				while(i < children.size())
-				{
-					if(children[i].type() == Token::KEYWORD && children[i].string() == "else")
-					{
-						throw ParseError(token.sourceLocation(), "Keyword 'else' cannot be used inside an existing 'else' block");
-					}
-					parse(children[i], declarations, elseInstructions, settings);
-					++i;
-				}
-
-				int instructionsToSkip = ifInstructions.size();
-				if(!elseInstructions.empty())
-				{
-					++instructionsToSkip;
-				}
-
-				// Skip over the "if" block when conditional expression is false
-				instructions.push_back(Instruction::condJump(token.sourceLocation(), instructionsToSkip));
-				// "if" block
-				instructions.insert(instructions.end(), ifInstructions.begin(), ifInstructions.end());
-				if(!elseInstructions.empty())
-				{
-					// When the condition is true, we need to unconditionally skip over the "else" block
-					instructions.push_back(Instruction::jump(token.sourceLocation(), elseInstructions.size()));
-					instructions.insert(instructions.end(), elseInstructions.begin(), elseInstructions.end());
-				}
+				handleIfKeyword(token, declarations, instructions, settings);
 			}
 			else if(keyword == KEYWORD_ELSE)
 			{
@@ -303,75 +389,19 @@ namespace
 			}
 			else if(keyword == KEYWORD_VAR)
 			{
-				if(children.size() == 1)
-				{
-					throw ParseError(token.sourceLocation(), "Keyword 'var' declaration requires a name");
-				}
-				else if(children.size() == 2)
-				{
-					throw ParseError(token.sourceLocation(), "Keyword 'var' missing initialisation value");
-				}
-				else if(children.size() > 3)
-				{
-					throw ParseError(token.sourceLocation(), "Keyword 'var' too many arguments");
-				}
-
-				Identifier identifier = tryMakeDeclaration(children[1]);
-				if (declarations.isDefined(identifier))
-				{
-					throw ParseError(token.sourceLocation(), "Keyword 'var' identifier '" + identifier.name() + "' already defined");
-				}
-				parse(children[2], declarations, instructions, settings);
-				declarations.add(identifier);
-				initIdentifier(token, declarations, instructions, identifier);
+				handleVarKeyword(token, declarations, instructions, settings);
 			}
 			else if(keyword == KEYWORD_SET)
 			{
-				if(children.size() == 2)
-				{
-					throw ParseError(token.sourceLocation(), "Keyword 'set' variable assignment requires a name");
-				}
-				else if(children.size() != 3)
-				{
-					throw ParseError(token.sourceLocation(), "Keyword 'set' missing assignment value");
-				}
-				Identifier identifier = tryMakeIdentifier(children[1]);
-				parse(children[2], declarations, instructions, settings);
-				handleVariableAssignment(token, identifier, declarations, instructions);
+				handleSetKeyword(token, declarations, instructions, settings);
 			}
 			else if(keyword == KEYWORD_INC)
 			{
-				handleIncrementKeyword(token, declarations, instructions);
+				handleIncKeyword(token, declarations, instructions);
 			}
 			else if(keyword == KEYWORD_TYPE)
 			{
-				if(children.empty())
-				{
-					throw ParseError(token.sourceLocation(), "Keyword 'type' requires a name");
-				}
-				else if(children.size() == 1)
-				{
-					throw ParseError(token.sourceLocation(), "Keyword 'type' function requires members");
-				}
-				Identifier identifier = tryMakeIdentifier(children[1]);
-				if (declarations.isDefined(identifier))
-				{
-					throw ParseError(token.sourceLocation(), "Keyword 'type' identifier " + identifier.name() + " already defined");
-				}
-
-				std::vector<Identifier> memberNames;
-				for (int i = 2 ; i < children.size() ; ++i)
-				{
-					Identifier identifier = tryMakeDeclaration(children[i]);
-					memberNames.push_back(identifier);
-				}
-
-				TypePointer typeDefinition = std::make_shared<TypeDefinition>(identifier, memberNames);
-				instructions.push_back(Instruction::push(token.sourceLocation(), Value::typeDefinition(typeDefinition)));
-
-				// Note: allows recursive types
-				declarations.add(identifier);
-				initIdentifier(token, declarations, instructions, identifier);
+				handleTypeKeyword(token, declarations, instructions);
 			}
 			else if(keyword == KEYWORD_DEFUN)
 			{
