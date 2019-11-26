@@ -133,6 +133,27 @@ namespace
 		return false;
 	}
 
+	void handleVariableReference(const Token &token, const Identifier &identifier, Declarations &declarations, InstructionList &instructions)
+	{
+	  switch(declarations.checkIdentifier(identifier))
+		{
+		case IDENTIFIER_DEFINITION_UNDEFINED:
+			throw ParseError(token.sourceLocation(), "Identifier '" + identifier.name() + "' not defined");
+			break;
+		case IDENTIFIER_DEFINITION_LOCAL:
+			instructions.push_back(Instruction::refLocal(token.sourceLocation(), identifier));
+			break;
+		case IDENTIFIER_DEFINITION_CLOSURE:
+			instructions.push_back(Instruction::refClosure(token.sourceLocation(), identifier));
+			break;
+		case IDENTIFIER_DEFINITION_GLOBAL:
+			instructions.push_back(Instruction::refGlobal(token.sourceLocation(), identifier));
+			break;
+		default:
+			throw CompilerBug("Failed to classify identifier " + identifier.name() + " at " + str(token.sourceLocation()));
+		}
+	}
+
 	void parse(const Token &token, Declarations &declarations, InstructionList &instructions, const Settings &settings);
 
 	void handleList(const Token &token, Declarations &declarations, InstructionList &instructions, const Settings &settings)
@@ -301,31 +322,17 @@ namespace
 					throw ParseError(token.sourceLocation(), "Keyword 'inc' takes a single identifier");
 				}
 				Identifier identifier = tryMakeIdentifier(children[1]);
-				
+				// TODO: what if identifier is member access: object.field?
+
+        // Generate instructions for (set <var> (+ 1 <var>))
 				instructions.push_back(Instruction::push(token.sourceLocation(), Value::number(1)));
-				// TODO: de-duplicate vs Token::Identifier
-				switch(declarations.checkIdentifier(identifier))
-				{
-				case IDENTIFIER_DEFINITION_UNDEFINED:
-					throw ParseError(token.sourceLocation(), "Identifier '" + identifier.name() + "' not defined");
-					break;
-				case IDENTIFIER_DEFINITION_LOCAL:
-					instructions.push_back(Instruction::refLocal(token.sourceLocation(), identifier));
-					break;
-				case IDENTIFIER_DEFINITION_CLOSURE:
-					instructions.push_back(Instruction::refClosure(token.sourceLocation(), identifier));
-					break;
-				case IDENTIFIER_DEFINITION_GLOBAL:
-					instructions.push_back(Instruction::refGlobal(token.sourceLocation(), identifier));
-					break;
-				default:
-					throw CompilerBug("Failed to classify identifier " + identifier.name() + " at " + str(token.sourceLocation()));
-				}
+				handleVariableReference(token, identifier, declarations, instructions);
 				Identifier plus("+");
 				assert(declarations.checkIdentifier(plus) == IDENTIFIER_DEFINITION_GLOBAL);
 				instructions.push_back(Instruction::refGlobal(token.sourceLocation(), plus));
 				instructions.push_back(Instruction::call(token.sourceLocation(), 2));
 				
+				// TODO: de-duplicate vs "set"
 				switch(declarations.checkIdentifier(identifier))
 				{
 				case IDENTIFIER_DEFINITION_UNDEFINED:
@@ -495,23 +502,7 @@ namespace
 		case Token::IDENTIFIER:
 			{
 				Identifier identifier = tryMakeIdentifier(token);
-				switch(declarations.checkIdentifier(identifier))
-				{
-				case IDENTIFIER_DEFINITION_UNDEFINED:
-					throw ParseError(token.sourceLocation(), "Identifier '" + identifier.name() + "' not defined");
-					break;
-				case IDENTIFIER_DEFINITION_LOCAL:
-					instructions.push_back(Instruction::refLocal(token.sourceLocation(), identifier));
-					break;
-				case IDENTIFIER_DEFINITION_CLOSURE:
-					instructions.push_back(Instruction::refClosure(token.sourceLocation(), identifier));
-					break;
-				case IDENTIFIER_DEFINITION_GLOBAL:
-					instructions.push_back(Instruction::refGlobal(token.sourceLocation(), identifier));
-					break;
-				default:
-					throw CompilerBug("Failed to classify identifier " + identifier.name() + " at " + str(token.sourceLocation()));
-				}
+				handleVariableReference(token, identifier, declarations, instructions);
 
 				for(Token::Children::const_iterator i = children.begin() ; i != children.end() ; ++i)
 				{
