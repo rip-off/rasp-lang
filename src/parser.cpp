@@ -175,6 +175,25 @@ namespace
 		}
 	}
 
+	void handleIncrementKeyword(const Token &token, Declarations &declarations, InstructionList &instructions)
+	{
+		const Token::Children &children = token.children();
+		if(children.size() != 2)
+		{
+			throw ParseError(token.sourceLocation(), "Keyword 'inc' takes a single identifier");
+		}
+		Identifier identifier = tryMakeIdentifier(children[1]);
+		// TODO: what if identifier is member access: object.field?
+		// Generate instructions for (set <var> (+ 1 <var>))
+		instructions.push_back(Instruction::push(token.sourceLocation(), Value::number(1)));
+		handleVariableReference(token, identifier, declarations, instructions);
+		Identifier plus("+");
+		assert(declarations.checkIdentifier(plus) == IDENTIFIER_DEFINITION_GLOBAL);
+		instructions.push_back(Instruction::refGlobal(token.sourceLocation(), plus));
+		instructions.push_back(Instruction::call(token.sourceLocation(), 2));
+		handleVariableAssignment(token, identifier, declarations, instructions);
+	}
+
 	void parse(const Token &token, Declarations &declarations, InstructionList &instructions, const Settings &settings);
 
 	void handleList(const Token &token, Declarations &declarations, InstructionList &instructions, const Settings &settings)
@@ -322,21 +341,7 @@ namespace
 			}
 			else if(keyword == KEYWORD_INC)
 			{
-				if(children.size() != 2)
-				{
-					throw ParseError(token.sourceLocation(), "Keyword 'inc' takes a single identifier");
-				}
-				Identifier identifier = tryMakeIdentifier(children[1]);
-				// TODO: what if identifier is member access: object.field?
-
-        // Generate instructions for (set <var> (+ 1 <var>))
-				instructions.push_back(Instruction::push(token.sourceLocation(), Value::number(1)));
-				handleVariableReference(token, identifier, declarations, instructions);
-				Identifier plus("+");
-				assert(declarations.checkIdentifier(plus) == IDENTIFIER_DEFINITION_GLOBAL);
-				instructions.push_back(Instruction::refGlobal(token.sourceLocation(), plus));
-				instructions.push_back(Instruction::call(token.sourceLocation(), 2));
-				handleVariableAssignment(token, identifier, declarations, instructions);
+				handleIncrementKeyword(token, declarations, instructions);
 			}
 			else if(keyword == KEYWORD_TYPE)
 			{
