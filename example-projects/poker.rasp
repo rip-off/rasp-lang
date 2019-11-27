@@ -53,15 +53,7 @@
   (while (< i CARDS_IN_DECK)
     (set deck (array_set_element deck i i))
     (inc i))
-  // Shuffle
-  (var j (- CARDS_IN_DECK 1))
-  (while (> j 1)
-    (var r (% (rand) j))
-    (var temp (array_element deck r))
-    (set deck (array_set_element deck r (array_element deck j)))
-    (set deck (array_set_element deck j temp))
-    (set j (- j 1)))
-  deck)
+  (random_shuffle deck))
 
 // main
 

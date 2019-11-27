@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include <fstream>
 #include <iostream>
 
 #include "repl.h"
@@ -81,6 +82,16 @@ int main(int argc, const char **argv)
 	standardMath(globals);
 	standardLibrary(globals);
 	Interpreter interpreter(globals, settings);
+
+	const char *selfHostedStandardLibrary = "standard-library.rasp";
+	if (std::ifstream(selfHostedStandardLibrary).good())
+	{
+	  execute(interpreter, selfHostedStandardLibrary, settings);
+	}
+	else
+	{
+	  std::cerr << "WARN: failed to load " << selfHostedStandardLibrary << std::endl;
+	}
 
 	for (ArgumentList::const_iterator it = args.begin() ; it != args.end() ; ++it)
 	{
