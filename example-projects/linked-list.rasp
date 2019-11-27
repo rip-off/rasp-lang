@@ -1,3 +1,5 @@
+//
+
 (type linked_list_node_type element next)
 (type linked_list_type length head)
 
@@ -29,12 +31,13 @@
 	(assert (>= index 0) "Index too small!")
 	(get_linked_list_node list.head index))
 
-(defun print_linked_list (list)
-	(var length (length_linked_list list))
-	(println "List has " length " element(s)")
-	(var i 0)
-	(while (< i length)
-		(var element (get_linked_list list i))
-		(println " * " element)
-		(set i (+ i 1))))
-
+(defun linked_list_remove (list index_to_remove)
+  // TODO: check index is in range
+  (var copy (new_linked_list))
+  (var i 0)
+  (while (< i list.length)
+    (if (!= i index_to_remove)
+      // TODO: avoid visiting the elements in each iteration
+      (set copy (push_linked_list copy (get_linked_list list i))))
+    (inc i))
+  copy)
