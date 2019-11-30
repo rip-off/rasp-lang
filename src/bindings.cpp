@@ -42,18 +42,22 @@ void Bindings::set(RefType refType, const Identifier &identifier, const Value &v
 
 void Bindings::init(RefType refType, const Identifier &identifier, const Value &value)
 {
-    Mapping &mapping = mappingFor(refType);
+	Mapping &mapping = mappingFor(refType);
 	#if 1
-	mapping[identifier] = makeValue(value);
-	#else // TODO: fix testLoopWithInnerVariableDeclaration
-	auto result = mapping.insert(std::make_pair(identifier, value));
-	if (!result.second)
-	{
-		throw CompilerBug("Cannot initialise an already bound " + str(refType) + " identifier: '" + identifier.name() + "'");
-	}
+	  mapping[identifier] = makeValue(value);
+	#else
+	  // TODO: fix testLoopWithInnerVariableDeclaration
+	  // The problem is that a init_global instruction is generated inside a loop
+	  // Variables declared inside loops should probably not be global
+	  auto result = mapping.insert(std::make_pair(identifier, value));
+	  if (!result.second)
+	  {
+		  throw CompilerBug("Cannot initialise an already bound " + str(refType) + " identifier: '" + identifier.name() + "'");
+	  }
 	#endif
 }
 
+// TODO: replace with init(RefType::Local, ...) once bug above is fixed
 void Bindings::initLocal(const Identifier &identifier, const Value &value)
 {
 	auto result = localsByName_.insert(std::make_pair(identifier, makeValue(value)));

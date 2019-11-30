@@ -32,7 +32,6 @@ public:
     // Value should not be bound
     void init(RefType refType, const Identifier &identifier, const Value &value);
     
-    // TODO: replace with init(RefType::Local, ...)?
     // Value should not be bound
     void initLocal(const Identifier &identifier, const Value &value);
 
