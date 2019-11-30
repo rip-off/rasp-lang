@@ -1,21 +1,13 @@
 // Poker!
-(var NUM_SUITS 4)
+(var SUITS (array "♠" "♥" "♦" "♣"))
+(var NUM_SUITS (array_length SUITS))
 (var CARDS_IN_SUIT 13)
 (var HAND_SIZE 5)
 (var CARDS_IN_DECK (* NUM_SUITS CARDS_IN_SUIT))
 
 (defun suit (card)
   (var index (/ card CARDS_IN_SUIT))
-  (var result "UNKNOWN_CARD_SUIT")
-  (if (== index 0)
-    (set result "♠"))
-  (if (== index 1)
-    (set result "♥"))
-  (if (== index 2)
-    (set result "♦"))
-  (if (== index 3)
-    (set result "♣"))
-  result)
+  (array_element SUITS index))
 
 (defun rank (card)
   (var result "UNKNOWN_CARD_RANK")
@@ -42,7 +34,7 @@
     (if (== (- CARDS_IN_SUIT 1) (% i CARDS_IN_SUIT))
       (println)
       else
-      (print " | "))
+      (if (!= (+ i 1) (array_length cards)) (print " | ")))
     (inc i))
   (println))
 
@@ -53,12 +45,19 @@
   (while (< i CARDS_IN_DECK)
     (set deck (array_set_element deck i i))
     (inc i))
-  (random_shuffle deck))
+  deck)
 
 // main
 
 (srand)
 (var deck (populate_deck))
+(println "DECK:")
+(print_cards deck)
+
+(set deck (random_shuffle deck))
+(println "SHUFFLED:")
+(print_cards deck)
+
 (var next_card 0)
 (defun deal_hand ()
   (var hand (array_new HAND_SIZE))
@@ -68,9 +67,6 @@
     (inc next_card)
     (inc i))
   hand)
-
-(println "DECK:")
-(print_cards deck)
 
 (var dealer (deal_hand))
 (var player (deal_hand))
