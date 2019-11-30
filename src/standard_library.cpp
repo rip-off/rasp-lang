@@ -173,6 +173,17 @@ namespace
 		array[index] = arguments[2];
 		return Value::array(array);
 	}
+	
+	Value array(const Arguments &arguments)
+	{
+	  int size = arguments.size();
+		Value::Array result;
+		for (unsigned i = 0 ; i < size ; ++i)
+		{
+			result.push_back(arguments[i]);
+		}
+		return Value::array(result);
+	}
 
 	Value array_new(const Arguments &arguments)
 	{
@@ -410,6 +421,7 @@ namespace
 		ENTRY(array_length),
 		ENTRY(array_element),
 		ENTRY(array_set_element),
+		ENTRY(array),
 		ENTRY(array_new),
 		ENTRY(try_convert_string_to_int),
 		ENTRY(srand),
