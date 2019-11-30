@@ -1,6 +1,6 @@
 // Poker!
 (var SUITS (array "♠" "♥" "♦" "♣"))
-(var RANKS (array "A" "1" "2" "3" "4" "5" "6" "7" "8" "9" "T" "J" "Q" "K"))
+(var RANKS (array "1" "2" "3" "4" "5" "6" "7" "8" "9" "T" "J" "Q" "K" "A"))
 (var CARDS_IN_SUIT (array_length RANKS))
 (var HAND_SIZE 5)
 (var CARDS_IN_DECK (* (array_length SUITS) CARDS_IN_SUIT))
@@ -55,13 +55,32 @@
     (inc i))
   hand)
 
-(var player (deal_hand))
-(print "Player: ")
-(print_cards player)
+(var dealer_hand (deal_hand))
+(print "Dealer: ")
+(print_cards dealer_hand)
 (println)
 
-(var dealer (deal_hand))
-(print "Dealer: ")
-(print_cards dealer)
+(var num_players nil)
+(while (is_nil num_players)
+  (print "Enter the number of players: ")
+  (var input (read_line))
+  (var number (try_convert_string_to_int input))
+  (if (is_nil number)
+    (println ("Invalid number " input))
+    else
+    (if (<= number 0)
+      (println "Number of players must be at least 1")
+      else
+      (set num_players number)))
+  /* loop ! */)
+
 (println)
+
+(var player 0)
+(while (< player num_players)
+  (var player_hand (deal_hand))
+  (print "Player " (+ player 1) ": ")
+  (print_cards player_hand)
+  (println)
+  (inc player))
 
