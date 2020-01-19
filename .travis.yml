@@ -1,5 +1,4 @@
 language: cpp
-before_script: mkdir obj/
 script:
 - make clean
 - make
