@@ -17,6 +17,7 @@ $(EXEC): $(OBJECTS)
 	$(CC) $(OBJECTS) -o $(EXEC)
 
 obj/%.o: src/%.cpp
+	@mkdir -p obj/
 	$(CC) -c $(CC_FLAGS) $< -o $@
 
 DEPS := $(OBJECTS:.o=.d)
