@@ -9,6 +9,7 @@ all: test
 
 clean:
 	rm -f $(EXEC) $(OBJECTS)
+	rmdir obj/
 
 test: $(EXEC)
 	./$(EXEC) --unit-tests
