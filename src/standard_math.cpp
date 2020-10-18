@@ -31,6 +31,7 @@ namespace
 		case GT:  return ">";
 		case LTE: return "<=";
 		case GTE: return ">=";
+		default: throw std::logic_error("Unhandled token type " + str(function));
 		}
 	}
 

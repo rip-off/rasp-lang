@@ -88,7 +88,7 @@ namespace
 		}
 
 		Bindings::Mapping closedValuesByName;
-		for (int i = 0 ; i < argc ; ++i)
+		for (std::size_t i = 0 ; i < argc ; ++i)
 		{
 			auto &pair = closureValues.back();
 			closedValuesByName[pair.first] = pair.second;

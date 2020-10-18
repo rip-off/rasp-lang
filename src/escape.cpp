@@ -24,7 +24,7 @@ namespace {
 
 bool needsEscaping(char c)
 {
-	for (int i = 0 ; i < sizeof(escape) / sizeof(escape[0]) ; ++i)
+	for (std::size_t i = 0 ; i < sizeof(escape) / sizeof(escape[0]) ; ++i)
 	{
 		if (c == escape[i].source)
 		{
@@ -36,7 +36,7 @@ bool needsEscaping(char c)
 
 bool needsReescaping(char c)
 {
-	for (int i = 0 ; i < sizeof(escape) / sizeof(escape[0]) ; ++i)
+	for (std::size_t i = 0 ; i < sizeof(escape) / sizeof(escape[0]) ; ++i)
 	{
 		if (c == escape[i].replacement)
 		{
@@ -49,7 +49,7 @@ bool needsReescaping(char c)
 
 char unescape(char c)
 {
-	for (int i = 0 ; i < sizeof(escape) / sizeof(escape[0]) ; ++i)
+	for (std::size_t i = 0 ; i < sizeof(escape) / sizeof(escape[0]) ; ++i)
 	{
 		if (c == escape[i].source)
 		{
@@ -61,7 +61,7 @@ char unescape(char c)
 
 char reescape(char c)
 {
-	for (int i = 0 ; i < sizeof(escape) / sizeof(escape[0]) ; ++i)
+	for (std::size_t i = 0 ; i < sizeof(escape) / sizeof(escape[0]) ; ++i)
 	{
 		if (c == escape[i].replacement)
 		{

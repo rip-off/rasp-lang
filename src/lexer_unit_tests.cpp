@@ -23,7 +23,7 @@ namespace
 		assertEquals(token.type(), Token::LIST);
 
 		const Token::Children &rootChildren = token.children();
-		assertEquals(rootChildren.size(), 1);
+		assertEquals(rootChildren.size(), 1u);
 		const Token &literal = rootChildren.front();
 		assertEquals(literal.type(), Token::KEYWORD);
 		assertEquals(literal.string(), "nil");
@@ -36,7 +36,7 @@ namespace
 		assertEquals(token.type(), Token::LIST);
 
 		const Token::Children &rootChildren = token.children();
-		assertEquals(rootChildren.size(), 1);
+		assertEquals(rootChildren.size(), 1u);
 		const Token &literal = rootChildren.front();
 		assertEquals(literal.type(), Token::NUMBER);
 		assertEquals(literal.string(), "42");
@@ -49,7 +49,7 @@ namespace
 		assertEquals(token.type(), Token::LIST);
 
 		const Token::Children &rootChildren = token.children();
-		assertEquals(rootChildren.size(), 1);
+		assertEquals(rootChildren.size(), 1u);
 		const Token &literal = rootChildren.front();
 		assertEquals(literal.type(), Token::KEYWORD);
 		assertEquals(literal.string(), "true");
@@ -62,7 +62,7 @@ namespace
 		assertEquals(token.type(), Token::LIST);
 
 		const Token::Children &rootChildren = token.children();
-		assertEquals(rootChildren.size(), 1);
+		assertEquals(rootChildren.size(), 1u);
 		const Token &literal = rootChildren.front();
 		assertEquals(literal.type(), Token::KEYWORD);
 		assertEquals(literal.string(), "false");
@@ -75,7 +75,7 @@ namespace
 		assertEquals(token.type(), Token::LIST);
 
 		const Token::Children &rootChildren = token.children();
-		assertEquals(rootChildren.size(), 1);
+		assertEquals(rootChildren.size(), 1u);
 		const Token &literal = rootChildren.front();
 		assertEquals(literal.type(), Token::STRING);
 		assertEquals(literal.string(), "Hello, World");
@@ -88,7 +88,7 @@ namespace
 		assertEquals(token.type(), Token::LIST);
 
 		const Token::Children &rootChildren = token.children();
-		assertEquals(rootChildren.size(), 1);
+		assertEquals(rootChildren.size(), 1u);
 		const Token &literal = rootChildren.front();
 		assertEquals(literal.type(), Token::IDENTIFIER);
 		assertEquals(literal.string(), "identifier");
@@ -101,7 +101,7 @@ namespace
 		assertEquals(token.type(), Token::LIST);
 
 		const Token::Children &rootChildren = token.children();
-		assertEquals(rootChildren.size(), 1);
+		assertEquals(rootChildren.size(), 1u);
 		const Token &literal = rootChildren.front();
 		assertEquals(literal.type(), Token::IDENTIFIER);
 		assertEquals(literal.string(), "camelCase");
@@ -114,7 +114,7 @@ namespace
 		assertEquals(token.type(), Token::LIST);
 
 		const Token::Children &rootChildren = token.children();
-		assertEquals(rootChildren.size(), 1);
+		assertEquals(rootChildren.size(), 1u);
 		const Token &literal = rootChildren.front();
 		assertEquals(literal.type(), Token::IDENTIFIER);
 		assertEquals(literal.string(), "snake_case");
@@ -127,12 +127,12 @@ namespace
 		assertEquals(token.type(), Token::LIST);
 
 		const Token::Children &rootChildren = token.children();
-		assertEquals(rootChildren.size(), 1);
+		assertEquals(rootChildren.size(), 1u);
 		const Token &list = rootChildren.front();
 		assertEquals(list.type(), Token::LIST);
 
 		const Token::Children &children = list.children();
-		assertEquals(children.size(), 3);
+		assertEquals(children.size(), 3u);
 
 		assertEquals(children[0].type(), Token::IDENTIFIER);
 		assertEquals(children[0].string(), "+");
@@ -151,12 +151,12 @@ namespace
 		assertEquals(token.type(), Token::LIST);
 		
 		const Token::Children &rootChildren = token.children();
-		assertEquals(rootChildren.size(), 1);
+		assertEquals(rootChildren.size(), 1u);
 		const Token &list = rootChildren.front();
 		assertEquals(list.type(), Token::LIST);
 
 		const Token::Children &children = list.children();
-		assertEquals(children.size(), 3);
+		assertEquals(children.size(), 3u);
 
 		assertEquals(children[0].type(), Token::KEYWORD);
 		assertEquals(children[0].string(), "var");
@@ -175,12 +175,12 @@ namespace
 		assertEquals(token.type(), Token::LIST);
 		
 		const Token::Children &rootChildren = token.children();
-		assertEquals(rootChildren.size(), 1);
+		assertEquals(rootChildren.size(), 1u);
 		const Token &list = rootChildren.front();
 		assertEquals(list.type(), Token::LIST);
 
 		const Token::Children &children = list.children();
-		assertEquals(children.size(), 3);
+		assertEquals(children.size(), 3u);
 
 		assertEquals(children[0].type(), Token::KEYWORD);
 		assertEquals(children[0].string(), "var");
@@ -189,7 +189,7 @@ namespace
 		assertEquals(children[1].string(), "__declaration");
 
 		const Token::Children &declaration = children[1].children();
-		assertEquals(declaration.size(), 2);
+		assertEquals(declaration.size(), 2u);
 		assertEquals(declaration[0].type(), Token::IDENTIFIER);
 		assertEquals(declaration[0].string(), "x");
 
@@ -207,12 +207,12 @@ namespace
 		assertEquals(token.type(), Token::LIST);
 		
 		const Token::Children &rootChildren = token.children();
-		assertEquals(rootChildren.size(), 1);
+		assertEquals(rootChildren.size(), 1u);
 		const Token &list = rootChildren.front();
 		assertEquals(list.type(), Token::LIST);
 
 		const Token::Children &children = list.children();
-		assertEquals(children.size(), 4);
+		assertEquals(children.size(), 4u);
 
 		assertEquals(children[0].type(), Token::KEYWORD);
 		assertEquals(children[0].string(), "defun");
@@ -224,7 +224,7 @@ namespace
 		assertEquals(children[2].string(), "__list");
 
 		const Token::Children &argumentList = children[2].children();
-		assertEquals(argumentList.size(), 1);
+		assertEquals(argumentList.size(), 1u);
 		assertEquals(argumentList[0].type(), Token::IDENTIFIER);
 		assertEquals(argumentList[0].string(), "x");
 
@@ -232,7 +232,7 @@ namespace
 		assertEquals(children[3].string(), "__list");
 
 		const Token::Children &functionBody = children[3].children();
-		assertEquals(functionBody.size(), 3);
+		assertEquals(functionBody.size(), 3u);
 		assertEquals(functionBody[0].type(), Token::IDENTIFIER);
 		assertEquals(functionBody[0].string(), "*");
 
@@ -250,12 +250,12 @@ namespace
 		assertEquals(token.type(), Token::LIST);
 
 		const Token::Children &rootChildren = token.children();
-		assertEquals(rootChildren.size(), 1);
+		assertEquals(rootChildren.size(), 1u);
 		const Token &list = rootChildren.front();
 		assertEquals(list.type(), Token::LIST);
 
 		const Token::Children &children = list.children();
-		assertEquals(children.size(), 4);
+		assertEquals(children.size(), 4u);
 
 		assertEquals(children[0].type(), Token::KEYWORD);
 		assertEquals(children[0].string(), "defun");
@@ -264,7 +264,7 @@ namespace
 		assertEquals(children[1].string(), "__declaration");
 
 		const Token::Children &functionNameDeclaration = children[1].children();
-		assertEquals(functionNameDeclaration.size(), 2);
+		assertEquals(functionNameDeclaration.size(), 2u);
 		assertEquals(functionNameDeclaration[0].type(), Token::IDENTIFIER);
 		assertEquals(functionNameDeclaration[0].string(), "double");
 
@@ -275,12 +275,12 @@ namespace
 		assertEquals(children[2].string(), "__list");
 
 		const Token::Children &argumentList = children[2].children();
-		assertEquals(argumentList.size(), 1);
+		assertEquals(argumentList.size(), 1u);
 		assertEquals(argumentList[0].type(), Token::DECLARATION);
 		assertEquals(argumentList[0].string(), "__declaration");
 
 		const Token::Children &argumentDeclaration = argumentList[0].children();
-		assertEquals(argumentDeclaration.size(), 2);
+		assertEquals(argumentDeclaration.size(), 2u);
 		assertEquals(argumentDeclaration[0].type(), Token::IDENTIFIER);
 		assertEquals(argumentDeclaration[0].string(), "x");
 
@@ -291,7 +291,7 @@ namespace
 		assertEquals(children[3].string(), "__list");
 
 		const Token::Children &functionBody = children[3].children();
-		assertEquals(functionBody.size(), 3);
+		assertEquals(functionBody.size(), 3u);
 		assertEquals(functionBody[0].type(), Token::IDENTIFIER);
 		assertEquals(functionBody[0].string(), "*");
 

@@ -354,7 +354,7 @@ namespace
 		}
 
 		std::vector<Identifier> memberNames;
-		for (int i = 2 ; i < children.size() ; ++i)
+		for (std::size_t i = 2 ; i < children.size() ; ++i)
 		{
 			Identifier identifier = tryMakeDeclaration(children[i]);
 			memberNames.push_back(identifier);

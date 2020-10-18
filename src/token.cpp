@@ -89,6 +89,8 @@ std::ostream &operator<<(std::ostream &out, Token::Type tokenType) {
 			return out << "Identifier";
 		case Token::DECLARATION:
 			return out << "Declaration";
+		default:
+			throw std::logic_error("Unhandled token type " + str(tokenType));
 	}
 }
 

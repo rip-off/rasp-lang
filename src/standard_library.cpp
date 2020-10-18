@@ -136,7 +136,7 @@ namespace
 			throw ExternalFunctionError("Expected numeric argument");
 		}
 
-		int index = indexValue.number();
+		std::size_t index = indexValue.number();
 		if (index < 0 || index >= array.size())
 		{
 			throw ExternalFunctionError("Array has " + str(array.size()) + " elements, cannot get index " + str(index));
@@ -164,7 +164,7 @@ namespace
 			throw ExternalFunctionError("Expected numeric argument");
 		}
 
-		int index = indexValue.number();
+		std::size_t index = indexValue.number();
 		if (index < 0 || index >= array.size())
 		{
 			throw ExternalFunctionError("Array has " + str(array.size()) + " elements, cannot get index " + str(index));
@@ -176,7 +176,7 @@ namespace
 	
 	Value array(const Arguments &arguments)
 	{
-	  int size = arguments.size();
+		std::size_t size = arguments.size();
 		Value::Array result;
 		for (unsigned i = 0 ; i < size ; ++i)
 		{
@@ -197,7 +197,7 @@ namespace
 			throw ExternalFunctionError("Expected numeric argument");
 		}
 
-		int size = arguments[0].number();
+		std::size_t size = arguments[0].number();
 		Value::Array result;
 		for (unsigned i = 0 ; i < size ; ++i)
 		{

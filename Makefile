@@ -1,4 +1,4 @@
-CC = clang++
+CC = g++
 CC_FLAGS = -std=c++11 -Wall -Werror -g
 
 EXEC = rasp

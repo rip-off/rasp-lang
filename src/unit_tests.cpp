@@ -101,7 +101,7 @@ namespace
 		root.addChild(list);
 		Declarations declarations = interpreter.declarations();
 		InstructionList result = parse(root, declarations, interpreter.settings());
-		assertEquals(result.size(), 4);
+		assertEquals(result.size(), 4u);
 
 		assertEquals(result[0].type(), Instruction::PUSH);
 		assertEquals(result[0].value().number(), 13);
@@ -130,7 +130,7 @@ namespace
 		Declarations declarations = interpreter.declarations();
 		declarations.add(variableName);
 		InstructionList result = parse(root, declarations, interpreter.settings());
-		assertEquals(result.size(), 5);
+		assertEquals(result.size(), 5u);
 
 		assertEquals(result[0].type(), Instruction::PUSH);
 		assertEquals(result[0].value().number(), 1);
@@ -162,7 +162,7 @@ namespace
 		Declarations localDeclarations = interpreter.declarations().newScope();
 		localDeclarations.add(variableName);
 		InstructionList result = parse(root, localDeclarations, interpreter.settings());
-		assertEquals(result.size(), 5);
+		assertEquals(result.size(), 5u);
 
 		assertEquals(result[0].type(), Instruction::PUSH);
 		assertEquals(result[0].value().number(), 1);
@@ -236,7 +236,7 @@ namespace
 		{
 			execute(interpreter, source);
 		}
-		catch (ExternalFunctionError e)
+		catch (const ExternalFunctionError &e)
 		{
 			assertEquals("cannot mod by zero in external function '%'", e.what());
 		}
@@ -249,7 +249,7 @@ namespace
 		{
 			execute(interpreter, source);
 		}
-		catch (ExternalFunctionError e)
+		catch (const ExternalFunctionError &e)
 		{
 			assertEquals("cannot divide by zero in external function '/'", e.what());
 		}
