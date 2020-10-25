@@ -32,7 +32,8 @@
 	(get_linked_list_node list.head index))
 
 (defun linked_list_remove (list index_to_remove)
-  // TODO: check index is in range
+  (assert (< index_to_remove list.length) "Index too big!")
+  (assert (>= index_to_remove 0) "Index too small!")
   (var copy (new_linked_list))
   (var i 0)
   (while (< i list.length)

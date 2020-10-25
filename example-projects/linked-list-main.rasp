@@ -20,10 +20,16 @@
   (print "Enter index to remove: ")
 	(var input (read_line))
 	(var index (try_convert_string_to_int input))
-	(if index
-	  (set list (linked_list_remove list index))
+	(if (is_nil index)
+	  (println "Not a number: " input)
+	else
+	  (if (>= index list.length)
+	    (println "Index too big!")
 	  else
-	  (println "Not a number: " input)))
+	      (if (< index 0)
+	        (println "Index too small!")
+	      else
+	        (set list (linked_list_remove list index))))))
 
 (defun print_command ()
 	(var length (length_linked_list list))
